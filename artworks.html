@@ -3,16 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Artworks — tarik yigit</title>
+<title>Artworks — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
-<!-- model-viewer for 3D -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
-/* ── ARTWORK GRID ── */
 .artwork-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 6px;
 }
 .artwork-thumb {
   position: relative; aspect-ratio: 1;
@@ -28,10 +24,10 @@
 }
 .artwork-thumb:hover .aw-ph { background:#dedad4; }
 .aw-ph-cross { width:20px; height:20px; position:relative; }
-.aw-ph-cross::before,.aw-ph-cross::after { content:''; position:absolute; background:#c8c4be; }
+.aw-ph-cross::before, .aw-ph-cross::after { content:''; position:absolute; background:#c8c4be; }
 .aw-ph-cross::before { width:1px; height:100%; left:50%; top:0; }
 .aw-ph-cross::after  { width:100%; height:1px; top:50%; left:0; }
-.aw-ph-lbl { font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:#bbb; }
+.aw-ph-lbl { font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:#bbb; font-family:var(--mono); }
  
 .aw-overlay {
   position:absolute; inset:0;
@@ -41,42 +37,40 @@
 }
 .artwork-thumb:hover .aw-overlay { opacity:1; }
 .aw-ov-title { font-size:13px; font-style:italic; color:#fff; margin-bottom:2px; line-height:1.3; }
-.aw-ov-meta  { font-size:8px; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.aw-ov-meta  { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.5); font-family:var(--mono); }
  
-/* projects list */
 .project-item {
   display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
   padding:20px 0; border-bottom:1px solid #e8e4de;
 }
 .project-item:first-child { border-top:1px solid #e8e4de; }
-.project-name { font-size:15px; font-weight:bold; margin-bottom:4px; }
+.project-name { font-size:15px; font-weight:500; margin-bottom:4px; }
 .project-desc { font-size:13px; font-style:italic; color:var(--mid); }
-.p-tag { font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border:1px solid; white-space:nowrap; margin-top:2px; }
-.tag-on { color:#c0392b; border-color:#c0392b; }
+.p-tag { font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border:1px solid; white-space:nowrap; font-family:var(--mono); }
+.tag-on { color:var(--red); border-color:var(--red); }
 .tag-pl { color:#ccc; border-color:#ccc; }
  
-@media(max-width:640px){ .artwork-grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:640px) { .artwork-grid { grid-template-columns:repeat(2,1fr); } }
 </style>
 </head>
 <body>
+<div id="page-transition-mask"></div>
  
-<!-- HEADER -->
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html" class="active">Artworks</a>
-    <a href="writings.html">Writings</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
+    <a href="artworks.html" class="active" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -88,25 +82,20 @@
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
- 
     <div class="tabs">
-      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works"                 data-tr="Eserler">Works</button>
+      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works"                data-tr="Eserler">Works</button>
       <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
     </div>
- 
-    <!-- WORKS GRID -->
     <div class="tab-panel on" id="panel-works">
       <div class="artwork-grid" id="artworkGrid"></div>
     </div>
- 
-    <!-- ONGOING / PLANNED -->
     <div class="tab-panel" id="panel-projects">
       <div id="projectsList"></div>
     </div>
   </div>
 </div>
  
-<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
  
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
@@ -116,73 +105,61 @@
   </div>
   <div class="reading-body" id="reading-body"></div>
 </div>
- 
-<!-- FLOATING BACK BUTTON -->
 <button id="back-fab" onclick="closeReading()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
  
-<!-- 3D VIEWER OVERLAY -->
+<!-- 3D VIEWER -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
     <button class="viewer-close" onclick="closeViewer()" data-en="Close" data-tr="Kapat">Close</button>
   </div>
-  <model-viewer
-    id="model-viewer-el"
-    camera-controls
-    auto-rotate
-    shadow-intensity="1"
-    exposure="0.8"
-    style="background:#000; width:100%; height:100%;">
-  </model-viewer>
+  <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.75"
+    style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
  
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* Build artwork grid from data.js */
-(function(){
+function swTab(t) {
+  ['works','projects'].forEach(id => {
+    document.getElementById('tab-' + id).classList.toggle('on', id === t);
+    document.getElementById('panel-' + id).classList.toggle('on', id === t);
+  });
+}
+ 
+(function buildPage() {
+  const l    = currentLang;
   const grid = document.getElementById('artworkGrid');
   SITE.artworks.forEach((aw, idx) => {
-    const thumb = document.createElement('div');
-    thumb.className = 'artwork-thumb';
-    thumb.addEventListener('click', () => openArtwork(idx));
- 
-    const inner = aw.image
-      ? `<img src="${aw.image}" alt="${aw.title}">`
-      : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>`;
- 
-    thumb.innerHTML = `
-      ${inner}
-      <div class="aw-overlay">
-        <div class="aw-ov-title">${aw.title}</div>
-        <div class="aw-ov-meta">${aw.year}</div>
-      </div>`;
-    grid.appendChild(thumb);
+    const div = document.createElement('div');
+    div.className = 'artwork-thumb';
+    div.addEventListener('click', () => openArtwork(idx));
+    div.innerHTML = aw.image
+      ? `<img src="${aw.image}" alt="${aw.title}">
+         <div class="aw-overlay"><div class="aw-ov-title">${aw.title}</div><div class="aw-ov-meta">${aw.year}</div></div>`
+      : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
+         <div class="aw-overlay"><div class="aw-ov-title">${aw.title}</div><div class="aw-ov-meta">${aw.year}</div></div>`;
+    grid.appendChild(div);
   });
  
-  /* Projects list — currently static, add to SITE object if needed */
   const projEl = document.getElementById('projectsList');
-  projEl.innerHTML = `
-    <div class="project-item">
-      <div><div class="project-name">Project Title One</div><div class="project-desc">A short description of this project.</div></div>
-      <span class="p-tag tag-on">Ongoing</span>
-    </div>
-    <div class="project-item">
-      <div><div class="project-name">Project Title Two</div><div class="project-desc">A short description of this project.</div></div>
-      <span class="p-tag tag-pl">Planned</span>
+  SITE.projects.forEach(p => {
+    const statusLabel = p.status === 'ongoing'
+      ? (l === 'tr' ? 'Devam Ediyor' : 'Ongoing')
+      : (l === 'tr' ? 'Planlandı'    : 'Planned');
+    projEl.innerHTML += `<div class="project-item">
+      <div>
+        <div class="project-name">${l === 'tr' ? p.titleTR : p.title}</div>
+        <div class="project-desc">${l === 'tr' ? p.descTR  : p.desc}</div>
+      </div>
+      <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${statusLabel}</span>
     </div>`;
+  });
 })();
- 
-/* Tab switcher */
-function swTab(t) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('tab-' + t).classList.add('on');
-  document.getElementById('panel-' + t).classList.add('on');
-}
 </script>
 </body>
 </html>
+ 
