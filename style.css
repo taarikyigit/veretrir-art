@@ -15,8 +15,8 @@ html { scroll-behavior: smooth; }
   --faint:   #cac7c1;
   --line:    #dedad5;
   --red:     #a82a1e;
---serif:   'Helvetica Neue', Helvetica, Arial, sans-serif;
---mono:    'Helvetica Neue', Helvetica, Arial, sans-serif;
+--serif: 'Inter', sans-serif;
+--mono:  'Inter', sans-serif;
   --hh:      54px;
   --ease:    cubic-bezier(0.4,0,0.2,1);
 }
