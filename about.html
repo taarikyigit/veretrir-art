@@ -3,54 +3,598 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>About — tarık yiğit</title>
-<link rel="stylesheet" href="style.css"/>
+<title>Admin — tarık yiğit</title>
 <style>
-.about-text { max-width:580px; font-size:16px; line-height:1.95; color:#555; }
-.about-text p + p { margin-top:18px; }
+@import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&display=swap');
+ 
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f5f2ed;--bg2:#eeebe5;--ink:#111;--mid:#888;--dim:#aaa;
+  --line:#ddd;--red:#c0392b;--green:#27ae60;--blue:#2980b9;
+  --font:'Literata',Georgia,serif;--mono:'Courier New',monospace;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.7;}
+ 
+/* ── TOP BAR ── */
+.admin-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:#111;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:52px;
+}
+.admin-title{font-size:13px;font-weight:500;letter-spacing:.04em;}
+.admin-header-right{display:flex;gap:12px;align-items:center;}
+.btn-export{
+  background:var(--green);color:#fff;border:none;
+  font-family:var(--font);font-size:12px;letter-spacing:.06em;
+  padding:8px 20px;cursor:pointer;transition:background .2s;
+}
+.btn-export:hover{background:#219a52;}
+.btn-site{
+  background:none;border:1px solid #444;color:#aaa;
+  font-family:var(--font);font-size:11px;letter-spacing:.08em;
+  padding:6px 14px;cursor:pointer;text-decoration:none;
+  transition:border-color .2s,color .2s;
+}
+.btn-site:hover{border-color:#fff;color:#fff;}
+ 
+/* ── LAYOUT ── */
+.admin-wrap{padding-top:52px;display:grid;grid-template-columns:200px 1fr;min-height:100vh;}
+ 
+/* ── SIDEBAR ── */
+.sidebar{
+  background:#1a1a1a;color:#ccc;
+  padding:28px 0;
+  position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto;
+}
+.sidebar-section{
+  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  color:#555;padding:20px 22px 6px;
+}
+.sidebar a{
+  display:block;padding:9px 22px;
+  font-size:13px;color:#aaa;text-decoration:none;
+  transition:background .15s,color .15s;
+  border-left:2px solid transparent;
+}
+.sidebar a:hover{background:#252525;color:#fff;}
+.sidebar a.active{background:#252525;color:#fff;border-left-color:var(--green);}
+ 
+/* ── MAIN PANEL ── */
+.admin-main{padding:36px 40px 80px;max-width:860px;}
+ 
+.panel-title{
+  font-size:22px;font-weight:500;margin-bottom:6px;
+}
+.panel-sub{font-size:13px;color:var(--mid);margin-bottom:32px;font-style:italic;}
+ 
+.section-sep{height:1px;background:var(--line);margin:36px 0;}
+ 
+/* ── CARDS ── */
+.card{
+  background:#fff;border:1px solid var(--line);
+  padding:22px 24px;margin-bottom:14px;
+  display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;
+}
+.card-title{font-size:15px;font-weight:500;margin-bottom:3px;}
+.card-meta{font-size:11px;color:var(--dim);font-family:var(--mono);}
+.card-actions{display:flex;gap:8px;}
+.btn-edit,.btn-del{
+  background:none;border:1px solid var(--line);
+  font-family:var(--font);font-size:11px;letter-spacing:.06em;
+  padding:5px 12px;cursor:pointer;transition:all .2s;
+}
+.btn-edit:hover{border-color:var(--ink);color:var(--ink);}
+.btn-del:hover{border-color:var(--red);color:var(--red);}
+ 
+/* ── FORM ── */
+.form-group{margin-bottom:18px;}
+.form-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:6px;font-family:var(--mono);}
+.form-input, .form-textarea, .form-select{
+  width:100%;border:1px solid var(--line);background:var(--bg);
+  font-family:var(--font);font-size:14px;color:var(--ink);
+  padding:9px 12px;outline:none;transition:border-color .2s;
+}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--ink);}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.7;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-note{font-size:11px;color:var(--dim);margin-top:5px;font-style:italic;}
+ 
+.btn-add{
+  background:var(--ink);color:#fff;border:none;
+  font-family:var(--font);font-size:12px;letter-spacing:.06em;
+  padding:10px 22px;cursor:pointer;transition:background .2s;margin-top:6px;
+}
+.btn-add:hover{background:#333;}
+.btn-cancel{
+  background:none;border:1px solid var(--line);
+  font-family:var(--font);font-size:12px;letter-spacing:.06em;
+  padding:10px 18px;cursor:pointer;transition:all .2s;margin-top:6px;margin-left:8px;
+}
+.btn-cancel:hover{border-color:var(--ink);}
+ 
+/* ── UPLOAD ZONE ── */
+.upload-zone{
+  border:2px dashed var(--line);padding:36px;text-align:center;
+  cursor:pointer;transition:border-color .2s,background .2s;
+  margin-bottom:12px;
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--ink);background:#f0ece3;}
+.upload-zone-icon{font-size:28px;margin-bottom:8px;color:var(--dim);}
+.upload-zone p{font-size:13px;color:var(--mid);}
+.upload-zone p strong{color:var(--ink);}
+.upload-zone input{display:none;}
+ 
+.upload-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.upload-preview-item{
+  position:relative;width:80px;height:80px;
+  background:var(--bg2);overflow:hidden;
+}
+.upload-preview-item img{width:100%;height:100%;object-fit:cover;}
+.upload-preview-item span{
+  position:absolute;bottom:0;left:0;right:0;
+  font-size:8px;background:rgba(0,0,0,.6);color:#fff;
+  padding:2px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--mono);
+}
+ 
+/* ── STATUS BADGES ── */
+.badge{
+  display:inline-block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;
+  padding:2px 8px;border:1px solid;font-family:var(--mono);
+}
+.badge-on{color:var(--green);border-color:var(--green);}
+.badge-pl{color:var(--dim);border-color:var(--line);}
+ 
+/* ── EXPORT PANEL ── */
+.export-box{
+  background:#111;color:#ccc;padding:20px 22px;
+  font-family:var(--mono);font-size:12px;line-height:1.8;
+  max-height:360px;overflow-y:auto;white-space:pre;
+  border:1px solid #333;margin-top:12px;
+}
+.export-hint{font-size:12px;color:var(--mid);font-style:italic;margin-bottom:8px;}
+ 
+/* ── PANEL VISIBILITY ── */
+.admin-panel{display:none;}
+.admin-panel.active{display:block;}
+ 
+/* ── MODAL ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;
+  align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:var(--bg);border:1px solid var(--line);
+  padding:32px;width:min(620px,92vw);max-height:85vh;overflow-y:auto;
+}
+.modal-title{font-size:18px;font-weight:500;margin-bottom:20px;}
+ 
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:28px;right:28px;z-index:300;
+  background:var(--green);color:#fff;
+  font-family:var(--font);font-size:13px;padding:12px 22px;
+  opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;
+  pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateY(0);}
 </style>
 </head>
 <body>
-<div id="page-transition-mask"></div>
-<header>
-  <div class="header-left">
-    <a href="index.html" class="header-name">tarık yiğit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-      </svg>
-    </a>
+ 
+<!-- TOP BAR -->
+<div class="admin-header">
+  <span class="admin-title">tarık yiğit — admin</span>
+  <div class="admin-header-right">
+    <button class="btn-export" onclick="exportData()">⬇ Export data.js</button>
+    <a href="index.html" class="btn-site" target="_blank">View Site ↗</a>
   </div>
-  <nav>
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında" class="active">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
+</div>
+ 
+<div class="admin-wrap">
+ 
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">Content</div>
+    <a href="#" class="active" onclick="showPanel('artworks');return false;">Artworks</a>
+    <a href="#" onclick="showPanel('poems');return false;">Poems</a>
+    <a href="#" onclick="showPanel('articles');return false;">Articles</a>
+    <a href="#" onclick="showPanel('projects');return false;">Projects</a>
+    <div class="sidebar-section">Site</div>
+    <a href="#" onclick="showPanel('hero');return false;">Hero Slides</a>
+    <a href="#" onclick="showPanel('export');return false;">Export</a>
+    <div class="sidebar-section">Help</div>
+    <a href="#" onclick="showPanel('guide');return false;">How to deploy</a>
   </nav>
-  <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
-    <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
-  </div>
-</header>
-<div class="page-wrap">
-  <div class="sec">
-    <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
-    <div class="about-text">
-      <p data-en="Write your biography or artist statement here. Who you are, where you come from, what you make and why."
-         data-tr="Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.">
-        Write your biography or artist statement here. Who you are, where you come from, what you make and why.
-      </p>
-      <p data-en="A second paragraph about your practice — the themes you return to, the tensions that drive your work."
-         data-tr="Pratiğiniz hakkında ikinci paragraf — döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler.">
-        A second paragraph about your practice — the themes you return to, the tensions that drive your work.
-      </p>
+ 
+  <!-- MAIN -->
+  <main class="admin-main">
+ 
+    <!-- ════ ARTWORKS ════ -->
+    <div class="admin-panel active" id="panel-artworks">
+      <div class="panel-title">Artworks</div>
+      <div class="panel-sub">Manage your visual works. Each artwork appears in the 4-square grid.</div>
+      <button class="btn-add" onclick="openModal('artwork', -1)">+ Add Artwork</button>
+      <div class="section-sep"></div>
+      <div id="list-artworks"></div>
+    </div>
+ 
+    <!-- ════ POEMS ════ -->
+    <div class="admin-panel" id="panel-poems">
+      <div class="panel-title">Poems</div>
+      <div class="panel-sub">Your poems appear in the Writings section.</div>
+      <button class="btn-add" onclick="openModal('poem', -1)">+ Add Poem</button>
+      <div class="section-sep"></div>
+      <div id="list-poems"></div>
+    </div>
+ 
+    <!-- ════ ARTICLES ════ -->
+    <div class="admin-panel" id="panel-articles">
+      <div class="panel-title">Articles</div>
+      <div class="panel-sub">Essays, criticism, and other written works.</div>
+      <button class="btn-add" onclick="openModal('article', -1)">+ Add Article</button>
+      <div class="section-sep"></div>
+      <div id="list-articles"></div>
+    </div>
+ 
+    <!-- ════ PROJECTS ════ -->
+    <div class="admin-panel" id="panel-projects">
+      <div class="panel-title">Ongoing &amp; Planned Projects</div>
+      <div class="panel-sub">Listed under the Artworks page.</div>
+      <button class="btn-add" onclick="openModal('project', -1)">+ Add Project</button>
+      <div class="section-sep"></div>
+      <div id="list-projects"></div>
+    </div>
+ 
+    <!-- ════ HERO ════ -->
+    <div class="admin-panel" id="panel-hero">
+      <div class="panel-title">Hero Slideshow</div>
+      <div class="panel-sub">Images shown as background on the homepage. Upload files to your server, then enter their paths below.</div>
+ 
+      <div id="hero-inputs"></div>
+      <button class="btn-add" onclick="addHeroSlot()">+ Add Slide</button>
+    </div>
+ 
+    <!-- ════ EXPORT ════ -->
+    <div class="admin-panel" id="panel-export">
+      <div class="panel-title">Export data.js</div>
+      <div class="panel-sub">Generate your updated data.js file and download it. Replace the file on your server.</div>
+      <button class="btn-export" style="margin-bottom:12px;" onclick="exportData()">⬇ Download data.js</button>
+      <p class="export-hint">Preview of what will be exported:</p>
+      <div class="export-box" id="export-preview"></div>
+    </div>
+ 
+    <!-- ════ GUIDE ════ -->
+    <div class="admin-panel" id="panel-guide">
+      <div class="panel-title">How to deploy</div>
+      <div class="panel-sub" style="margin-bottom:0"></div>
+      <div style="max-width:580px;font-size:15px;line-height:1.9;color:#555;margin-top:8px;">
+        <p style="margin-bottom:16px;"><strong>1. Upload your images</strong><br>
+        Use FTP, Cpanel File Manager, or your hosting's drag-and-drop uploader.<br>
+        Put artwork images in <code style="font-family:var(--mono);background:#eee;padding:1px 5px;">images/</code> and 3D models in <code style="font-family:var(--mono);background:#eee;padding:1px 5px;">images/3d/</code>.</p>
+ 
+        <p style="margin-bottom:16px;"><strong>2. Edit your content</strong><br>
+        In the panels on the left, add/edit your artworks, poems, and articles. Use the exact same image path you uploaded (e.g. <code style="font-family:var(--mono);background:#eee;padding:1px 5px;">images/work1.jpg</code>).</p>
+ 
+        <p style="margin-bottom:16px;"><strong>3. Export and upload data.js</strong><br>
+        Click <em>Export data.js</em> in the top bar. Download the file, then upload it to your site root — replacing the old <code style="font-family:var(--mono);background:#eee;padding:1px 5px;">data.js</code>.</p>
+ 
+        <p style="margin-bottom:16px;"><strong>4. Upload site files</strong><br>
+        On first setup, upload ALL these files to your site root:<br>
+        <code style="font-family:var(--mono);background:#eee;padding:1px 5px;display:block;margin-top:6px;line-height:2;">
+        index.html &nbsp; artworks.html &nbsp; writings.html<br>
+        about.html &nbsp; contact.html &nbsp; admin.html<br>
+        style.css &nbsp; common.js &nbsp; data.js
+        </code>
+        </p>
+ 
+        <p><strong>5. That's it.</strong><br>
+        After that, you only need to re-upload <code style="font-family:var(--mono);background:#eee;padding:1px 5px;">data.js</code> + your image files whenever you add new work.</p>
+      </div>
+    </div>
+ 
+  </main>
+</div>
+ 
+<!-- ════ MODAL ════ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Edit</div>
+    <div id="modalBody"></div>
+    <div style="margin-top:20px;">
+      <button class="btn-add" onclick="saveModal()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
     </div>
   </div>
 </div>
-<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
-<script src="data.js"></script><script src="common.js"></script>
+ 
+<div id="toast">Saved!</div>
+ 
+<script>
+/* ════════════════════════════════════════
+   STATE  —  loaded from data.js if present,
+   otherwise uses defaults
+════════════════════════════════════════ */
+ 
+// We load data.js from the parent folder (same dir as site files)
+// The admin should sit beside data.js on the server.
+// On first open, SITE comes from the loaded data.js.
+ 
+const DEFAULT_DATA = {
+  artworks:[
+    {id:'untitled-1',title:'Untitled I',titleTR:'İsimsiz I',year:'2024',medium:'Mixed Media',mediumTR:'Karma Teknik',
+     image:null,extraImages:[],model:'images/3d/test.gltf',
+     desc:'Add a description.',descTR:'Açıklama ekleyin.'},
+  ],
+  poems:[
+    {id:'poem-1',title:'Poem Title One',titleTR:'Şiir Başlık Bir',year:'2024',
+     body:'Your poem here.',bodyTR:'Şiiriniz burada.'},
+  ],
+  articles:[
+    {id:'article-1',title:'Article Title One',titleTR:'Makale Başlık Bir',year:'2024',
+     type:'Essay',typeTR:'Deneme',body:'Your article here.',bodyTR:'Makaleniz burada.'},
+  ],
+  projects:[
+    {title:'Project One',titleTR:'Proje Bir',desc:'Description.',descTR:'Açıklama.',status:'ongoing'},
+  ],
+  heroSlides:[null,null,null,null],
+};
+ 
+// Try to use SITE from data.js, fall back to defaults
+let D;
+try { D = typeof SITE !== 'undefined' ? JSON.parse(JSON.stringify(SITE)) : DEFAULT_DATA; }
+catch(e) { D = DEFAULT_DATA; }
+ 
+// Ensure projects array exists
+if (!D.projects) D.projects = [];
+ 
+/* ════════ PANEL SWITCHING ════════ */
+function showPanel(name) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+  renderAll();
+  if (name === 'export') updateExportPreview();
+  if (name === 'hero') renderHero();
+}
+ 
+/* ════════ RENDER LISTS ════════ */
+function renderAll() {
+  renderList('artworks', D.artworks, aw => `${aw.title} / ${aw.titleTR}`, aw => `${aw.year} · ${aw.medium}`);
+  renderList('poems',    D.poems,    p  => `${p.title} / ${p.titleTR}`,   p  => p.year);
+  renderList('articles', D.articles, a  => `${a.title} / ${a.titleTR}`,   a  => `${a.year} · ${a.type}`);
+  renderList('projects', D.projects, p  => `${p.title} / ${p.titleTR}`,   p  => p.status);
+}
+ 
+function renderList(type, items, titleFn, metaFn) {
+  const el = document.getElementById('list-' + type);
+  if (!el) return;
+  el.innerHTML = '';
+  if (!items.length) { el.innerHTML = '<p style="color:#aaa;font-style:italic;font-size:13px;">No items yet.</p>'; return; }
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div>
+        <div class="card-title">${titleFn(item)}</div>
+        <div class="card-meta">${metaFn(item)}</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-edit" onclick="openModal('${type.slice(0,-1)}', ${i})">Edit</button>
+        <button class="btn-del"  onclick="deleteItem('${type}', ${i})">Delete</button>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+ 
+/* ════════ HERO SLIDES ════════ */
+function renderHero() {
+  const el = document.getElementById('hero-inputs');
+  el.innerHTML = '';
+  D.heroSlides.forEach((src, i) => {
+    el.innerHTML += `
+      <div class="form-group" style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;">
+        <div>
+          <label class="form-label">Slide ${i+1} — Image path</label>
+          <input class="form-input" value="${src||''}" placeholder="images/hero${i+1}.jpg"
+            onchange="D.heroSlides[${i}] = this.value || null">
+        </div>
+        <button class="btn-del" style="margin-top:22px;" onclick="D.heroSlides.splice(${i},1);renderHero();">✕</button>
+      </div>`;
+  });
+}
+function addHeroSlot() { D.heroSlides.push(null); renderHero(); }
+ 
+/* ════════ MODAL ════════ */
+let _modalType = '', _modalIdx = -1;
+ 
+function openModal(type, idx) {
+  _modalType = type; _modalIdx = idx;
+  const isNew = idx === -1;
+  document.getElementById('modalTitle').textContent = (isNew ? 'Add ' : 'Edit ') + capitalize(type);
+ 
+  let item = {};
+  if (!isNew) {
+    const map = {artwork:'artworks',poem:'poems',article:'articles',project:'projects'};
+    item = JSON.parse(JSON.stringify(D[map[type]][idx]));
+  }
+ 
+  document.getElementById('modalBody').innerHTML = buildForm(type, item);
+  document.getElementById('modalBg').classList.add('open');
+}
+ 
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('open');
+}
+ 
+function buildForm(type, item) {
+  const v = (k, def='') => item[k] != null ? item[k] : def;
+ 
+  if (type === 'artwork') return `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="f-title" value="${v('title')}"></div>
+      <div class="form-group"><label class="form-label">Title (TR)</label><input class="form-input" id="f-titleTR" value="${v('titleTR')}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Year</label><input class="form-input" id="f-year" value="${v('year')}"></div>
+      <div class="form-group"><label class="form-label">Medium (EN)</label><input class="form-input" id="f-medium" value="${v('medium')}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Medium (TR)</label><input class="form-input" id="f-mediumTR" value="${v('mediumTR')}"></div>
+    <div class="form-group"><label class="form-label">Main image path</label><input class="form-input" id="f-image" value="${v('image')}" placeholder="images/work1.jpg"><p class="form-note">Upload the file to your server first, then enter the path here.</p></div>
+    <div class="form-group"><label class="form-label">3D model path (.gltf)</label><input class="form-input" id="f-model" value="${v('model')}" placeholder="images/3d/model.gltf"><p class="form-note">Leave blank if no 3D model.</p></div>
+    <div class="form-group"><label class="form-label">Description (EN)</label><textarea class="form-textarea" id="f-desc">${v('desc')}</textarea></div>
+    <div class="form-group"><label class="form-label">Description (TR)</label><textarea class="form-textarea" id="f-descTR">${v('descTR')}</textarea></div>
+  `;
+ 
+  if (type === 'poem') return `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="f-title" value="${v('title')}"></div>
+      <div class="form-group"><label class="form-label">Title (TR)</label><input class="form-input" id="f-titleTR" value="${v('titleTR')}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Year</label><input class="form-input" id="f-year" value="${v('year')}" style="max-width:160px;"></div>
+    <div class="form-group"><label class="form-label">Poem text (EN)</label><textarea class="form-textarea" id="f-body" style="min-height:200px;">${v('body')}</textarea><p class="form-note">Line breaks are preserved exactly as typed.</p></div>
+    <div class="form-group"><label class="form-label">Poem text (TR)</label><textarea class="form-textarea" id="f-bodyTR" style="min-height:200px;">${v('bodyTR')}</textarea></div>
+  `;
+ 
+  if (type === 'article') return `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="f-title" value="${v('title')}"></div>
+      <div class="form-group"><label class="form-label">Title (TR)</label><input class="form-input" id="f-titleTR" value="${v('titleTR')}"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Year</label><input class="form-input" id="f-year" value="${v('year')}"></div>
+      <div class="form-group"><label class="form-label">Type (EN, e.g. Essay)</label><input class="form-input" id="f-type" value="${v('type')}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Type (TR, e.g. Deneme)</label><input class="form-input" id="f-typeTR" value="${v('typeTR')}" style="max-width:260px;"></div>
+    <div class="form-group"><label class="form-label">Article body (EN)</label><textarea class="form-textarea" id="f-body" style="min-height:200px;">${v('body')}</textarea><p class="form-note">Separate paragraphs with a blank line.</p></div>
+    <div class="form-group"><label class="form-label">Article body (TR)</label><textarea class="form-textarea" id="f-bodyTR" style="min-height:200px;">${v('bodyTR')}</textarea></div>
+  `;
+ 
+  if (type === 'project') return `
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="f-title" value="${v('title')}"></div>
+      <div class="form-group"><label class="form-label">Title (TR)</label><input class="form-input" id="f-titleTR" value="${v('titleTR')}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Description (EN)</label><textarea class="form-textarea" id="f-desc">${v('desc')}</textarea></div>
+    <div class="form-group"><label class="form-label">Description (TR)</label><textarea class="form-textarea" id="f-descTR">${v('descTR')}</textarea></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="f-status" style="max-width:200px;">
+        <option value="ongoing" ${v('status')==='ongoing'?'selected':''}>Ongoing</option>
+        <option value="planned" ${v('status')==='planned'?'selected':''}>Planned</option>
+      </select>
+    </div>
+  `;
+  return '';
+}
+ 
+function saveModal() {
+  const map = {artwork:'artworks',poem:'poems',article:'articles',project:'projects'};
+  const arr = D[map[_modalType]];
+ 
+  const g = id => { const el=document.getElementById(id); return el ? el.value.trim() : ''; };
+ 
+  let item = {};
+  if      (_modalType === 'artwork') {
+    item = {
+      id: _modalIdx >= 0 ? arr[_modalIdx].id : 'artwork-'+Date.now(),
+      title:g('f-title'),titleTR:g('f-titleTR'),
+      year:g('f-year'),medium:g('f-medium'),mediumTR:g('f-mediumTR'),
+      image:g('f-image')||null, extraImages:[],
+      model:g('f-model')||null,
+      desc:g('f-desc'),descTR:g('f-descTR'),
+    };
+  } else if (_modalType === 'poem') {
+    item = {
+      id: _modalIdx >= 0 ? arr[_modalIdx].id : 'poem-'+Date.now(),
+      title:g('f-title'),titleTR:g('f-titleTR'),
+      year:g('f-year'),body:g('f-body'),bodyTR:g('f-bodyTR'),
+    };
+  } else if (_modalType === 'article') {
+    item = {
+      id: _modalIdx >= 0 ? arr[_modalIdx].id : 'article-'+Date.now(),
+      title:g('f-title'),titleTR:g('f-titleTR'),
+      year:g('f-year'),type:g('f-type'),typeTR:g('f-typeTR'),
+      body:g('f-body'),bodyTR:g('f-bodyTR'),
+    };
+  } else if (_modalType === 'project') {
+    item = {
+      title:g('f-title'),titleTR:g('f-titleTR'),
+      desc:g('f-desc'),descTR:g('f-descTR'),
+      status:g('f-status'),
+    };
+  }
+ 
+  if (_modalIdx >= 0) arr[_modalIdx] = item;
+  else arr.push(item);
+ 
+  closeModal();
+  renderAll();
+  showToast('Saved!');
+}
+ 
+function deleteItem(type, idx) {
+  if (!confirm('Delete this item?')) return;
+  D[type].splice(idx, 1);
+  renderAll();
+  showToast('Deleted.');
+}
+ 
+/* ════════ EXPORT ════════ */
+function buildDataJS() {
+  const j = k => JSON.stringify(k, null, 2)
+    .replace(/"([^"]+)":/g, '$1:')  // unquote keys
+    .replace(/"/g, "'");            // single quotes
+  return `/* ═══════════════════════════════════════════════════════
+   data.js  —  Generated by admin panel
+   ═══════════════════════════════════════════════════════ */
+ 
+const SITE = ${j(D)};
+`;
+}
+ 
+function updateExportPreview() {
+  document.getElementById('export-preview').textContent = buildDataJS();
+}
+ 
+function exportData() {
+  updateExportPreview();
+  const blob = new Blob([buildDataJS()], {type:'text/javascript'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'data.js'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('data.js downloaded!');
+}
+ 
+/* ════════ HELPERS ════════ */
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+ 
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+ 
+/* ════════ INIT ════════ */
+renderAll();
+renderHero();
+</script>
+ 
+<!-- Load data.js so admin picks up existing content -->
+<script src="data.js" onerror="console.log('data.js not found, using defaults')"></script>
+<script>
+// If SITE is now defined (from data.js), sync it into D
+if (typeof SITE !== 'undefined') {
+  D = JSON.parse(JSON.stringify(SITE));
+  if (!D.projects) D.projects = [];
+  renderAll();
+  renderHero();
+}
+</script>
 </body>
 </html>
  
