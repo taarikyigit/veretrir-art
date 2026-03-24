@@ -49,7 +49,6 @@ header {
   letter-spacing: 0.04em; text-decoration: none; color: var(--ink);
 }
 
-/* IG icon only */
 .ig-btn {
   display: flex; align-items: center;
   text-decoration: none; color: var(--mid);
@@ -104,7 +103,6 @@ nav a:hover { color: var(--ink); }
   position:relative; z-index:2;
   background:#000; padding:9px 24px;
 }
-/* 5 — all lowercase, no text-transform */
 .hero-name {
   font-size: clamp(16px,2.6vw,26px);
   font-weight: bold;
@@ -163,7 +161,7 @@ nav a:hover { color: var(--ink); }
 .panel { display:none; }
 .panel.on { display:block; }
 
-/* ── 4-square grid ── */
+/* 4-square grid */
 .artwork-grid {
   display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
 }
@@ -245,7 +243,7 @@ footer {
 }
 
 /* ══════════════════════════════
-   DETAIL PAGE — slide-up animation
+   DETAIL PAGE
 ══════════════════════════════ */
 #detail-page {
   position: fixed;
@@ -253,7 +251,6 @@ footer {
   z-index: 300;
   background: var(--bg);
   overflow-y: auto;
-  /* slide-up animation */
   transform: translateY(100%);
   transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
@@ -265,7 +262,6 @@ footer {
   visibility: visible;
 }
 
-/* floating back button — bottom left, always visible */
 .back-fab {
   position: fixed;
   bottom: 28px;
@@ -294,7 +290,6 @@ footer {
 }
 .back-fab:hover { background: #333; }
 
-/* detail header — minimal top bar inside detail */
 .detail-top-bar {
   position: sticky; top:0;
   background: var(--bg);
@@ -314,7 +309,6 @@ footer {
   color: #aaa; border: 1px solid #ddd; padding: 2px 8px; white-space: nowrap;
 }
 
-/* detail body */
 .detail-body {
   max-width: 860px; margin: 0 auto;
   padding: 52px 32px 120px;
@@ -344,7 +338,6 @@ footer {
 .detail-description { font-size:15px; line-height:1.9; color:#555; max-width:640px; }
 .detail-description p+p { margin-top:14px; }
 
-/* writing detail — full text */
 .detail-writing-body {
   font-size: 16px; line-height: 2.0; color: #333;
   max-width: 640px; white-space: pre-line;
@@ -362,7 +355,7 @@ footer {
   font-size:14px; font-style:italic; color:#555;
 }
 
-/* ── responsive ── */
+/* responsive */
 @media(max-width:700px){
   .artwork-grid { grid-template-columns:repeat(2,1fr); }
   .writings-cols { grid-template-columns:1fr; gap:32px; }
@@ -375,14 +368,11 @@ footer {
 </head>
 <body>
 
-<!-- ══════════════════════
-     HEADER
-══════════════════════ -->
+<!-- HEADER (built by JS from SITE settings) -->
 <header>
   <div class="header-left">
-    <a href="#" class="header-name" onclick="showMain();return false;">tarik yigit</a>
-    <!-- 1 — icon only, no label -->
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="#" class="header-name" id="headerName" onclick="showMain();return false;"></a>
+    <a id="igLink" href="#" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
@@ -392,569 +382,435 @@ footer {
   </div>
 
   <nav>
-    <a href="#artworks-sec" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="#writings-sec" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="#about-sec"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="#contact-sec"  data-en="Contact"   data-tr="İletişim">Contact</a>
+    <a href="#artworks-sec" id="nav-artworks">Artworks</a>
+    <a href="#writings-sec" id="nav-writings">Writings</a>
+    <a href="#about-sec"    id="nav-about">About</a>
+    <a href="#contact-sec"  id="nav-contact">Contact</a>
   </nav>
 
   <div class="header-right">
     <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
     <span class="ls">·</span>
-    <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+    <button class="lb"    onclick="setLang('tr')" id="b-tr">TR</button>
   </div>
 </header>
 
-<!-- ══════════════════════
-     MAIN PAGE
-══════════════════════ -->
+<!-- MAIN PAGE -->
 <div id="main-page">
 
-  <!-- HERO -->
+  <!-- HERO (slides built by JS) -->
   <section id="hero">
-    <div class="hero-slides" id="heroSlides">
-      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
-      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
-      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
-      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
-    </div>
+    <div class="hero-slides" id="heroSlides"></div>
     <div class="hero-overlay"></div>
-    <!-- 5 — lowercase name -->
-    <div class="hero-name-wrap"><div class="hero-name">tarik yigit</div></div>
+    <div class="hero-name-wrap"><div class="hero-name" id="heroName"></div></div>
     <button class="hero-btn prev" onclick="heroMove(-1)">&#8592;</button>
     <button class="hero-btn next" onclick="heroMove(1)">&#8594;</button>
     <div class="hero-dots" id="heroDots"></div>
   </section>
 
-  <!-- ARTWORKS -->
+  <!-- ARTWORKS (grid built by JS) -->
   <section id="artworks-sec">
     <div class="sec">
-      <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
+      <div class="sec-title" id="sec-artworks-title">Artworks</div>
       <div class="art-tabs">
-        <button class="art-tab on" onclick="swTab('g')" data-en="Works" data-tr="Eserler">Works</button>
-        <button class="art-tab"    onclick="swTab('p')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
+        <button class="art-tab on" onclick="swTab('g')" id="tab-works">Works</button>
+        <button class="art-tab"    onclick="swTab('p')" id="tab-projects">Ongoing &amp; Planned</button>
       </div>
-
-      <!-- WORKS GRID -->
       <div class="panel on" id="pg">
-        <div class="artwork-grid">
-          <div class="artwork-thumb" onclick="openDetail('artwork',0)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
-            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled I" data-tr="İsimsiz I">Untitled I</div><div class="aw-ov-meta">2024</div></div>
-          </div>
-          <div class="artwork-thumb" onclick="openDetail('artwork',1)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
-            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled II" data-tr="İsimsiz II">Untitled II</div><div class="aw-ov-meta">2024</div></div>
-          </div>
-          <div class="artwork-thumb" onclick="openDetail('artwork',2)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
-            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled III" data-tr="İsimsiz III">Untitled III</div><div class="aw-ov-meta">2023</div></div>
-          </div>
-          <div class="artwork-thumb" onclick="openDetail('artwork',3)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
-            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled IV" data-tr="İsimsiz IV">Untitled IV</div><div class="aw-ov-meta">2023</div></div>
-          </div>
-        </div>
+        <div class="artwork-grid" id="artworkGrid"></div>
       </div>
-
-      <!-- ONGOING / PLANNED -->
       <div class="panel" id="pp">
-        <div class="project-item">
-          <div><div class="project-name" data-en="Project Title One" data-tr="Proje Bir">Project Title One</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
-          <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
-        </div>
-        <div class="project-item">
-          <div><div class="project-name" data-en="Project Title Two" data-tr="Proje İki">Project Title Two</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
-          <span class="p-tag tag-pl" data-en="Planned" data-tr="Planlandı">Planned</span>
-        </div>
-        <div class="project-item">
-          <div><div class="project-name" data-en="Project Title Three" data-tr="Proje Üç">Project Title Three</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
-          <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
-        </div>
+        <div id="projectsList"></div>
       </div>
     </div>
   </section>
 
-  <!-- WRITINGS -->
+  <!-- WRITINGS (lists built by JS) -->
   <section id="writings-sec">
     <div class="sec">
-      <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
+      <div class="sec-title" id="sec-writings-title">Writings</div>
       <div class="writings-cols">
-
         <div>
-          <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
-          <!-- 4 — poems now clickable with openDetail -->
-          <a href="#" class="writing-item" onclick="openDetail('poem',0);return false;">
-            <div class="wi-title" data-en="Poem Title One" data-tr="Şiir Bir">Poem Title One</div>
-            <div class="wi-meta">2024</div>
-          </a>
-          <a href="#" class="writing-item" onclick="openDetail('poem',1);return false;">
-            <div class="wi-title" data-en="Poem Title Two" data-tr="Şiir İki">Poem Title Two</div>
-            <div class="wi-meta">2024</div>
-          </a>
-          <a href="#" class="writing-item" onclick="openDetail('poem',2);return false;">
-            <div class="wi-title" data-en="Poem Title Three" data-tr="Şiir Üç">Poem Title Three</div>
-            <div class="wi-meta">2023</div>
-          </a>
+          <div class="col-title" id="col-poems-title">Poems</div>
+          <div id="poemsList"></div>
         </div>
-
         <div>
-          <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
-          <!-- 4 — articles now clickable with openDetail -->
-          <a href="#" class="writing-item" onclick="openDetail('article',0);return false;">
-            <div class="wi-title" data-en="Article Title One" data-tr="Makale Bir">Article Title One</div>
-            <div class="wi-meta" data-en="2024 · Essay" data-tr="2024 · Deneme">2024 · Essay</div>
-          </a>
-          <a href="#" class="writing-item" onclick="openDetail('article',1);return false;">
-            <div class="wi-title" data-en="Article Title Two" data-tr="Makale İki">Article Title Two</div>
-            <div class="wi-meta" data-en="2023 · Criticism" data-tr="2023 · Eleştiri">2023 · Criticism</div>
-          </a>
-          <a href="#" class="writing-item" onclick="openDetail('article',2);return false;">
-            <div class="wi-title" data-en="Article Title Three" data-tr="Makale Üç">Article Title Three</div>
-            <div class="wi-meta" data-en="2023 · Essay" data-tr="2023 · Deneme">2023 · Essay</div>
-          </a>
+          <div class="col-title" id="col-articles-title">Articles</div>
+          <div id="articlesList"></div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- ABOUT -->
+  <!-- ABOUT (filled by JS) -->
   <section id="about-sec">
     <div class="sec">
-      <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
-      <div class="about-text">
-        <p data-en="My research explores the relationship between material, trace, and time. I find it fascinating how a physical, transmitted, or energetic trail is created when a body and a surface come into contact, and how this interaction carries the layers of relativity, time, and irreversibility. I investigate the conflict between control and loss of control, between the hand's intention and the material's resistance, through sculpture, installation, and drawing. The frozen moment of plaster setting, the sagging of flax threads under gravity, the transfer of ink from one surface to another, each piece is both a process and a record." data-tr="Araştırmam, malzeme, iz ve zaman arasındaki ilişkiyi inceliyor. Bir beden ile bir yüzeyin karşılaştığında fiziksel, transfer ya da enerjetik bir izin nasıl oluştuğu ve bu etkileşimin süre, geri döndürülemezlik ve görelilik katmanlarını nasıl taşıdığı beni büyülüyor. Heykel, enstalasyon ve çizim aracılığıyla, kontrol ile kontrol kaybı, elin niyeti ile malzemenin direnci arasındaki gerilimi araştırıyorum. Alçının donduğu an, keten liflerinin yerçekimi altında sarkışı, mürekkebin bir yüzeyden diğerine transferi her parça hem bir süreç hem de bir kayıttır.">Write your biography or artist statement here. Who you are, where you come from, what you make and why.</p>
-        <p data-en="As a collaborator who directs as much as it is directed, rather than as something to be mastered, my practice is an ongoing conversation with matter. The trace in this conversation becomes the outward manifestation of a relationship—between the body and the outside world, between the past and the present, and between what is retained and what is abandoned." data-tr="Yönettiği kadar yönlendirilen bir işbirlikçi olarak, pratiğim maddeyle süregiden bir diyalogdur. Bu diyalogda iz, beden ile dış dünya, geçmiş ile şimdi, tutulan ile terk edilen arasındaki ilişkinin görünür tezahürü haline gelir.
-
-">A second paragraph about your practice — the themes you return to, the tensions that drive your work.</p>
-      </div>
+      <div class="sec-title" id="sec-about-title">About</div>
+      <div class="about-text" id="aboutText"></div>
     </div>
   </section>
 
-  <!-- CONTACT -->
+  <!-- CONTACT (filled by JS) -->
   <section id="contact-sec">
     <div class="sec" style="text-align:center;">
-      <div class="sec-title" data-en="Contact" data-tr="İletişim">Contact</div>
-      <a href="mailto:hello@veretrir.art" class="contact-email">hello@veretrir.art</a>
-      <p class="contact-note" data-en="Collaborations, exhibitions, publications." data-tr="İşbirlikleri, sergiler, yayınlar.">Collaborations, exhibitions, publications.</p>
+      <div class="sec-title" id="sec-contact-title">Contact</div>
+      <a id="contactEmail" href="#" class="contact-email"></a>
+      <p class="contact-note" id="contactNote"></p>
     </div>
   </section>
 
   <footer>
-    <span>tarik yigit</span>
-    <span>veretrir.art</span>
+    <span id="footerName"></span>
+    <span id="footerDomain"></span>
   </footer>
 </div>
 
-<!-- ══════════════════════
-     DETAIL PAGE (slide-up)
-══════════════════════ -->
+<!-- DETAIL PAGE (slide-up) -->
 <div id="detail-page">
-
-  <!-- sticky top bar inside detail -->
   <div class="detail-top-bar">
     <span class="detail-type-badge" id="detailBadge">artwork</span>
-    <span class="detail-top-title" id="detailTopTitle"></span>
+    <span class="detail-top-title"  id="detailTopTitle"></span>
   </div>
-
-  <!-- scrollable body -->
-  <div class="detail-body" id="detailBody">
-    <!-- filled by JS -->
-  </div>
+  <div class="detail-body" id="detailBody"></div>
 </div>
 
-<!-- 3 — floating back button, bottom-left, always accessible -->
 <button class="back-fab" id="backFab" onclick="closeDetail()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <polyline points="15 18 9 12 15 6"/>
   </svg>
-  <span data-en="Back" data-tr="Geri">Back</span>
+  <span id="backLabel">Back</span>
 </button>
 
+<!-- Load content first, then the site engine -->
+<script src="content.js"></script>
 <script>
-/* ════════════════════════════
-   DATA — edit your content here
-════════════════════════════ */
-const ARTWORKS = [
-  {
-    title:'Untitled I', titleTR:'İsimsiz I',
-    year:'2024', medium:'Mixed Media', mediumTR:'Karma Teknik',
-    desc:'Add a description of this artwork — the process, the intent, the materials, the context.',
-    descTR:'Bu eserle ilgili açıklama ekleyin — süreç, niyet, malzeme, bağlam.'
-  },
-  {
-    title:'Untitled II', titleTR:'İsimsiz II',
-    year:'2024', medium:'Digital', mediumTR:'Dijital',
-    desc:'Add a description of this artwork.',
-    descTR:'Bu eserle ilgili açıklama ekleyin.'
-  },
-  {
-    title:'Untitled III', titleTR:'İsimsiz III',
-    year:'2023', medium:'Print', mediumTR:'Baskı',
-    desc:'Add a description of this artwork.',
-    descTR:'Bu eserle ilgili açıklama ekleyin.'
-  },
-  {
-    title:'Untitled IV', titleTR:'İsimsiz IV',
-    year:'2023', medium:'Oil on Canvas', mediumTR:'Tuval Üzerine Yağlıboya',
-    desc:'Add a description of this artwork.',
-    descTR:'Bu eserle ilgili açıklama ekleyin.'
-  },
-];
+/* ════════════════════════════════════════════════════════
+   SITE ENGINE — do not edit this file
+   Edit content.js instead
+════════════════════════════════════════════════════════ */
 
-const POEMS = [
-  {
-    title:'untitled poem', titleTR:'başlıksız şiir',
-    year:'2025',
-    body:`life goes on without hesitation
-living can’t be done without determination
-one day you die inside
-one day you born outside
-again and again
-until you unfurl
-
-i used to can’t 
-but now i can
-in a shell
-that won’t
-come out as as a pearl`,
-    bodyTR:`life goes on without hesitation
-living can’t be done without determination
-one day you die inside
-one day you born outside
-again and again
-until you unfurl
-
-i used to can’t 
-but now i can
-in a shell
-that won’t
-come out as as a pearl`
-  },
-  {
-    title:'büyük şeylerin yanından geçiyoruz', titleTR:'büyük şeylerin yanından geçiyoruz',
-    year:'2025',
-    body:`kahır, ağır yük
-ansızın iner, omuzundanki kıllardan süzülür
-tırmalayarak, çizerek
-
-bakar bazen gözler
-paslanmaz çelik gövdeli dev ruhlara
-yüz  tonluk gölgeler
-kavrayamazsın, geçer parmaklarının ucundan
-gözlerine sığmaz
-
-büyük şeylerin yanından geçiyoruz
-
-ufak hissediyorsun
-devasa motorlar üflüyor ensene
-piston sesi, vinç sesi, çelik sesi
-ama asla tam olarak göremiyorsun
-gözlerin yetmez
-ellerin değmez
-korku bile sığmaz içine
-
-askıda kalmaya gerek yok
-küçük bir atıf
-var edilenleri inkar edemez
-
-büyük şeylerin yanından geçiyoruz
-
-sen büyük şeyleri
-öyle bilemezsin
-
-ufakça bil
-ufakça gör
-ufakça hisset
-
-vinçler kaldırıyor uzuvlarımı
-kruvaziyerler geçiyor 
-el sallıyorsun
-
-omzunda titriyor sema
-her adım bir alevli yankı
-her adım bir kahır
-
-büyük şeylerin yanından geçiyoruz
-
-büyüdün ama
-hala büyük şeylerin
-hepsini göremezsin
-
-sadece adlandıramadan hissedersin
-
-gölgesini
-uzaklığını
-gürültüsünü
-
-ve belki de
-sadece ufak bir his kalır
-demir gövdelerin arasında kıvranan,
-küçük ama,  hayatta kalan bir parça
-
-`,
-    bodyTR:`kahır, ağır yük
-ansızın iner, omuzundanki kıllardan süzülür
-tırmalayarak, çizerek
-
-bakar bazen gözler
-paslanmaz çelik gövdeli dev ruhlara
-yüz  tonluk gölgeler
-kavrayamazsın, geçer parmaklarının ucundan
-gözlerine sığmaz
-
-büyük şeylerin yanından geçiyoruz
-
-ufak hissediyorsun
-devasa motorlar üflüyor ensene
-piston sesi, vinç sesi, çelik sesi
-ama asla tam olarak göremiyorsun
-gözlerin yetmez
-ellerin değmez
-korku bile sığmaz içine
-
-askıda kalmaya gerek yok
-küçük bir atıf
-var edilenleri inkar edemez
-
-büyük şeylerin yanından geçiyoruz
-
-sen büyük şeyleri
-öyle bilemezsin
-
-ufakça bil
-ufakça gör
-ufakça hisset
-
-vinçler kaldırıyor uzuvlarımı
-kruvaziyerler geçiyor 
-el sallıyorsun
-
-omzunda titriyor sema
-her adım bir alevli yankı
-her adım bir kahır
-
-büyük şeylerin yanından geçiyoruz
-
-büyüdün ama
-hala büyük şeylerin
-hepsini göremezsin
-
-sadece adlandıramadan hissedersin
-
-gölgesini
-uzaklığını
-gürültüsünü
-
-ve belki de
-sadece ufak bir his kalır
-demir gövdelerin arasında kıvranan,
-küçük ama,  hayatta kalan bir parça`
-  },
-  {
-    title:'Poem Title Three', titleTR:'Şiir Başlık Üç',
-    year:'2023',
-    body:`Third poem goes here.`,
-    bodyTR:`Üçüncü şiir buraya gelir.`
-  },
-  {
-    title:'Poem Title Three', titleTR:'Şiir Başlık Üç',
-    year:'2023',
-    body:`Third poem goes here.`,
-    bodyTR:`Üçüncü şiir buraya gelir.`
-  },
-];
-
-const ARTICLES = [
-  {
-    title:'Article Title One', titleTR:'Makale Başlık Bir',
-    year:'2024', type:'Essay', typeTR:'Deneme',
-    body:`Add your full article text here. This is the body of the essay — you can write as much as you need. Replace this placeholder with your actual writing.
-
-A second paragraph of the article continues here.`,
-    bodyTR:`Makale metninizi buraya ekleyin. Bu, denemenin gövdesidir. Bu yer tutucuyu gerçek yazınızla değiştirin.
-
-Makalenin ikinci paragrafı burada devam eder.`
-  },
-  {
-    title:'Article Title Two', titleTR:'Makale Başlık İki',
-    year:'2023', type:'Criticism', typeTR:'Eleştiri',
-    body:`Second article body goes here.`,
-    bodyTR:`İkinci makale metni buraya gelir.`
-  },
-  {
-    title:'Article Title Three', titleTR:'Makale Başlık Üç',
-    year:'2023', type:'Essay', typeTR:'Deneme',
-    body:`Third article body goes here.`,
-    bodyTR:`Üçüncü makale metni buraya gelir.`
-  },
-];
-
-/* ════════════════════════════
-   STATE
-════════════════════════════ */
 let currentLang = 'en';
 let savedScrollY = 0;
 
-/* ════════════════════════════
-   LANG
-════════════════════════════ */
+/* ── helpers ── */
+const t = (obj, l) => (l === 'tr' && obj.tr) ? obj.tr : obj.en;
+const $ = id => document.getElementById(id);
+
+/* ── language ── */
+const LABELS = {
+  artworks:  { en: 'Artworks',          tr: 'Eserler'          },
+  writings:  { en: 'Writings',          tr: 'Yazılar'          },
+  about:     { en: 'About',             tr: 'Hakkında'         },
+  contact:   { en: 'Contact',           tr: 'İletişim'         },
+  works:     { en: 'Works',             tr: 'Eserler'          },
+  ongoing_pl:{ en: 'Ongoing & Planned', tr: 'Devam & Planlanan'},
+  poems:     { en: 'Poems',             tr: 'Şiirler'          },
+  articles:  { en: 'Articles',          tr: 'Makaleler'        },
+  back:      { en: 'Back',              tr: 'Geri'             },
+  ongoing:   { en: 'Ongoing',           tr: 'Devam'            },
+  planned:   { en: 'Planned',           tr: 'Planlandı'        },
+  artwork:   { en: 'Artwork',           tr: 'Eser'             },
+  poem:      { en: 'Poem',              tr: 'Şiir'             },
+  article:   { en: 'Article',           tr: 'Makale'           },
+  about_work:{ en: 'About this work',   tr: 'Bu eser hakkında' },
+  add_photo: { en: 'add main artwork image', tr: 'ana eser görseli ekle' },
+  add_photos:{ en: 'Additional photos', tr: 'Ek fotoğraflar'   },
+  rel_wrt:   { en: 'Related writings',  tr: 'İlgili yazılar'   },
+  photo:     { en: 'photo',             tr: 'fotoğraf'         },
+};
+
 function setLang(l) {
   currentLang = l;
   document.documentElement.lang = l;
-  document.querySelectorAll('[data-en]').forEach(el => {
-    const v = el.getAttribute('data-' + l);
-    if (v !== null) el.innerHTML = v;
-  });
-  document.getElementById('b-en').classList.toggle('on', l==='en');
-  document.getElementById('b-tr').classList.toggle('on', l==='tr');
+  $('b-en').classList.toggle('on', l === 'en');
+  $('b-tr').classList.toggle('on', l === 'tr');
+  renderAll();
 }
 
-/* ════════════════════════════
-   TABS
-════════════════════════════ */
-function swTab(t) {
-  document.querySelectorAll('.art-tab').forEach((b,i) => {
-    b.classList.toggle('on', (t==='g'&&i===0)||(t==='p'&&i===1));
-  });
-  document.getElementById('pg').classList.toggle('on', t==='g');
-  document.getElementById('pp').classList.toggle('on', t==='p');
+/* ── render all dynamic content ── */
+function renderAll() {
+  const l = currentLang;
+
+  /* site identity */
+  $('headerName').textContent = SITE.name;
+  $('heroName').textContent   = SITE.name;
+  $('footerName').textContent = SITE.name;
+  $('footerDomain').textContent = SITE.domain;
+  $('igLink').href = SITE.instagram;
+
+  /* nav labels */
+  $('nav-artworks').textContent = LABELS.artworks[l];
+  $('nav-writings').textContent = LABELS.writings[l];
+  $('nav-about').textContent    = LABELS.about[l];
+  $('nav-contact').textContent  = LABELS.contact[l];
+
+  /* section titles */
+  $('sec-artworks-title').textContent = LABELS.artworks[l];
+  $('tab-works').textContent          = LABELS.works[l];
+  $('tab-projects').textContent       = LABELS.ongoing_pl[l];
+  $('sec-writings-title').textContent = LABELS.writings[l];
+  $('col-poems-title').textContent    = LABELS.poems[l];
+  $('col-articles-title').textContent = LABELS.articles[l];
+  $('sec-about-title').textContent    = LABELS.about[l];
+  $('sec-contact-title').textContent  = LABELS.contact[l];
+  $('backLabel').textContent          = LABELS.back[l];
+
+  /* about */
+  const aboutParagraphs = t(SITE.about, l)
+    .split(/\n\n+/)
+    .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
+    .join('');
+  $('aboutText').innerHTML = aboutParagraphs;
+
+  /* contact */
+  $('contactEmail').textContent = SITE.email;
+  $('contactEmail').href = `mailto:${SITE.email}`;
+  $('contactNote').textContent = t(SITE.contact, l);
+
+  /* hero */
+  renderHero();
+
+  /* grids */
+  renderArtworkGrid();
+  renderProjects();
+  renderPoems();
+  renderArticles();
 }
 
-/* ════════════════════════════
-   HERO SLIDESHOW
-════════════════════════════ */
-const heroSlidesEl = document.getElementById('heroSlides');
-const heroDotsEl   = document.getElementById('heroDots');
-let hCur=0, hTotal=0, hTimer;
+/* ── hero ── */
+let hCur = 0, hTotal = 0, hTimer;
 
-function heroInit() {
-  hTotal = heroSlidesEl.querySelectorAll('.hero-slide').length;
-  heroDotsEl.innerHTML = '';
-  for(let i=0;i<hTotal;i++){
+function renderHero() {
+  const slides = $('heroSlides');
+  slides.innerHTML = '';
+
+  const imgs = (HERO_IMAGES && HERO_IMAGES.length)
+    ? HERO_IMAGES
+    : ['', '', '', ''];  /* placeholders */
+
+  imgs.forEach(src => {
+    const div = document.createElement('div');
+    div.className = 'hero-slide';
+    if (src) {
+      div.innerHTML = `<img src="${src}" alt="">`;
+    } else {
+      div.innerHTML = `<div class="hero-slide-ph"><span>add artwork photo</span></div>`;
+    }
+    slides.appendChild(div);
+  });
+
+  hTotal = imgs.length;
+  heroInitDots();
+  clearInterval(hTimer);
+  hTimer = setInterval(() => heroMove(1), 4500);
+}
+
+function heroInitDots() {
+  const el = $('heroDots');
+  el.innerHTML = '';
+  for (let i = 0; i < hTotal; i++) {
     const d = document.createElement('button');
-    d.className = 'hero-dot'+(i===0?' on':'');
-    d.onclick = ()=>heroGoTo(i);
-    heroDotsEl.appendChild(d);
+    d.className = 'hero-dot' + (i === 0 ? ' on' : '');
+    d.onclick = () => heroGoTo(i);
+    el.appendChild(d);
   }
-  hTimer = setInterval(()=>heroMove(1), 4500);
+  heroGoTo(0);
 }
+
 function heroGoTo(n) {
-  hCur = (n+hTotal)%hTotal;
-  heroSlidesEl.style.transform = `translateX(-${hCur*100}%)`;
-  heroDotsEl.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('on',i===hCur));
+  hCur = (n + hTotal) % hTotal;
+  $('heroSlides').style.transform = `translateX(-${hCur * 100}%)`;
+  $('heroDots').querySelectorAll('.hero-dot').forEach((d, i) =>
+    d.classList.toggle('on', i === hCur));
 }
+
 function heroMove(dir) {
   clearInterval(hTimer);
-  heroGoTo(hCur+dir);
-  hTimer = setInterval(()=>heroMove(1), 4500);
+  heroGoTo(hCur + dir);
+  hTimer = setInterval(() => heroMove(1), 4500);
 }
-let hDx=0;
-heroSlidesEl.addEventListener('mousedown',  e=>hDx=e.clientX);
-heroSlidesEl.addEventListener('touchstart', e=>hDx=e.touches[0].clientX,{passive:true});
-heroSlidesEl.addEventListener('mouseup',    e=>{if(Math.abs(e.clientX-hDx)>40)heroMove(e.clientX<hDx?1:-1);});
-heroSlidesEl.addEventListener('touchend',   e=>{const d=e.changedTouches[0].clientX-hDx;if(Math.abs(d)>40)heroMove(d<0?1:-1);});
 
-/* ════════════════════════════
-   DETAIL PAGE
-════════════════════════════ */
-const detailPage  = document.getElementById('detail-page');
-const detailBody  = document.getElementById('detailBody');
-const detailBadge = document.getElementById('detailBadge');
-const detailTopTi = document.getElementById('detailTopTitle');
-const backFab     = document.getElementById('backFab');
+let hDx = 0;
+$('heroSlides').addEventListener('mousedown',  e => hDx = e.clientX);
+$('heroSlides').addEventListener('touchstart', e => hDx = e.touches[0].clientX, { passive: true });
+$('heroSlides').addEventListener('mouseup',    e => { if (Math.abs(e.clientX - hDx) > 40) heroMove(e.clientX < hDx ? 1 : -1); });
+$('heroSlides').addEventListener('touchend',   e => { const d = e.changedTouches[0].clientX - hDx; if (Math.abs(d) > 40) heroMove(d < 0 ? 1 : -1); });
+
+/* ── artwork grid ── */
+function renderArtworkGrid() {
+  const l = currentLang;
+  const grid = $('artworkGrid');
+  grid.innerHTML = '';
+  ARTWORKS.forEach((aw, idx) => {
+    const div = document.createElement('div');
+    div.className = 'artwork-thumb';
+    div.onclick = () => openDetail('artwork', idx);
+
+    const imgPart = aw.mainImage
+      ? `<img src="${aw.mainImage}" alt="${t(aw.title, l)}">`
+      : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>`;
+
+    div.innerHTML = `
+      ${imgPart}
+      <div class="aw-overlay">
+        <div class="aw-ov-title">${t(aw.title, l)}</div>
+        <div class="aw-ov-meta">${aw.year}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+/* ── projects ── */
+function renderProjects() {
+  const l = currentLang;
+  const list = $('projectsList');
+  list.innerHTML = '';
+  PROJECTS.forEach(pr => {
+    const div = document.createElement('div');
+    div.className = 'project-item';
+    const isOn = pr.status === 'ongoing';
+    div.innerHTML = `
+      <div>
+        <div class="project-name">${t(pr.title, l)}</div>
+        <div class="project-desc">${t(pr.desc, l)}</div>
+      </div>
+      <span class="p-tag ${isOn ? 'tag-on' : 'tag-pl'}">
+        ${isOn ? LABELS.ongoing[l] : LABELS.planned[l]}
+      </span>`;
+    list.appendChild(div);
+  });
+}
+
+/* ── poems list ── */
+function renderPoems() {
+  const l = currentLang;
+  const list = $('poemsList');
+  list.innerHTML = '';
+  POEMS.forEach((pm, idx) => {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'writing-item';
+    a.onclick = e => { e.preventDefault(); openDetail('poem', idx); };
+    a.innerHTML = `
+      <div class="wi-title">${t(pm.title, l)}</div>
+      <div class="wi-meta">${pm.year}</div>`;
+    list.appendChild(a);
+  });
+}
+
+/* ── articles list ── */
+function renderArticles() {
+  const l = currentLang;
+  const list = $('articlesList');
+  list.innerHTML = '';
+  ARTICLES.forEach((ar, idx) => {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'writing-item';
+    a.onclick = e => { e.preventDefault(); openDetail('article', idx); };
+    a.innerHTML = `
+      <div class="wi-title">${t(ar.title, l)}</div>
+      <div class="wi-meta">${ar.year} · ${t(ar.type, l)}</div>`;
+    list.appendChild(a);
+  });
+}
+
+/* ── tabs ── */
+function swTab(tab) {
+  $('tab-works').classList.toggle('on', tab === 'g');
+  $('tab-projects').classList.toggle('on', tab === 'p');
+  $('pg').classList.toggle('on', tab === 'g');
+  $('pp').classList.toggle('on', tab === 'p');
+}
+
+/* ── detail page ── */
+const detailPage  = $('detail-page');
+const detailBody  = $('detailBody');
+const detailBadge = $('detailBadge');
+const detailTopTi = $('detailTopTitle');
+const backFab     = $('backFab');
 
 function buildArtworkHTML(aw) {
   const l = currentLang;
-  const title  = l==='tr' ? aw.titleTR  : aw.title;
-  const medium = l==='tr' ? aw.mediumTR : aw.medium;
-  const desc   = l==='tr' ? aw.descTR   : aw.desc;
-  const photoLbl = l==='tr'?'fotoğraf':'photo';
-  const addPhLbl = l==='tr'?'ana eser görseli ekle':'add main artwork image';
-  const aboutLbl = l==='tr'?'Bu eser hakkında':'About this work';
-  const addPhoLbl= l==='tr'?'Ek fotoğraflar':'Additional photos';
-  const relWrtLbl= l==='tr'?'İlgili yazılar':'Related writings';
-  const wrtPlLbl = l==='tr'?'Bu eserle ilgili bir yazı veya not ekleyin.':'Add a writing or note related to this work.';
+  const title  = t(aw.title, l);
+  const medium = t(aw.medium, l);
+  const desc   = t(aw.desc, l);
+
+  const heroImg = aw.mainImage
+    ? `<img class="detail-hero-img" src="${aw.mainImage}" alt="${title}">`
+    : `<div class="detail-hero-ph"><span>${LABELS.add_photo[l]}</span></div>`;
+
+  const extraPhotos = (() => {
+    const extras = aw.images || [];
+    const slots = Math.max(extras.length, 3);
+    return Array.from({ length: slots }, (_, i) =>
+      extras[i]
+        ? `<div class="detail-photo"><img src="${extras[i]}" alt="${title} ${i+1}"></div>`
+        : `<div class="detail-photo"><div class="detail-photo-ph"><span>${LABELS.photo[l]}</span></div></div>`
+    ).join('');
+  })();
+
   return `
-    <div class="detail-hero-ph"><span>${addPhLbl}</span></div>
+    ${heroImg}
     <div class="detail-title">${title}</div>
     <div class="detail-meta">${aw.year} · ${medium}</div>
-    <div class="detail-sec-label">${aboutLbl}</div>
-    <div class="detail-description"><p>${desc}</p></div>
-    <div class="detail-sec-label">${addPhoLbl}</div>
-    <div class="detail-photos">
-      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
-      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
-      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
-    </div>
-    <div class="detail-sec-label">${relWrtLbl}</div>
-    <div class="detail-writing-item">${wrtPlLbl}</div>
+    <div class="detail-sec-label">${LABELS.about_work[l]}</div>
+    <div class="detail-description">${desc.split(/\n\n+/).map(p => `<p>${p}</p>`).join('')}</div>
+    <div class="detail-sec-label">${LABELS.add_photos[l]}</div>
+    <div class="detail-photos">${extraPhotos}</div>
+    <div class="detail-sec-label">${LABELS.rel_wrt[l]}</div>
+    <div class="detail-writing-item" style="color:#bbb;font-style:italic;font-size:13px;">—</div>
   `;
 }
 
 function buildPoemHTML(pm) {
   const l = currentLang;
-  const title = l==='tr' ? pm.titleTR : pm.title;
-  const body  = l==='tr' ? pm.bodyTR  : pm.body;
   return `
-    <div class="detail-title">${title}</div>
+    <div class="detail-title">${t(pm.title, l)}</div>
     <div class="detail-meta">${pm.year}</div>
-    <div class="detail-sec-label" data-en="Poem" data-tr="Şiir">${l==='tr'?'Şiir':'Poem'}</div>
-    <div class="detail-writing-body">${body}</div>
+    <div class="detail-sec-label">${LABELS.poem[l]}</div>
+    <div class="detail-writing-body">${t(pm.body, l)}</div>
   `;
 }
 
 function buildArticleHTML(ar) {
   const l = currentLang;
-  const title = l==='tr' ? ar.titleTR : ar.title;
-  const type  = l==='tr' ? ar.typeTR  : ar.type;
-  const body  = l==='tr' ? ar.bodyTR  : ar.body;
   return `
-    <div class="detail-title">${title}</div>
-    <div class="detail-meta">${ar.year} · ${type}</div>
-    <div class="detail-sec-label">${l==='tr'?'Makale':'Article'}</div>
-    <div class="detail-writing-body">${body}</div>
+    <div class="detail-title">${t(ar.title, l)}</div>
+    <div class="detail-meta">${ar.year} · ${t(ar.type, l)}</div>
+    <div class="detail-sec-label">${LABELS.article[l]}</div>
+    <div class="detail-writing-body">${t(ar.body, l)}</div>
   `;
 }
 
 function openDetail(type, idx) {
   savedScrollY = window.scrollY;
+  let html = '', badge = '', topTitle = '';
 
-  let html = '';
-  let badge = '';
-  let topTitle = '';
-
-  if(type==='artwork') {
+  if (type === 'artwork') {
     const aw = ARTWORKS[idx];
     html = buildArtworkHTML(aw);
-    badge = currentLang==='tr' ? 'Eser' : 'Artwork';
-    topTitle = currentLang==='tr' ? aw.titleTR : aw.title;
-  } else if(type==='poem') {
+    badge = LABELS.artwork[currentLang];
+    topTitle = t(aw.title, currentLang);
+  } else if (type === 'poem') {
     const pm = POEMS[idx];
     html = buildPoemHTML(pm);
-    badge = currentLang==='tr' ? 'Şiir' : 'Poem';
-    topTitle = currentLang==='tr' ? pm.titleTR : pm.title;
-  } else if(type==='article') {
+    badge = LABELS.poem[currentLang];
+    topTitle = t(pm.title, currentLang);
+  } else if (type === 'article') {
     const ar = ARTICLES[idx];
     html = buildArticleHTML(ar);
-    badge = currentLang==='tr' ? 'Makale' : 'Article';
-    topTitle = currentLang==='tr' ? ar.titleTR : ar.title;
+    badge = LABELS.article[currentLang];
+    topTitle = t(ar.title, currentLang);
   }
 
   detailBody.innerHTML = html;
   detailBadge.textContent = badge;
   detailTopTi.textContent = topTitle;
-
-  /* lock main scroll */
   document.body.style.overflow = 'hidden';
-
-  /* trigger slide-up animation */
   detailPage.scrollTop = 0;
   detailPage.classList.add('open');
-
-  /* show back FAB slightly after */
-  setTimeout(()=>backFab.classList.add('visible'), 200);
+  setTimeout(() => backFab.classList.add('visible'), 200);
 }
 
 function closeDetail() {
@@ -966,12 +822,10 @@ function closeDetail() {
 
 function showMain() {
   closeDetail();
-  window.scrollTo({top:0, behavior:'smooth'});
 }
 
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
-
-heroInit();
+/* ── boot ── */
+renderAll();
 </script>
 </body>
 </html>
