@@ -3,39 +3,38 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Contact — tarik yigit</title>
+<title>Contact — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.contact-wrap { text-align: center; }
+.contact-center { text-align:center; }
 .contact-email {
-  display: inline-block; margin-top: 8px;
-  font-size: clamp(15px, 2.5vw, 28px); font-weight: bold;
-  color: var(--ink); text-decoration: none;
-  border-bottom: 2px solid var(--ink); padding-bottom: 2px;
-  transition: color .2s, border-color .2s;
+  display:inline-block; margin-top:8px;
+  font-size:clamp(16px,2.5vw,28px); font-weight:500;
+  color:var(--ink); text-decoration:none;
+  border-bottom:2px solid var(--ink); padding-bottom:2px;
+  transition:color .2s,border-color .2s;
 }
-.contact-email:hover { color: var(--red); border-color: var(--red); }
-.contact-note { margin-top: 14px; font-style: italic; font-size: 13px; color: #aaa; }
+.contact-email:hover { color:var(--red); border-color:var(--red); }
+.contact-note { margin-top:14px; font-style:italic; font-size:14px; color:#aaa; }
 </style>
 </head>
 <body>
- 
+<div id="page-transition-mask"></div>
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html">Artworks</a>
-    <a href="writings.html">Writings</a>
-    <a href="about.html">About</a>
-    <a href="contact.html" class="active">Contact</a>
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim" class="active">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -43,12 +42,11 @@
     <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
- 
 <div class="page-wrap">
   <div class="sec">
-    <div class="sec-title contact-wrap" data-en="Contact" data-tr="İletişim">Contact</div>
-    <div class="contact-wrap">
-      <a href="mailto:hello@veretrir.art" class="contact-email">hello@veretrir.art</a>
+    <div class="sec-title contact-center" data-en="Contact" data-tr="İletişim">Contact</div>
+    <div class="contact-center">
+      <a href="mailto:hello@veretrir.art" class="contact-email" data-no-transition>hello@veretrir.art</a>
       <p class="contact-note"
          data-en="Collaborations, exhibitions, publications."
          data-tr="İşbirlikleri, sergiler, yayınlar.">
@@ -57,10 +55,7 @@
     </div>
   </div>
 </div>
- 
-<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
- 
-<script src="data.js"></script>
-<script src="common.js"></script>
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
+<script src="data.js"></script><script src="common.js"></script>
 </body>
 </html>
