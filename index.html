@@ -3,669 +3,806 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>tarik yigit — veretrir</title>
-
+<title>tarik yigit</title>
 <style>
-:root {
-  --ink: #0d0d0b;
-  --paper: #f0ece3;
-  --paper2: #e8e2d6;
-  --red: #d63c1f;
-  --dim: #7a7368;
-  --faint: #c4bfb5;
-  --white: #faf8f3;
-  --font: 'Courier New', Courier, monospace;
-}
-
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
 
+:root {
+  --bg: #f5f2ed;
+  --bg2: #eeebe5;
+  --ink: #111;
+  --mid: #888;
+  --faint: #ccc;
+  --font: 'Courier New', Courier, monospace;
+  --header-h: 52px;
+}
+
 body {
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.7;
   overflow-x: hidden;
-  cursor: none;
 }
 
-/* ── CURSOR ── */
-#cursor {
+/* ════════════════════════════════
+   HEADER
+════════════════════════════════ */
+header {
   position: fixed;
-  width: 12px; height: 12px;
-  background: var(--red);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%,-50%);
-  transition: width 0.2s, height 0.2s, background 0.2s;
-  mix-blend-mode: multiply;
-}
-#cursor.big { width: 56px; height: 56px; background: var(--ink); }
-
-/* grain */
-body::after {
-  content:''; position:fixed; inset:0;
-  pointer-events:none; z-index:9998;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity:0.45;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--bg);
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 28px;
+  height: var(--header-h);
 }
 
-/* ── LANG ── */
-#lang-sw {
-  position: fixed; top: 28px; left: 32px;
-  z-index: 1000; display: flex; align-items: center; gap: 2px;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-name {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+/* Instagram button */
+.ig-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--mid);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  transition: color 0.2s;
+  padding: 4px 0;
+}
+.ig-btn:hover { color: var(--ink); }
+.ig-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+nav {
+  display: flex;
+  gap: 32px;
+}
+nav a {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+nav a:hover, nav a.active { color: var(--ink); }
+
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 3px;
 }
 .lb {
   background: none; border: none;
   font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.12em;
-  color: var(--dim); cursor: none; padding: 3px 5px;
+  font-size: 11px; letter-spacing: 0.1em;
+  color: #aaa; cursor: pointer; padding: 2px 4px;
   transition: color 0.2s;
 }
-.lb.on { color: var(--ink); border-bottom: 1.5px solid var(--ink); }
-.lb:hover { color: var(--red); }
+.lb.on { color: var(--ink); border-bottom: 1px solid var(--ink); }
+.lb:hover { color: var(--ink); }
 .ls { color: var(--faint); font-size: 9px; }
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; right: 0; z-index: 500;
-  padding: 28px 40px;
-  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-}
-nav a {
-  font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--dim); text-decoration: none; cursor: none;
-  transition: color 0.2s, letter-spacing 0.3s;
-}
-nav a:hover { color: var(--red); letter-spacing: 0.32em; }
-
-/* ── HERO ── */
+/* ════════════════════════════════
+   HERO — fullscreen slideshow bg
+════════════════════════════════ */
 #hero {
-  min-height: 100vh; padding: 0 5vw 80px;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  position: relative; overflow: hidden;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero-rule {
-  width: 100%; height: 1px; background: var(--ink);
-  margin-bottom: 32px;
-  animation: widen 1s 0.3s both; transform-origin: left;
+/* Background slideshow */
+.hero-slides {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  transition: transform 0.9s cubic-bezier(0.77,0,0.175,1);
 }
-@keyframes widen { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
-.hero-bottom {
-  display: grid; grid-template-columns: 1fr 1fr;
-  align-items: end; gap: 40px;
+.hero-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  background: #1a1a1a;
+  position: relative;
+  overflow: hidden;
+}
+.hero-slide img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.7;
+}
+/* placeholder when no image */
+.hero-slide-ph {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #1c1c1c 0%, #2a2828 50%, #1a1818 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-slide-ph span {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: #444;
 }
 
-.hero-name-block { animation: slideUp 0.8s 0.4s both; }
-
-.name-label {
-  font-family: var(--font);
-  font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
-  color: var(--dim); margin-bottom: 12px;
+/* dark overlay so name is always readable */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1;
 }
 
+/* Name pill with black bar */
+.hero-name-wrap {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  background: #000;
+  padding: 10px 28px;
+}
 .hero-name {
-  font-family: var(--font);
-  font-size: clamp(32px, 6vw, 88px);
-  font-weight: bold; line-height: 1; letter-spacing: -0.01em; color: var(--ink);
-}
-.hero-name .slash { color: var(--red); font-weight: normal; }
-
-.hero-right { animation: slideUp 0.8s 0.6s both; text-align: right; }
-
-.hero-desc {
-  font-family: var(--font);
-  font-style: italic; font-size: clamp(13px, 1.5vw, 18px);
-  color: var(--dim); line-height: 1.7;
-  max-width: 380px; margin-left: auto;
+  font-size: clamp(18px, 3vw, 30px);
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
 }
 
-.hero-domain {
-  font-family: var(--font);
-  font-size: 10px; letter-spacing: 0.2em; color: var(--faint); margin-top: 16px;
+/* Slideshow dots — bottom center */
+.hero-dots {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 8px;
 }
-
-.scroll-ticker {
-  position: absolute; bottom: 28px; right: 40px;
-  font-family: var(--font);
-  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--faint); writing-mode: vertical-rl;
-  animation: fadeIn 1s 1s both;
+.hero-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  border: none; cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
 }
+.hero-dot.on { background: #fff; transform: scale(1.4); }
 
-@keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
-@keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
-
-/* ── SECTION BASE ── */
-.sec { padding: 120px 5vw; position: relative; }
-
-.sec-header {
-  display: flex; align-items: baseline; gap: 20px;
-  margin-bottom: 64px;
-  border-top: 2px solid var(--ink); padding-top: 18px;
+/* Hero slide arrows */
+.hero-btn {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  z-index: 2;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; cursor: pointer;
+  width: 40px; height: 40px;
+  font-family: var(--font); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
 }
+.hero-btn:hover { background: rgba(0,0,0,0.55); }
+.hero-btn.prev { left: 20px; }
+.hero-btn.next { right: 20px; }
 
-.sec-num {
-  font-family: var(--font);
-  font-size: 10px; letter-spacing: 0.2em; color: var(--red);
+/* ════════════════════════════════
+   MAIN PAGE (sections)
+════════════════════════════════ */
+#main-page { padding-top: var(--header-h); }
+
+.sec {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 72px 32px;
 }
 
 .sec-title {
-  font-family: var(--font);
-  font-size: clamp(22px, 4vw, 56px);
-  font-weight: bold; letter-spacing: -0.01em; color: var(--ink); line-height: 1;
-}
-.sec-title em {
-  font-style: italic; font-weight: normal;
-  font-size: 0.95em; color: var(--dim);
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 40px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ddd;
 }
 
-/* ── ARTWORKS ── */
-#artworks { background: var(--paper); }
-
-.tabs { display: flex; margin-bottom: 56px; border-bottom: 1px solid var(--faint); }
-.tab {
+/* ════════════════════════════════
+   ARTWORK TABS
+════════════════════════════════ */
+.art-tabs {
+  display: flex;
+  margin-bottom: 36px;
+  border-bottom: 1px solid #ddd;
+}
+.art-tab {
   background: none; border: none;
   font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--dim); cursor: none; padding: 12px 24px 12px 0; margin-right: 28px;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: color 0.2s, border-color 0.2s;
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: #aaa; cursor: pointer;
+  padding: 10px 20px 10px 0; margin-right: 20px;
+  border-bottom: 1px solid transparent; margin-bottom: -1px;
+  transition: color 0.2s;
 }
-.tab.on { color: var(--ink); border-bottom-color: var(--ink); }
-.tab:hover { color: var(--red); }
+.art-tab.on { color: var(--ink); border-bottom-color: var(--ink); }
+.art-tab:hover { color: var(--ink); }
 
 .panel { display: none; }
 .panel.on { display: block; }
 
-/* ── SLIDER ── */
-.slider-wrap {
+/* ════════════════════════════════
+   ARTWORK GRID — 4 squares
+════════════════════════════════ */
+.artwork-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.artwork-thumb {
   position: relative;
-  width: 100%;
-  height: 80vh;
-  min-height: 480px;
-  background: var(--ink);
+  aspect-ratio: 1;
+  background: #e0dcd6;
   overflow: hidden;
-  user-select: none;
+  cursor: pointer;
 }
-
-.slides {
-  display: flex;
-  height: 100%;
-  transition: transform 0.6s cubic-bezier(0.77,0,0.175,1);
+.artwork-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  transition: transform 0.4s ease;
 }
+.artwork-thumb:hover img { transform: scale(1.04); }
 
-.slide {
-  flex: 0 0 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--paper2);
-}
-
-/* When you add real images, replace .slide-placeholder with an <img> tag */
-.slide-placeholder {
+/* placeholder */
+.aw-ph {
   width: 100%; height: 100%;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 16px;
-  background: var(--paper2);
+  align-items: center; justify-content: center; gap: 8px;
+  background: #e8e4de;
+  transition: background 0.3s;
+}
+.artwork-thumb:hover .aw-ph { background: #dedad4; }
+.aw-ph-cross {
+  width: 24px; height: 24px; position: relative;
+}
+.aw-ph-cross::before, .aw-ph-cross::after {
+  content:''; position:absolute; background:#c8c4be;
+}
+.aw-ph-cross::before { width:1px; height:100%; left:50%; top:0; }
+.aw-ph-cross::after  { width:100%; height:1px; top:50%; left:0; }
+.aw-ph-lbl {
+  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: #bbb;
 }
 
-.slide img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
+/* hover overlay */
+.artwork-thumb-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 14px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.artwork-thumb:hover .artwork-thumb-overlay { opacity: 1; }
+.aw-ov-title {
+  font-size: 13px; font-style: italic; color: #fff;
+  margin-bottom: 2px; line-height: 1.3;
+}
+.aw-ov-meta {
+  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
 }
 
-.slide-placeholder-cross {
-  width: 48px; height: 48px; position: relative;
+/* ════════════════════════════════
+   PROJECTS LIST
+════════════════════════════════ */
+.project-item {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 16px; align-items: start;
+  padding: 22px 0; border-bottom: 1px solid #e8e4de;
 }
-.slide-placeholder-cross::before, .slide-placeholder-cross::after {
-  content:''; position:absolute; background: var(--faint);
+.project-item:first-child { border-top: 1px solid #e8e4de; }
+.project-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
+.project-desc { font-size: 13px; font-style: italic; color: var(--mid); }
+.p-tag {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 9px; border: 1px solid; white-space: nowrap; margin-top: 2px;
 }
-.slide-placeholder-cross::before { width:1px; height:100%; left:50%; top:0; }
-.slide-placeholder-cross::after  { width:100%; height:1px; top:50%; left:0; }
+.tag-on { color: #c0392b; border-color: #c0392b; }
+.tag-pl { color: var(--faint); border-color: var(--faint); }
 
-.slide-placeholder-txt {
-  font-family: var(--font);
+/* ════════════════════════════════
+   WRITINGS
+════════════════════════════════ */
+#writings-sec { background: var(--bg2); }
+.writings-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.col-title {
   font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--faint);
+  color: #aaa; margin-bottom: 24px;
+  padding-bottom: 10px; border-bottom: 1px solid #ddd;
 }
-
-/* Slide caption bar */
-.slide-caption {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 24px 32px;
-  background: linear-gradient(to top, rgba(13,13,11,0.85) 0%, transparent 100%);
-  display: flex; justify-content: space-between; align-items: flex-end;
+.writing-item {
+  display: block; padding: 14px 0;
+  border-bottom: 1px solid #e8e4de;
+  cursor: pointer; transition: padding-left 0.2s;
+  text-decoration: none;
 }
-
-.slide-title {
-  font-family: var(--font);
-  font-style: italic; font-size: clamp(16px, 2vw, 24px);
-  color: var(--white); margin-bottom: 4px; line-height: 1.2;
+.writing-item:hover { padding-left: 8px; }
+.wi-title {
+  font-size: 14px; font-style: italic; color: var(--ink);
+  margin-bottom: 3px; transition: color 0.2s;
 }
+.writing-item:hover .wi-title { color: #c0392b; }
+.wi-meta { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #bbb; }
 
-.slide-meta {
-  font-family: var(--font);
-  font-size: 9px; letter-spacing: 0.2em;
-  color: var(--faint); text-transform: uppercase;
+/* ════════════════════════════════
+   ABOUT
+════════════════════════════════ */
+.about-text {
+  max-width: 580px;
+  font-size: 15px; line-height: 1.9; color: #555;
 }
+.about-text p + p { margin-top: 18px; }
 
-.slide-counter {
-  font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.1em;
-  color: var(--faint);
-  white-space: nowrap;
-}
-
-/* Prev / Next buttons */
-.slider-btn {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: none; border: 1px solid rgba(255,255,255,0.2);
-  color: var(--white); cursor: none;
-  width: 52px; height: 52px;
-  font-family: var(--font); font-size: 20px;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s, border-color 0.2s;
-  z-index: 10;
-}
-.slider-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
-.slider-btn.prev { left: 24px; }
-.slider-btn.next { right: 24px; }
-
-/* Dot indicators */
-.slider-dots {
-  display: flex; justify-content: center; gap: 8px;
-  padding: 20px 0 0;
-}
-.dot {
-  width: 6px; height: 6px;
-  border-radius: 50%; background: var(--faint);
-  cursor: none; border: none; padding: 0;
-  transition: background 0.2s, transform 0.2s;
-}
-.dot.on { background: var(--ink); transform: scale(1.4); }
-
-/* Drag hint */
-.slider-hint {
-  text-align: center; margin-top: 12px;
-  font-family: var(--font);
-  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
-  color: var(--faint);
-}
-
-/* ── PROJECTS LIST ── */
-.pl { list-style: none; }
-.pi {
-  display: grid; grid-template-columns: 60px 1fr auto;
-  gap: 24px; align-items: start;
-  padding: 28px 0; border-bottom: 1px solid var(--faint);
-  transition: padding-left 0.3s; cursor: none;
-}
-.pi:first-child { border-top: 1px solid var(--faint); }
-.pi:hover { padding-left: 8px; }
-
-.pi-idx { font-family: var(--font); font-size: 10px; color: var(--red); padding-top: 4px; }
-.pi-name { font-family: var(--font); font-size: clamp(14px, 2vw, 22px); font-weight: bold; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 8px; line-height: 1.2; }
-.pi-desc { font-family: var(--font); font-style: italic; font-size: 13px; color: var(--dim); line-height: 1.7; }
-.pi-tag { font-family: var(--font); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border: 1px solid; margin-top: 4px; white-space: nowrap; }
-.tag-on  { color: var(--red); border-color: var(--red); }
-.tag-pl  { color: var(--faint); border-color: var(--faint); }
-
-/* ── WRITINGS ── */
-#writings { background: var(--ink); color: var(--white); }
-#writings .sec-header { border-top-color: var(--white); }
-#writings .sec-title  { color: var(--white); }
-#writings .sec-title em { color: var(--faint); }
-
-.wg { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #2a2a27; }
-.wg-col { background: var(--ink); padding: 48px 40px; }
-.wg-col-h {
-  font-family: var(--font); font-size: 10px; letter-spacing: 0.35em;
-  text-transform: uppercase; color: var(--red); margin-bottom: 36px;
-  padding-bottom: 12px; border-bottom: 1px solid #2a2a27;
-}
-
-.wi {
-  display: block; padding: 20px 0; border-bottom: 1px solid #2a2a27;
-  cursor: none; transition: padding-left 0.3s; text-decoration: none;
-}
-.wi:hover { padding-left: 10px; }
-
-.wi-t {
-  font-family: var(--font); font-style: italic;
-  font-size: clamp(15px, 1.8vw, 21px); color: var(--white);
-  margin-bottom: 6px; line-height: 1.4; transition: color 0.2s;
-}
-.wi:hover .wi-t { color: var(--red); }
-.wi-m { font-family: var(--font); font-size: 9px; letter-spacing: 0.15em; color: #4a4a46; text-transform: uppercase; }
-
-.w-note { font-family: var(--font); font-size: 9px; letter-spacing: 0.12em; color: #3a3a37; margin-top: 28px; padding-left: 12px; border-left: 1px solid #2a2a27; line-height: 1.9; }
-
-/* ── ABOUT ── */
-#about { background: var(--white); }
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-
-.about-text p {
-  font-family: var(--font);
-  font-size: clamp(13px, 1.5vw, 17px); line-height: 1.9; color: var(--dim); margin-bottom: 20px;
-}
-
-.manifesto-word {
-  font-family: var(--font);
-  font-size: clamp(36px, 7vw, 96px); font-weight: bold; line-height: 0.95;
-  color: transparent; -webkit-text-stroke: 1.5px var(--ink);
-  letter-spacing: -0.02em; display: block;
-}
-.manifesto-word.fill { color: var(--ink); -webkit-text-stroke: 0; }
-.manifesto-word.red  { color: var(--red);  -webkit-text-stroke: 0; }
-
-.manifesto-sub {
-  font-family: var(--font); font-style: italic;
-  font-size: 11px; letter-spacing: 0.15em; color: var(--dim);
-  text-transform: uppercase; margin-top: 24px; padding-left: 12px;
-  border-left: 2px solid var(--red); line-height: 1.8;
-}
-
-/* ── CONTACT ── */
-#contact { background: var(--paper); padding: 100px 5vw; position: relative; overflow: hidden; }
-
-.contact-bg {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  font-family: var(--font);
-  font-size: clamp(60px, 14vw, 200px); font-weight: bold;
-  color: transparent; -webkit-text-stroke: 1px var(--faint);
-  white-space: nowrap; pointer-events: none; user-select: none;
-  letter-spacing: -0.04em; opacity: 0.4;
-}
-
-.contact-inner { position: relative; z-index: 1; max-width: 600px; }
-
-.contact-label {
-  font-family: var(--font); font-size: 9px;
-  letter-spacing: 0.4em; text-transform: uppercase; color: var(--dim); margin-bottom: 24px;
-}
-
+/* ════════════════════════════════
+   CONTACT
+════════════════════════════════ */
+#contact-sec { background: var(--bg2); }
+#contact-sec .sec { text-align: center; }
 .contact-email {
-  font-family: var(--font);
-  font-size: clamp(15px, 2.8vw, 38px); font-weight: bold;
-  color: var(--ink); text-decoration: none; letter-spacing: -0.01em;
-  display: inline-block; border-bottom: 2px solid var(--ink); padding-bottom: 4px;
-  transition: color 0.3s, border-color 0.3s; cursor: none;
+  display: inline-block; margin-top: 8px;
+  font-size: clamp(16px, 2.5vw, 28px); font-weight: bold;
+  color: var(--ink); text-decoration: none;
+  border-bottom: 2px solid var(--ink); padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
 }
-.contact-email:hover { color: var(--red); border-color: var(--red); }
-
+.contact-email:hover { color: #c0392b; border-color: #c0392b; }
 .contact-note {
-  font-family: var(--font); font-style: italic;
-  font-size: 13px; color: var(--dim); margin-top: 24px;
-  max-width: 400px; line-height: 1.8;
+  margin-top: 16px; font-style: italic;
+  font-size: 13px; color: #aaa;
 }
 
-/* ── FOOTER ── */
+/* ════════════════════════════════
+   FOOTER
+════════════════════════════════ */
 footer {
-  background: var(--ink); padding: 28px 5vw;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px;
+  border-top: 1px solid #ddd;
+  padding: 22px 32px;
+  display: flex; justify-content: space-between;
+  font-size: 10px; letter-spacing: 0.1em; color: #bbb;
 }
-.f-name { font-family: var(--font); font-size: 12px; font-weight: bold; letter-spacing: 0.05em; color: var(--paper2); }
-.f-right { font-family: var(--font); font-size: 9px; letter-spacing: 0.2em; color: #3a3a37; text-align: right; }
 
-/* ── REVEAL ── */
-.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
-.reveal.vis { opacity: 1; transform: none; }
+/* ════════════════════════════════
+   ARTWORK DETAIL PAGE (full overlay)
+════════════════════════════════ */
+#detail-page {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--bg);
+  overflow-y: auto;
+  padding-top: var(--header-h);
+}
+#detail-page.open { display: block; }
 
-/* ── RESPONSIVE ── */
+/* Detail header — reuse main header style but for detail */
+#detail-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 400;
+  background: var(--bg);
+  border-bottom: 1px solid #ddd;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 20px;
+}
+
+.back-btn {
+  background: none; border: none;
+  font-family: var(--font);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid); cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: color 0.2s;
+  padding: 0;
+}
+.back-btn:hover { color: var(--ink); }
+.back-btn svg { width: 14px; height: 14px; }
+
+.detail-header-title {
+  font-size: 13px; font-style: italic;
+  color: var(--ink);
+}
+
+/* Detail body */
+.detail-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 56px 32px 80px;
+}
+
+.detail-hero-img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #111;
+  display: block;
+  margin-bottom: 40px;
+}
+
+/* placeholder hero */
+.detail-hero-ph {
+  width: 100%;
+  height: 50vh;
+  background: #e0dcd6;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 40px;
+}
+.detail-hero-ph span {
+  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #bbb;
+}
+
+.detail-title {
+  font-size: clamp(22px, 4vw, 40px);
+  font-weight: bold;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.detail-meta {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #aaa; margin-bottom: 36px;
+}
+
+.detail-section-label {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: #aaa; margin-bottom: 16px; margin-top: 48px;
+  padding-bottom: 10px; border-bottom: 1px solid #ddd;
+}
+
+.detail-description {
+  font-size: 15px; line-height: 1.9; color: #555;
+  max-width: 640px;
+}
+.detail-description p + p { margin-top: 16px; }
+
+/* Additional photos strip */
+.detail-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+.detail-photo {
+  aspect-ratio: 1;
+  background: #e8e4de;
+  overflow: hidden;
+  cursor: pointer;
+}
+.detail-photo img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.3s; }
+.detail-photo:hover img { transform: scale(1.05); }
+.detail-photo-ph {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  background: #e8e4de;
+}
+.detail-photo-ph span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #bbb; }
+
+/* Detail writings */
+.detail-writing-item {
+  padding: 14px 0; border-bottom: 1px solid #e8e4de;
+  font-size: 14px; font-style: italic; color: #555;
+}
+
+/* ════════════════════════════════
+   RESPONSIVE
+════════════════════════════════ */
 @media (max-width: 700px) {
-  .hero-bottom { grid-template-columns: 1fr; }
-  .wg { grid-template-columns: 1fr; }
-  .about-grid { grid-template-columns: 1fr; gap: 48px; }
-  nav { display: none; }
-  .wg-col { padding: 32px 20px; }
-  .slider-wrap { height: 60vw; min-height: 280px; }
-  .slider-btn { width: 40px; height: 40px; font-size: 16px; }
-  .pi { grid-template-columns: 40px 1fr; }
-  .pi-tag { display: none; }
+  .artwork-grid { grid-template-columns: repeat(2, 1fr); }
+  .writings-cols { grid-template-columns: 1fr; gap: 36px; }
+  .detail-photos { grid-template-columns: repeat(2, 1fr); }
+  nav { gap: 16px; }
+  .sec { padding: 56px 20px; }
+  .ig-btn span { display: none; }
+  header { padding: 0 16px; }
+}
+@media (max-width: 480px) {
+  .artwork-grid { grid-template-columns: repeat(2, 1fr); }
+  nav a[data-hide-sm] { display: none; }
 }
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
+<!-- ══════════════════════════════
+     HEADER (always visible)
+══════════════════════════════ -->
+<header id="site-header">
+  <div class="header-left">
+    <a href="#" class="header-name" onclick="showMain(); return false;">tarik yigit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>Instagram</span>
+    </a>
+  </div>
 
-<!-- Lang Switcher -->
-<div id="lang-sw">
-  <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
-  <span class="ls">·</span>
-  <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+  <nav id="main-nav">
+    <a href="#artworks-sec"  data-en="Artworks"  data-tr="Eserler">Artworks</a>
+    <a href="#writings-sec"  data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="#about-sec"     data-en="About"     data-tr="Hakkında">About</a>
+    <a href="#contact-sec"   data-en="Contact"   data-tr="İletişim">Contact</a>
+  </nav>
+
+  <div class="header-right">
+    <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
+    <span class="ls">·</span>
+    <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════
+     MAIN PAGE
+══════════════════════════════ -->
+<div id="main-page">
+
+  <!-- HERO -->
+  <section id="hero">
+    <!-- Background slideshow -->
+    <div class="hero-slides" id="heroSlides">
+      <!-- Slide 1 — replace .hero-slide-ph with <img src="your.jpg" alt=""> -->
+      <div class="hero-slide">
+        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="hero-slide">
+        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="hero-slide">
+        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="hero-slide">
+        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
+      </div>
+    </div>
+
+    <div class="hero-overlay"></div>
+
+    <!-- Name with black bar -->
+    <div class="hero-name-wrap">
+      <div class="hero-name">tarik yigit</div>
+    </div>
+
+    <!-- Arrows -->
+    <button class="hero-btn prev" onclick="heroMove(-1)">&#8592;</button>
+    <button class="hero-btn next" onclick="heroMove(1)">&#8594;</button>
+
+    <!-- Dots -->
+    <div class="hero-dots" id="heroDots"></div>
+  </section>
+
+  <!-- ARTWORKS -->
+  <section id="artworks-sec">
+    <div class="sec">
+      <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
+
+      <div class="art-tabs">
+        <button class="art-tab on" onclick="swTab('g')" data-en="Works" data-tr="Eserler">Works</button>
+        <button class="art-tab"    onclick="swTab('p')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
+      </div>
+
+      <!-- WORKS GRID -->
+      <div class="panel on" id="pg">
+        <div class="artwork-grid" id="artworkGrid">
+
+          <!-- ╔═══════════════════════════════════════╗
+               ║  To add real images:                  ║
+               ║  Replace .aw-ph with:                 ║
+               ║  <img src="file.jpg" alt="Title">     ║
+               ╚═══════════════════════════════════════╝ -->
+
+          <div class="artwork-thumb" onclick="openDetail(0)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
+            <div class="artwork-thumb-overlay">
+              <div class="aw-ov-title" data-en="Untitled I" data-tr="İsimsiz I">Untitled I</div>
+              <div class="aw-ov-meta" data-en="2024" data-tr="2024">2024</div>
+            </div>
+          </div>
+
+          <div class="artwork-thumb" onclick="openDetail(1)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
+            <div class="artwork-thumb-overlay">
+              <div class="aw-ov-title" data-en="Untitled II" data-tr="İsimsiz II">Untitled II</div>
+              <div class="aw-ov-meta" data-en="2024" data-tr="2024">2024</div>
+            </div>
+          </div>
+
+          <div class="artwork-thumb" onclick="openDetail(2)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
+            <div class="artwork-thumb-overlay">
+              <div class="aw-ov-title" data-en="Untitled III" data-tr="İsimsiz III">Untitled III</div>
+              <div class="aw-ov-meta" data-en="2023" data-tr="2023">2023</div>
+            </div>
+          </div>
+
+          <div class="artwork-thumb" onclick="openDetail(3)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
+            <div class="artwork-thumb-overlay">
+              <div class="aw-ov-title" data-en="Untitled IV" data-tr="İsimsiz IV">Untitled IV</div>
+              <div class="aw-ov-meta" data-en="2023" data-tr="2023">2023</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ONGOING / PLANNED -->
+      <div class="panel" id="pp">
+        <div class="project-item">
+          <div>
+            <div class="project-name" data-en="Project Title One" data-tr="Proje Bir">Project Title One</div>
+            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
+          </div>
+          <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
+        </div>
+        <div class="project-item">
+          <div>
+            <div class="project-name" data-en="Project Title Two" data-tr="Proje İki">Project Title Two</div>
+            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
+          </div>
+          <span class="p-tag tag-pl" data-en="Planned" data-tr="Planlandı">Planned</span>
+        </div>
+        <div class="project-item">
+          <div>
+            <div class="project-name" data-en="Project Title Three" data-tr="Proje Üç">Project Title Three</div>
+            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
+          </div>
+          <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITINGS -->
+  <section id="writings-sec">
+    <div class="sec">
+      <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
+      <div class="writings-cols">
+        <div>
+          <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title One" data-tr="Şiir Bir">Poem Title One</div><div class="wi-meta">2024</div></a>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title Two" data-tr="Şiir İki">Poem Title Two</div><div class="wi-meta">2024</div></a>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title Three" data-tr="Şiir Üç">Poem Title Three</div><div class="wi-meta">2023</div></a>
+        </div>
+        <div>
+          <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title One" data-tr="Makale Bir">Article Title One</div><div class="wi-meta" data-en="2024 · Essay" data-tr="2024 · Deneme">2024 · Essay</div></a>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title Two" data-tr="Makale İki">Article Title Two</div><div class="wi-meta" data-en="2023 · Criticism" data-tr="2023 · Eleştiri">2023 · Criticism</div></a>
+          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title Three" data-tr="Makale Üç">Article Title Three</div><div class="wi-meta" data-en="2023 · Essay" data-tr="2023 · Deneme">2023 · Essay</div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about-sec">
+    <div class="sec">
+      <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
+      <div class="about-text">
+        <p data-en="Write your biography or artist statement here. Who you are, where you come from, what you make and why." data-tr="Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.">Write your biography or artist statement here. Who you are, where you come from, what you make and why.</p>
+        <p data-en="A second paragraph about your practice — the themes you return to, the tensions that drive your work." data-tr="Pratiğiniz hakkında ikinci paragraf — döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler.">A second paragraph about your practice — the themes you return to, the tensions that drive your work.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact-sec">
+    <div class="sec" style="text-align:center;">
+      <div class="sec-title" data-en="Contact" data-tr="İletişim">Contact</div>
+      <a href="mailto:hello@veretrir.art" class="contact-email">hello@veretrir.art</a>
+      <p class="contact-note" data-en="Collaborations, exhibitions, publications." data-tr="İşbirlikleri, sergiler, yayınlar.">Collaborations, exhibitions, publications.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>tarik yigit</span>
+    <span>veretrir.art</span>
+  </footer>
+
+</div><!-- /main-page -->
+
+
+<!-- ══════════════════════════════
+     DETAIL PAGE (overlay)
+══════════════════════════════ -->
+<div id="detail-page">
+
+  <!-- Detail header replaces main header visually -->
+  <div id="detail-header">
+    <button class="back-btn" onclick="closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      <span data-en="Back" data-tr="Geri">Back</span>
+    </button>
+    <span class="detail-header-title" id="detailHeaderTitle"></span>
+  </div>
+
+  <div class="detail-body">
+    <!-- Main image -->
+    <div class="detail-hero-ph" id="detailHeroPh">
+      <span data-en="add main artwork image" data-tr="ana eser görseli ekle">add main artwork image</span>
+    </div>
+    <!-- or: <img class="detail-hero-img" id="detailHeroImg" src="" alt=""> -->
+
+    <div class="detail-title" id="detailTitle"></div>
+    <div class="detail-meta"  id="detailMeta"></div>
+
+    <!-- Description -->
+    <div class="detail-section-label" data-en="About this work" data-tr="Bu eser hakkında">About this work</div>
+    <div class="detail-description" id="detailDesc">
+      <p data-en="Add a description of this artwork — the process, the intent, the materials, the context. Replace this placeholder with your real text." data-tr="Bu eserle ilgili açıklama ekleyin — süreç, niyet, malzeme, bağlam. Bu yer tutucuyu gerçek metninizle değiştirin.">Add a description of this artwork — the process, the intent, the materials, the context. Replace this placeholder with your real text.</p>
+    </div>
+
+    <!-- Additional photos -->
+    <div class="detail-section-label" data-en="Additional photos" data-tr="Ek fotoğraflar">Additional photos</div>
+    <div class="detail-photos">
+      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
+      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
+      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
+    </div>
+
+    <!-- Related writings -->
+    <div class="detail-section-label" data-en="Related writings" data-tr="İlgili yazılar">Related writings</div>
+    <div class="detail-writing-item" data-en="Writing or note related to this work — replace with real content." data-tr="Bu eserle ilgili bir yazı veya not — gerçek içerikle değiştirin.">Writing or note related to this work — replace with real content.</div>
+    <div class="detail-writing-item" data-en="Another note, poem, or essay connected to this piece." data-tr="Bu esere bağlı başka bir not, şiir veya deneme.">Another note, poem, or essay connected to this piece.</div>
+
+  </div>
 </div>
 
-<!-- Nav -->
-<nav>
-  <a href="#artworks" data-en="Artworks" data-tr="Eserler">Artworks</a>
-  <a href="#writings"  data-en="Writings"  data-tr="Yazılar">Writings</a>
-  <a href="#about"     data-en="About"     data-tr="Hakkında">About</a>
-  <a href="#contact"   data-en="Contact"   data-tr="İletişim">Contact</a>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-rule"></div>
-  <div class="hero-bottom">
-    <div class="hero-name-block">
-      <p class="name-label" data-en="artist / writer" data-tr="sanatçı / yazar">artist / writer</p>
-      <h1 class="hero-name">tarik<span class="slash"> /</span><br>yigit</h1>
-    </div>
-    <div class="hero-right">
-      <p class="hero-desc" data-en="Images that resist explanation. Words that refuse to stay still." data-tr="Açıklamaya direnen imgeler. Yerinde durmayı reddeden sözcükler.">Images that resist explanation. Words that refuse to stay still.</p>
-      <p class="hero-domain">veretrir.art</p>
-    </div>
-  </div>
-  <div class="scroll-ticker" data-en="scroll ↓" data-tr="kaydır ↓">scroll ↓</div>
-</section>
-
-<!-- ARTWORKS -->
-<section id="artworks" class="sec">
-  <div class="sec-header reveal">
-    <span class="sec-num">01</span>
-    <h2 class="sec-title" data-en="Art<em>works</em>" data-tr="Eser<em>ler</em>">Art<em>works</em></h2>
-  </div>
-
-  <div class="tabs reveal">
-    <button class="tab on" onclick="swTab('g')" data-en="Artworks" data-tr="Eserler">Artworks</button>
-    <button class="tab"    onclick="swTab('p')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
-  </div>
-
-  <!-- SLIDER PANEL -->
-  <div class="panel on" id="pg">
-    <div class="reveal">
-      <div class="slider-wrap" id="sliderWrap">
-        <div class="slides" id="slides">
-
-          <!-- ╔══════════════════════════════════════════════════╗
-               ║  HOW TO ADD YOUR ARTWORKS                       ║
-               ║  Replace each .slide-placeholder div with:      ║
-               ║  <img src="your-image.jpg" alt="Title">         ║
-               ║  Keep the .slide-caption below each slide.      ║
-               ╚══════════════════════════════════════════════════╝ -->
-
-          <div class="slide">
-            <div class="slide-placeholder">
-              <div class="slide-placeholder-cross"></div>
-              <span class="slide-placeholder-txt" data-en="add your artwork here" data-tr="eserinizi buraya ekleyin">add your artwork here</span>
-            </div>
-            <div class="slide-caption">
-              <div>
-                <div class="slide-title" data-en="Untitled I" data-tr="İsimsiz I">Untitled I</div>
-                <div class="slide-meta" data-en="2024 · Mixed Media" data-tr="2024 · Karma Teknik">2024 · Mixed Media</div>
-              </div>
-              <div class="slide-counter" id="counter">1 / 4</div>
-            </div>
-          </div>
-
-          <div class="slide">
-            <div class="slide-placeholder">
-              <div class="slide-placeholder-cross"></div>
-              <span class="slide-placeholder-txt" data-en="add your artwork here" data-tr="eserinizi buraya ekleyin">add your artwork here</span>
-            </div>
-            <div class="slide-caption">
-              <div>
-                <div class="slide-title" data-en="Untitled II" data-tr="İsimsiz II">Untitled II</div>
-                <div class="slide-meta" data-en="2024 · Digital" data-tr="2024 · Dijital">2024 · Digital</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="slide">
-            <div class="slide-placeholder">
-              <div class="slide-placeholder-cross"></div>
-              <span class="slide-placeholder-txt" data-en="add your artwork here" data-tr="eserinizi buraya ekleyin">add your artwork here</span>
-            </div>
-            <div class="slide-caption">
-              <div>
-                <div class="slide-title" data-en="Untitled III" data-tr="İsimsiz III">Untitled III</div>
-                <div class="slide-meta" data-en="2023 · Print" data-tr="2023 · Baskı">2023 · Print</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="slide">
-            <div class="slide-placeholder">
-              <div class="slide-placeholder-cross"></div>
-              <span class="slide-placeholder-txt" data-en="add your artwork here" data-tr="eserinizi buraya ekleyin">add your artwork here</span>
-            </div>
-            <div class="slide-caption">
-              <div>
-                <div class="slide-title" data-en="Untitled IV" data-tr="İsimsiz IV">Untitled IV</div>
-                <div class="slide-meta" data-en="2023 · Oil on Canvas" data-tr="2023 · Tuval Üzerine Yağlıboya">2023 · Oil on Canvas</div>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /slides -->
-
-        <button class="slider-btn prev" onclick="moveSlide(-1)" aria-label="Previous">&#8592;</button>
-        <button class="slider-btn next" onclick="moveSlide(1)"  aria-label="Next">&#8594;</button>
-      </div><!-- /slider-wrap -->
-
-      <div class="slider-dots" id="dots"></div>
-      <p class="slider-hint" data-en="← drag or click arrows →" data-tr="← sürükle veya oklara tıkla →">← drag or click arrows →</p>
-    </div>
-  </div>
-
-  <!-- PROJECTS PANEL -->
-  <div class="panel" id="pp">
-    <ul class="pl reveal">
-      <li class="pi">
-        <span class="pi-idx">001</span>
-        <div>
-          <div class="pi-name" data-en="Project Title One" data-tr="Proje Başlık Bir">Project Title One</div>
-          <div class="pi-desc" data-en="Description of this ongoing project — what it investigates, where it is heading." data-tr="Bu devam eden projenin açıklaması — ne araştırdığı, nereye gittiği.">Description of this ongoing project — what it investigates, where it is heading.</div>
-        </div>
-        <span class="pi-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
-      </li>
-      <li class="pi">
-        <span class="pi-idx">002</span>
-        <div>
-          <div class="pi-name" data-en="Project Title Two" data-tr="Proje Başlık İki">Project Title Two</div>
-          <div class="pi-desc" data-en="A future project forming in the background — concept, material, intent." data-tr="Arka planda şekillenen gelecek bir proje — konsept, malzeme, niyet.">A future project forming in the background — concept, material, intent.</div>
-        </div>
-        <span class="pi-tag tag-pl" data-en="Planned" data-tr="Planlandı">Planned</span>
-      </li>
-      <li class="pi">
-        <span class="pi-idx">003</span>
-        <div>
-          <div class="pi-name" data-en="Project Title Three" data-tr="Proje Başlık Üç">Project Title Three</div>
-          <div class="pi-desc" data-en="Another thread being pulled — replace with your real projects." data-tr="Çekilen başka bir iplik — gerçek projelerinizle değiştirin.">Another thread being pulled — replace with your real projects.</div>
-        </div>
-        <span class="pi-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<!-- WRITINGS -->
-<section id="writings" class="sec">
-  <div class="sec-header reveal">
-    <span class="sec-num">02</span>
-    <h2 class="sec-title" data-en="Writ<em>ings</em>" data-tr="Yazı<em>lar</em>">Writ<em>ings</em></h2>
-  </div>
-  <div class="wg reveal">
-    <div class="wg-col">
-      <div class="wg-col-h" data-en="— poems" data-tr="— şiirler">— poems</div>
-      <a href="#" class="wi"><div class="wi-t" data-en="Poem Title One"   data-tr="Şiir Başlık Bir">Poem Title One</div><div class="wi-m">2024</div></a>
-      <a href="#" class="wi"><div class="wi-t" data-en="Poem Title Two"   data-tr="Şiir Başlık İki">Poem Title Two</div><div class="wi-m">2024</div></a>
-      <a href="#" class="wi"><div class="wi-t" data-en="Poem Title Three" data-tr="Şiir Başlık Üç">Poem Title Three</div><div class="wi-m">2023</div></a>
-      <p class="w-note" data-en="Add your poems here. Link each to its page." data-tr="Şiirlerinizi ekleyin. Her birini sayfasına bağlayın.">Add your poems here. Link each to its page.</p>
-    </div>
-    <div class="wg-col">
-      <div class="wg-col-h" data-en="— articles" data-tr="— makaleler">— articles</div>
-      <a href="#" class="wi"><div class="wi-t" data-en="Article Title One"   data-tr="Makale Başlık Bir">Article Title One</div><div class="wi-m" data-en="2024 · Essay" data-tr="2024 · Deneme">2024 · Essay</div></a>
-      <a href="#" class="wi"><div class="wi-t" data-en="Article Title Two"   data-tr="Makale Başlık İki">Article Title Two</div><div class="wi-m" data-en="2023 · Art Criticism" data-tr="2023 · Sanat Eleştirisi">2023 · Art Criticism</div></a>
-      <a href="#" class="wi"><div class="wi-t" data-en="Article Title Three" data-tr="Makale Başlık Üç">Article Title Three</div><div class="wi-m" data-en="2023 · Essay" data-tr="2023 · Deneme">2023 · Essay</div></a>
-      <p class="w-note" data-en="Add your articles here. Link each to its page." data-tr="Makalelerinizi ekleyin. Her birini sayfasına bağlayın.">Add your articles here. Link each to its page.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" class="sec">
-  <div class="sec-header reveal">
-    <span class="sec-num">03</span>
-    <h2 class="sec-title" data-en="A<em>bout</em>" data-tr="Hak<em>kında</em>">A<em>bout</em></h2>
-  </div>
-  <div class="about-grid">
-    <div class="about-text reveal">
-      <p data-en="Write your biography or artist statement here. Who are you, where do you come from, what do you make — and more importantly, why." data-tr="Biyografinizi veya sanatçı beyanınızı buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi — ve daha önemlisi, neden.">Write your biography or artist statement here. Who are you, where do you come from, what do you make — and more importantly, why.</p>
-      <p data-en="A second paragraph about your practice: the themes you return to, the tensions that drive your work, what you are looking for in the space between image and language." data-tr="Pratiğiniz hakkında ikinci bir paragraf: döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler, imge ile dil arasındaki alanda ne aradığınız.">A second paragraph about your practice: the themes you return to, the tensions that drive your work, what you are looking for in the space between image and language.</p>
-    </div>
-    <div class="about-manifesto reveal">
-      <span class="manifesto-word">make</span>
-      <span class="manifesto-word fill">things</span>
-      <span class="manifesto-word red">raw</span>
-      <p class="manifesto-sub" data-en="Replace with a phrase that defines how you think about your work." data-tr="Çalışmanız hakkında nasıl düşündüğünüzü tanımlayan bir ifadeyle değiştirin.">Replace with a phrase that defines how you think about your work.</p>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="contact-bg" aria-hidden="true">CONTACT</div>
-  <div class="contact-inner reveal">
-    <p class="contact-label" data-en="— get in touch" data-tr="— iletişime geçin">— get in touch</p>
-    <a href="mailto:hello@veretrir.art" class="contact-email">hello@veretrir.art</a>
-    <p class="contact-note" data-en="For collaborations, exhibitions, publications, or anything else worth pursuing." data-tr="İşbirlikleri, sergiler, yayınlar ya da peşinden koşmaya değer başka her şey için.">For collaborations, exhibitions, publications, or anything else worth pursuing.</p>
-  </div>
-</section>
-
-<footer>
-  <span class="f-name">tarik yigit</span>
-  <div class="f-right">
-    <div>veretrir.art</div>
-    <div style="margin-top:4px;color:#252523">© 2025</div>
-  </div>
-</footer>
 
 <script>
-/* ── CURSOR ── */
-const cur = document.getElementById('cursor');
-document.addEventListener('mousemove', e => {
-  cur.style.left = e.clientX + 'px';
-  cur.style.top  = e.clientY + 'px';
-});
-document.querySelectorAll('a, button, .pi, .wi').forEach(el => {
-  el.addEventListener('mouseenter', () => cur.classList.add('big'));
-  el.addEventListener('mouseleave', () => cur.classList.remove('big'));
-});
+/* ── Artwork data (edit here to set titles/years per artwork) ── */
+const ARTWORKS = [
+  { title: 'Untitled I',   titleTR: 'İsimsiz I',   year: '2024', medium: 'Mixed Media',    mediumTR: 'Karma Teknik' },
+  { title: 'Untitled II',  titleTR: 'İsimsiz II',  year: '2024', medium: 'Digital',         mediumTR: 'Dijital' },
+  { title: 'Untitled III', titleTR: 'İsimsiz III', year: '2023', medium: 'Print',            mediumTR: 'Baskı' },
+  { title: 'Untitled IV',  titleTR: 'İsimsiz IV',  year: '2023', medium: 'Oil on Canvas',   mediumTR: 'Tuval Üzerine Yağlıboya' },
+];
+
+let currentLang = 'en';
+let scrollY = 0;
 
 /* ── LANG ── */
 function setLang(l) {
+  currentLang = l;
   document.documentElement.lang = l;
   document.querySelectorAll('[data-en]').forEach(el => {
     const v = el.getAttribute('data-' + l);
@@ -677,70 +814,90 @@ function setLang(l) {
 
 /* ── TABS ── */
 function swTab(t) {
-  document.querySelectorAll('.tab').forEach((b, i) => {
+  document.querySelectorAll('.art-tab').forEach((b, i) => {
     b.classList.toggle('on', (t==='g'&&i===0)||(t==='p'&&i===1));
   });
   document.getElementById('pg').classList.toggle('on', t==='g');
   document.getElementById('pp').classList.toggle('on', t==='p');
 }
 
-/* ── SLIDER ── */
-const slidesEl  = document.getElementById('slides');
-const dotsEl    = document.getElementById('dots');
-const counterEl = document.getElementById('counter');
-let cur_s = 0;
-let total;
+/* ── HERO SLIDESHOW ── */
+const heroSlidesEl = document.getElementById('heroSlides');
+const heroDotsEl   = document.getElementById('heroDots');
+let hCur = 0, hTotal = 0, hTimer;
 
-function initSlider() {
-  const allSlides = slidesEl.querySelectorAll('.slide');
-  total = allSlides.length;
-
-  // Build dots
-  dotsEl.innerHTML = '';
-  for (let i = 0; i < total; i++) {
+function heroInit() {
+  hTotal = heroSlidesEl.querySelectorAll('.hero-slide').length;
+  heroDotsEl.innerHTML = '';
+  for (let i = 0; i < hTotal; i++) {
     const d = document.createElement('button');
-    d.className = 'dot' + (i === 0 ? ' on' : '');
-    d.setAttribute('aria-label', 'Slide ' + (i+1));
-    d.onclick = () => goTo(i);
-    dotsEl.appendChild(d);
+    d.className = 'hero-dot' + (i===0?' on':'');
+    d.onclick = () => heroGoTo(i);
+    heroDotsEl.appendChild(d);
   }
-  updateCounter();
+  hTimer = setInterval(() => heroMove(1), 4500);
 }
 
-function goTo(n) {
-  cur_s = (n + total) % total;
-  slidesEl.style.transform = `translateX(-${cur_s * 100}%)`;
-  dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur_s));
-  updateCounter();
+function heroGoTo(n) {
+  hCur = (n + hTotal) % hTotal;
+  heroSlidesEl.style.transform = `translateX(-${hCur * 100}%)`;
+  heroDotsEl.querySelectorAll('.hero-dot').forEach((d,i) => d.classList.toggle('on', i===hCur));
 }
 
-function moveSlide(dir) { goTo(cur_s + dir); }
-
-function updateCounter() {
-  if (counterEl) counterEl.textContent = (cur_s + 1) + ' / ' + total;
+function heroMove(dir) {
+  clearInterval(hTimer);
+  heroGoTo(hCur + dir);
+  hTimer = setInterval(() => heroMove(1), 4500);
 }
 
-// Touch / drag support
-let dragStartX = 0;
-const wrap = document.getElementById('sliderWrap');
-wrap.addEventListener('mousedown',  e => { dragStartX = e.clientX; });
-wrap.addEventListener('touchstart', e => { dragStartX = e.touches[0].clientX; }, {passive:true});
-wrap.addEventListener('mouseup',  e => { if (Math.abs(e.clientX - dragStartX) > 40) moveSlide(e.clientX < dragStartX ? 1 : -1); });
-wrap.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - dragStartX; if (Math.abs(dx) > 40) moveSlide(dx < 0 ? 1 : -1); });
+/* Hero touch/drag */
+let hDx = 0;
+heroSlidesEl.addEventListener('mousedown',  e => hDx = e.clientX);
+heroSlidesEl.addEventListener('touchstart', e => hDx = e.touches[0].clientX, {passive:true});
+heroSlidesEl.addEventListener('mouseup',    e => { if(Math.abs(e.clientX-hDx)>40) heroMove(e.clientX<hDx?1:-1); });
+heroSlidesEl.addEventListener('touchend',   e => { const d=e.changedTouches[0].clientX-hDx; if(Math.abs(d)>40) heroMove(d<0?1:-1); });
 
-// Keyboard
+/* ── DETAIL PAGE ── */
+function openDetail(idx) {
+  scrollY = window.scrollY;
+  const aw = ARTWORKS[idx];
+  const lang = currentLang;
+
+  /* Set header title */
+  document.getElementById('detailHeaderTitle').textContent = lang==='tr' ? aw.titleTR : aw.title;
+
+  /* Set title + meta */
+  document.getElementById('detailTitle').textContent = lang==='tr' ? aw.titleTR : aw.title;
+  document.getElementById('detailMeta').textContent  = aw.year + ' · ' + (lang==='tr' ? aw.mediumTR : aw.medium);
+
+  /* Open overlay */
+  const dp = document.getElementById('detail-page');
+  dp.classList.add('open');
+  dp.scrollTop = 0;
+
+  /* Freeze main page scroll */
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detail-page').classList.remove('open');
+  document.body.style.overflow = '';
+  /* Restore scroll position */
+  window.scrollTo(0, scrollY);
+}
+
+function showMain() {
+  closeDetail();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ESC to close */
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft')  moveSlide(-1);
-  if (e.key === 'ArrowRight') moveSlide(1);
+  if (e.key === 'Escape') closeDetail();
 });
 
-initSlider();
-
-/* ── REVEAL ON SCROLL ── */
-const ro = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); ro.unobserve(e.target); } });
-}, { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+/* Init */
+heroInit();
 </script>
 </body>
 </html>
