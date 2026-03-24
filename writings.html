@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Writings — tarik yigit</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="page-writings">
+
+<div class="page-transition-overlay"></div>
+
+<header id="site-header">
+  <div class="hd-left">
+    <a href="index.html" class="hd-name">tarik yigit</a>
+  </div>
+  <nav class="hd-nav">
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" class="active" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
+  </nav>
+  <div class="hd-right">
+    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+    <div class="hd-lang">
+      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
+      <span class="ls">·</span>
+      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+    </div>
+  </div>
+</header>
+
+<!-- WRITINGS TABS -->
+<div class="writings-header">
+  <h1 class="archive-title" data-en="Writings" data-tr="Yazılar">Writings</h1>
+  <div class="wr-tabs">
+    <button class="wr-tab on" onclick="wrTab('books')"    data-en="Books"    data-tr="Kitaplar">Books</button>
+    <button class="wr-tab"    onclick="wrTab('poems')"    data-en="Poems"    data-tr="Şiirler">Poems</button>
+    <button class="wr-tab"    onclick="wrTab('articles')" data-en="Articles" data-tr="Makaleler">Articles</button>
+  </div>
+</div>
+
+<!-- BOOKS PANEL -->
+<div class="wr-panel on" id="wr-books">
+  <div class="books-grid" id="booksGrid"></div>
+</div>
+
+<!-- POEMS PANEL -->
+<div class="wr-panel" id="wr-poems">
+  <div class="poems-list" id="poemsList"></div>
+</div>
+
+<!-- ARTICLES PANEL -->
+<div class="wr-panel" id="wr-articles">
+  <div class="articles-list" id="articlesList"></div>
+</div>
+
+<!-- READING OVERLAY (poem / article) -->
+<div class="reading-overlay" id="readingOverlay">
+  <div class="reading-bar">
+    <button class="reading-close" onclick="closeReading()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <span data-en="Close" data-tr="Kapat">Close</span>
+    </button>
+    <span class="reading-bar-title" id="readingBarTitle"></span>
+  </div>
+  <div class="reading-body" id="readingBody"></div>
+</div>
+
+<!-- BOOK READER OVERLAY -->
+<div class="book-overlay" id="bookOverlay">
+  <div class="book-bar">
+    <button class="book-close" onclick="closeBook()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <span data-en="Close" data-tr="Kapat">Close</span>
+    </button>
+    <span class="book-bar-title" id="bookBarTitle"></span>
+    <span class="book-page-num" id="bookPageNum"></span>
+  </div>
+  <div class="book-stage" id="bookStage">
+    <button class="book-arrow left" id="bookPrev" onclick="bookFlip(-1)">←</button>
+    <div class="book-spread" id="bookSpread">
+      <div class="book-page left-page" id="bookPageL"></div>
+      <div class="book-spine"></div>
+      <div class="book-page right-page" id="bookPageR"></div>
+    </div>
+    <button class="book-arrow right" id="bookNext" onclick="bookFlip(1)">→</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <span id="footer-name"></span>
+  <span id="footer-domain"></span>
+</footer>
+
+<script src="content.js"></script>
+<script src="engine.js"></script>
+<script>
+  initSite();
+  renderBooks();
+  renderPoems();
+  renderArticles();
+  animateIn();
+
+  const urlTab = new URLSearchParams(location.search).get('tab');
+  if (urlTab) wrTab(urlTab);
+</script>
+</body>
+</html>

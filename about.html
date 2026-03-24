@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>About — tarik yigit</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="page-about">
+
+<div class="page-transition-overlay"></div>
+
+<header id="site-header">
+  <div class="hd-left">
+    <a href="index.html" class="hd-name">tarik yigit</a>
+  </div>
+  <nav class="hd-nav">
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    class="active" data-en="About" data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
+  </nav>
+  <div class="hd-right">
+    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+    <div class="hd-lang">
+      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
+      <span class="ls">·</span>
+      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+    </div>
+  </div>
+</header>
+
+<main class="about-main">
+  <div class="about-inner">
+    <h1 class="about-heading" data-en="About" data-tr="Hakkında">About</h1>
+    <div class="about-text" id="aboutText"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <span id="footer-name"></span>
+  <span id="footer-domain"></span>
+</footer>
+
+<script src="content.js"></script>
+<script src="engine.js"></script>
+<script>
+  initSite();
+  document.getElementById('aboutText').innerHTML =
+    (currentLang === 'tr' ? SITE.about.tr : SITE.about.en)
+      .split(/\n\n+/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+  animateIn();
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Artworks — tarik yigit</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body class="page-artworks">
+
+<div class="page-transition-overlay"></div>
+
+<header id="site-header">
+  <div class="hd-left">
+    <a href="index.html" class="hd-name">tarik yigit</a>
+  </div>
+  <nav class="hd-nav">
+    <a href="artworks.html" class="active" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
+  </nav>
+  <div class="hd-right">
+    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
+    <div class="hd-lang">
+      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
+      <span class="ls">·</span>
+      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
+    </div>
+  </div>
+</header>
+
+<!-- ARCHIVE HEADER -->
+<div class="archive-header">
+  <h1 class="archive-title" data-en="Artworks" data-tr="Eserler">Artworks</h1>
+  <div class="archive-count"><span id="archiveCount">0</span> <span data-en="works" data-tr="eser">works</span></div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters-bar" id="filtersBar">
+  <div class="filter-group" id="filterType"></div>
+  <div class="filter-sep"></div>
+  <div class="filter-group" id="filterYear"></div>
+  <div class="filter-sep"></div>
+  <div class="filter-group" id="filterSeries"></div>
+  <button class="filter-reset" id="filterReset" onclick="resetFilters()" data-en="Clear" data-tr="Temizle">Clear</button>
+</div>
+
+<!-- GRID -->
+<div class="archive-grid" id="archiveGrid"></div>
+
+<!-- EMPTY STATE -->
+<div class="archive-empty" id="archiveEmpty" style="display:none">
+  <span data-en="No works match the selected filters." data-tr="Seçilen filtrelere uyan eser yok.">No works match the selected filters.</span>
+</div>
+
+<!-- DETAIL PANEL (slide-up) -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-bar">
+    <button class="detail-close" onclick="closeDetail()" id="detailCloseBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <span data-en="Close" data-tr="Kapat">Close</span>
+    </button>
+    <span class="detail-bar-title" id="detailBarTitle"></span>
+  </div>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<!-- 3D VIEWER (fullscreen overlay) -->
+<div class="viewer-overlay" id="viewerOverlay">
+  <button class="viewer-close" onclick="closeViewer()">✕</button>
+  <canvas id="viewer3d"></canvas>
+  <div class="viewer-hint" data-en="Drag to rotate · Scroll to zoom" data-tr="Döndürmek için sürükle · Yaklaştırmak için kaydır">Drag to rotate · Scroll to zoom</div>
+</div>
+
+<footer class="site-footer">
+  <span id="footer-name"></span>
+  <span id="footer-domain"></span>
+</footer>
+
+<script src="content.js"></script>
+<script src="engine.js"></script>
+<script src="viewer3d.js"></script>
+<script>
+  initSite();
+  buildFilters();
+  renderArchive();
+  animateIn();
+
+  /* open artwork if ?id= in URL */
+  const urlId = new URLSearchParams(location.search).get('id');
+  if (urlId) {
+    const aw = ARTWORKS.find(a => a.id === urlId);
+    if (aw) openDetail(aw);
+  }
+</script>
+</body>
+</html>
