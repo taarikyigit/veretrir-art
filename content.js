@@ -17,7 +17,7 @@ const SITE = {
   email:      'hello@veretrir.art',
 
   about: {
-    en: `Write your biography or artist statement here. Who you are, where you come from, what you make and why.
+    en: `Sanat pratiğim, malzeme, iz ve zaman arasındaki ontolojik ilişkinin sorgulanmasına dayanmaktadır. Bir özne ile bir yüzey arasında gerçekleşen temasın, fiziksel, transfer veya enerjetik bir iz olarak maddede nasıl dönüştüğü; bu izin kendi bünyesinde süre (durée), geri döndürülemezlik (irreversibility) ve görelilik (relativity) gibi zamansal katmanları nasıl barındırdığı, araştırmamın temel sorunsalını oluşturmaktadır..
 
 A second paragraph about your practice — the themes you return to, the tensions that drive your work.`,
     tr: `Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.
