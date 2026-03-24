@@ -3,34 +3,31 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Writings — tarik yigit</title>
+<title>Writings — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.writings-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 52px;
-}
-@media(max-width:640px){ .writings-grid{grid-template-columns:1fr;gap:32px;} }
+.writings-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
+@media(max-width:640px) { .writings-grid { grid-template-columns:1fr; gap:32px; } }
 </style>
 </head>
 <body>
+<div id="page-transition-mask"></div>
  
-<!-- HEADER -->
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html">Artworks</a>
-    <a href="writings.html" class="active">Writings</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"    data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"  data-tr="İletişim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -41,43 +38,42 @@
  
 <div class="page-wrap">
   <div class="sec">
+    <!-- sec-title switches with lang -->
     <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
  
-    <!-- TABS -->
     <div class="tabs">
       <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tümü">All</button>
       <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Şiirler">Poems</button>
       <button class="tab-btn"    id="tab-articles" onclick="swTab('articles')" data-en="Articles" data-tr="Makaleler">Articles</button>
     </div>
  
-    <!-- ALL TAB -->
+    <!-- ALL tab -->
     <div class="tab-panel on" id="panel-all">
       <div class="writings-grid">
         <div>
-          <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
-          <div id="all-poems-list"></div>
+          <div class="col-title" id="col-poems-lbl" data-en="Poems" data-tr="Şiirler">Poems</div>
+          <div id="all-poems"></div>
         </div>
         <div>
-          <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
-          <div id="all-articles-list"></div>
+          <div class="col-title" id="col-articles-lbl" data-en="Articles" data-tr="Makaleler">Articles</div>
+          <div id="all-articles"></div>
         </div>
       </div>
     </div>
  
-    <!-- POEMS TAB -->
+    <!-- POEMS tab -->
     <div class="tab-panel" id="panel-poems">
-      <div id="poems-list"></div>
+      <div id="only-poems"></div>
     </div>
  
-    <!-- ARTICLES TAB -->
+    <!-- ARTICLES tab -->
     <div class="tab-panel" id="panel-articles">
-      <div id="articles-list"></div>
+      <div id="only-articles"></div>
     </div>
- 
   </div>
 </div>
  
-<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
  
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
@@ -87,8 +83,6 @@
   </div>
   <div class="reading-body" id="reading-body"></div>
 </div>
- 
-<!-- FLOATING BACK BUTTON -->
 <button id="back-fab" onclick="closeReading()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   <span data-en="Back" data-tr="Geri">Back</span>
@@ -97,67 +91,73 @@
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ── Render lists ── */
-function makeWritingItem(label, idx, title, meta) {
-  const el = document.createElement('a');
-  el.href = '#';
-  el.className = 'writing-item';
-  el.innerHTML = `<div class="wi-title">${title}</div><div class="wi-meta">${meta}</div>`;
-  el.addEventListener('click', e => {
+/* Build a clickable writing item element */
+function makeItem(type, idx, title, meta) {
+  const a = document.createElement('a');
+  a.href = '#';
+  a.className = 'writing-item';
+  a.innerHTML = `<div class="wi-title">${title}</div><div class="wi-meta">${meta}</div>`;
+  a.addEventListener('click', e => {
     e.preventDefault();
-    if (label === 'poem')    openPoem(idx);
-    if (label === 'article') openArticle(idx);
+    if (type === 'poem')    openPoem(idx);
+    if (type === 'article') openArticle(idx);
   });
-  return el;
+  return a;
 }
  
+/* Render all lists using current language */
 function buildLists() {
   const l = currentLang;
  
-  /* all-poems-list */
-  ['all-poems-list','poems-list'].forEach(id => {
+  const targets = {
+    poems:    ['all-poems', 'only-poems'],
+    articles: ['all-articles', 'only-articles'],
+  };
+ 
+  /* Poems */
+  targets.poems.forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     SITE.poems.forEach((p, i) => {
-      el.appendChild(makeWritingItem('poem', i,
-        l==='tr' ? p.titleTR : p.title,
+      el.appendChild(makeItem('poem', i,
+        l === 'tr' ? p.titleTR : p.title,
         p.year
       ));
     });
   });
  
-  /* all-articles-list */
-  ['all-articles-list','articles-list'].forEach(id => {
+  /* Articles */
+  targets.articles.forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     SITE.articles.forEach((a, i) => {
-      const type = l==='tr' ? a.typeTR : a.type;
-      el.appendChild(makeWritingItem('article', i,
-        l==='tr' ? a.titleTR : a.title,
+      const type = l === 'tr' ? a.typeTR : a.type;
+      el.appendChild(makeItem('article', i,
+        l === 'tr' ? a.titleTR : a.title,
         `${a.year} · ${type}`
       ));
     });
   });
 }
  
-/* ── Tab switcher ── */
+/* Tab switcher */
 function swTab(t) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('tab-' + t).classList.add('on');
-  document.getElementById('panel-' + t).classList.add('on');
+  ['all','poems','articles'].forEach(id => {
+    document.getElementById('tab-' + id).classList.toggle('on', id === t);
+    document.getElementById('panel-' + id).classList.toggle('on', id === t);
+  });
 }
  
-/* ── Init ── */
-document.addEventListener('DOMContentLoaded', buildLists);
- 
-/* Rebuild lists when lang changes */
-const _origSetLang = setLang;
-// Override setLang to also rebuild lists
+/* Override setLang to also rebuild lists */
+const _baseLang = window.setLang;
 window.setLang = function(l) {
-  _origSetLang(l);
+  _baseLang(l);
   buildLists();
 };
+ 
+/* Initial build — after DOMContentLoaded fires in common.js */
+document.addEventListener('DOMContentLoaded', buildLists);
 </script>
 </body>
 </html>
+ 
