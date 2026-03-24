@@ -3,83 +3,189 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>tarık yiğitt</title>
+<title>tarik yigit</title>
 <link rel="stylesheet" href="style.css"/>
+<style>
+/* ── HERO ── */
+#hero {
+  position: relative; height: 100vh;
+  overflow: hidden; display: flex;
+  align-items: center; justify-content: center;
+}
+.hero-slides-wrap {
+  position: absolute; inset: 0; display: flex;
+  transition: transform 0.9s cubic-bezier(0.77,0,0.175,1);
+}
+.hero-slide { flex: 0 0 100%; height: 100%; background: #1a1a1a; }
+.hero-slide img { width:100%; height:100%; object-fit:cover; display:block; opacity:.75; }
+.hero-slide-ph {
+  width:100%; height:100%;
+  background: linear-gradient(135deg,#1c1c1c,#242222,#1a1818);
+  display:flex; align-items:center; justify-content:center;
+}
+.hero-slide-ph span { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#444; }
+.hero-overlay { position:absolute; inset:0; background:rgba(0,0,0,.38); z-index:1; }
+.hero-name-wrap { position:relative; z-index:2; background:#000; padding:9px 24px; }
+.hero-name { font-size:clamp(15px,2.4vw,24px); font-weight:bold; letter-spacing:.14em; color:#fff; line-height:1; }
+.hero-dots { position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2; display:flex; gap:8px; }
+.hero-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.35); border:none; cursor:pointer; transition:background .3s,transform .2s; }
+.hero-dot.on { background:#fff; transform:scale(1.4); }
+.hero-btn {
+  position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+  background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.18);
+  color:#fff; cursor:pointer; width:38px; height:38px;
+  font-family:var(--font); font-size:15px;
+  display:flex; align-items:center; justify-content:center; transition:background .2s;
+}
+.hero-btn:hover { background:rgba(0,0,0,.55); }
+.hero-btn.prev { left:18px; }
+.hero-btn.next { right:18px; }
+ 
+/* ── HOME SECTIONS ── */
+.home-sections { background: var(--bg2); }
+.home-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+.home-col-title { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.home-link-item { display:block; padding:12px 0; border-bottom:1px solid #e8e4de; text-decoration:none; transition:padding-left .2s; }
+.home-link-item:hover { padding-left:7px; }
+.hli-title { font-size:14px; font-style:italic; color:var(--ink); transition:color .2s; margin-bottom:2px; }
+.home-link-item:hover .hli-title { color:var(--red); }
+.hli-meta { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:#bbb; }
+.view-all { display:inline-block; margin-top:20px; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--mid); text-decoration:none; border-bottom:1px solid transparent; transition:color .2s,border-color .2s; }
+.view-all:hover { color:var(--ink); border-bottom-color:var(--ink); }
+ 
+@media(max-width:640px){ .home-grid{grid-template-columns:1fr;gap:40px;} }
+</style>
 </head>
-<body class="page-home">
-
-<div class="page-transition-overlay"></div>
-
+<body>
+ 
 <!-- HEADER -->
-<header id="site-header">
-  <div class="hd-left">
-    <a href="index.html" class="hd-name" data-en data-tr>tarık yiğit</a>
-  </div>
-  <nav class="hd-nav">
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
-  </nav>
-  <div class="hd-right">
-    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5"/>
+<header>
+  <div class="header-left">
+    <a href="index.html" class="header-name">tarik yigit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
-    <div class="hd-lang">
-      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
-      <span class="ls">·</span>
-      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
-    </div>
+  </div>
+  <nav>
+    <a href="artworks.html">Artworks</a>
+    <a href="writings.html">Writings</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="header-right">
+    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">·</span>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
-
+ 
 <!-- HERO -->
-<section class="hero" id="hero">
-  <div class="hero-track" id="heroTrack"></div>
-  <div class="hero-vignette"></div>
-  <div class="hero-wordmark">
-    <span id="hero-name"></span>
-  </div>
-  <div class="hero-nav">
-    <button class="hero-arrow" onclick="heroMove(-1)">←</button>
-    <div class="hero-dots" id="heroDots"></div>
-    <button class="hero-arrow" onclick="heroMove(1)">→</button>
+<section id="hero">
+  <div class="hero-slides-wrap" id="heroSlides"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-name-wrap"><div class="hero-name">tarik yigit</div></div>
+  <button class="hero-btn prev" id="heroPrev">&#8592;</button>
+  <button class="hero-btn next" id="heroNext">&#8594;</button>
+  <div class="hero-dots" id="heroDots"></div>
+</section>
+ 
+<!-- HOME PREVIEW -->
+<section class="home-sections">
+  <div class="sec">
+    <div class="home-grid">
+      <div>
+        <div class="home-col-title" data-en="Recent Artworks" data-tr="Son Eserler">Recent Artworks</div>
+        <div id="homeArtworks"></div>
+        <a href="artworks.html" class="view-all" data-en="View all →" data-tr="Tümünü gör →">View all →</a>
+      </div>
+      <div>
+        <div class="home-col-title" data-en="Recent Writings" data-tr="Son Yazılar">Recent Writings</div>
+        <div id="homeWritings"></div>
+        <a href="writings.html" class="view-all" data-en="View all →" data-tr="Tümünü gör →">View all →</a>
+      </div>
+    </div>
   </div>
 </section>
-
-<!-- RECENT WORKS STRIP -->
-<section class="home-strip">
-  <div class="strip-header">
-    <span class="strip-label" data-en="Recent works" data-tr="Son eserler">Recent works</span>
-    <a href="artworks.html" class="strip-link" data-en="View archive →" data-tr="Arşive git →">View archive →</a>
-  </div>
-  <div class="strip-grid" id="recentGrid"></div>
-</section>
-
-<!-- PROJECTS -->
-<section class="home-projects" id="projectsSec">
-  <div class="hp-label" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlandı">Ongoing &amp; Planned</div>
-  <div id="projectsList"></div>
-</section>
-
-<!-- FOOTER -->
-<footer class="site-footer">
-  <span id="footer-name"></span>
-  <span id="footer-domain"></span>
+ 
+<footer>
+  <span>tarik yigit</span>
+  <span>veretrir.art</span>
 </footer>
-
-<script src="content.js"></script>
-<script src="engine.js"></script>
+ 
+<script src="data.js"></script>
+<script src="common.js"></script>
 <script>
-  initSite();
-  renderHero();
-  renderRecentGrid();
-  renderProjects();
-  animateIn();
+/* ── HERO SLIDESHOW ── */
+(function(){
+  const wrap = document.getElementById('heroSlides');
+  const dotsEl = document.getElementById('heroDots');
+  const slides = SITE.heroSlides;
+  let cur = 0, timer;
+ 
+  slides.forEach(src => {
+    const s = document.createElement('div');
+    s.className = 'hero-slide';
+    if(src) {
+      const img = document.createElement('img');
+      img.src = src; img.alt = '';
+      s.appendChild(img);
+    } else {
+      s.innerHTML = '<div class="hero-slide-ph"><span>artwork</span></div>';
+    }
+    wrap.appendChild(s);
+  });
+ 
+  const total = slides.length;
+ 
+  for(let i=0;i<total;i++){
+    const d = document.createElement('button');
+    d.className='hero-dot'+(i===0?' on':'');
+    d.addEventListener('click',()=>goTo(i));
+    dotsEl.appendChild(d);
+  }
+ 
+  function goTo(n){
+    cur=(n+total)%total;
+    wrap.style.transform=`translateX(-${cur*100}%)`;
+    dotsEl.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  }
+  function move(dir){ clearInterval(timer); goTo(cur+dir); timer=setInterval(()=>move(1),4500); }
+ 
+  document.getElementById('heroPrev').addEventListener('click',()=>move(-1));
+  document.getElementById('heroNext').addEventListener('click',()=>move(1));
+ 
+  let dx=0;
+  wrap.addEventListener('mousedown',e=>dx=e.clientX);
+  wrap.addEventListener('touchstart',e=>dx=e.touches[0].clientX,{passive:true});
+  wrap.addEventListener('mouseup',e=>{if(Math.abs(e.clientX-dx)>40)move(e.clientX<dx?1:-1);});
+  wrap.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-dx;if(Math.abs(d)>40)move(d<0?1:-1);});
+ 
+  timer = setInterval(()=>move(1), 4500);
+})();
+ 
+/* ── HOME PREVIEWS ── */
+(function(){
+  const artEl = document.getElementById('homeArtworks');
+  SITE.artworks.slice(0,3).forEach(a=>{
+    artEl.innerHTML += `<div class="home-link-item" onclick="location.href='artworks.html'">
+      <div class="hli-title">${a.title}</div>
+      <div class="hli-meta">${a.year} · ${a.medium}</div>
+    </div>`;
+  });
+  const wrEl = document.getElementById('homeWritings');
+  const writings = [...SITE.poems.slice(0,2), ...SITE.articles.slice(0,1)];
+  writings.forEach(w=>{
+    const type = w.type ? `${w.year} · ${w.type}` : w.year;
+    wrEl.innerHTML += `<div class="home-link-item" onclick="location.href='writings.html'">
+      <div class="hli-title">${w.title}</div>
+      <div class="hli-meta">${type}</div>
+    </div>`;
+  });
+})();
 </script>
 </body>
 </html>
