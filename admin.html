@@ -5,30 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Content Helper — tarik yigit</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500&display=swap');
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --bg: #f5f2ed; --ink: #111; --mid: #888;
-  --font: 'Courier New', Courier, monospace;
-  --accent: #c0392b;
+  --bg:#f4f1ec; --ink:#0e0e0e; --mid:#7a7672; --line:#dedad5;
+  --mono:'Inconsolata','Courier New',monospace; --red:#a82a1e;
 }
-body { background:var(--bg); color:var(--ink); font-family:var(--font); font-size:14px; line-height:1.7; }
+body { background:var(--bg); color:var(--ink); font-family:var(--mono); font-size:13px; line-height:1.7; }
 
-header {
-  background:#111; color:#fff; padding:18px 32px;
+.top-bar {
+  background:#0e0e0e; color:#fff; height:54px;
   display:flex; align-items:center; justify-content:space-between;
+  padding:0 28px;
 }
-header h1 { font-size:13px; letter-spacing:0.08em; font-weight:bold; }
-header a { color:#aaa; text-decoration:none; font-size:11px; letter-spacing:0.1em; }
-header a:hover { color:#fff; }
+.top-bar h1 { font-size:12px; letter-spacing:0.1em; font-weight:400; }
+.top-bar a { color:#666; text-decoration:none; font-size:10px; letter-spacing:0.18em; text-transform:uppercase; transition:color 0.2s; }
+.top-bar a:hover { color:#fff; }
 
-.container { max-width:760px; margin:0 auto; padding:48px 32px 120px; }
+.container { max-width:780px; margin:0 auto; padding:48px 32px 120px; }
 
-.tabs { display:flex; gap:0; margin-bottom:40px; border-bottom:2px solid #ddd; }
+.intro {
+  background:#fff; border:1px solid var(--line); padding:22px 26px; margin-bottom:36px;
+}
+.intro h2 { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--mid); margin-bottom:12px; }
+.intro ol { padding-left:18px; }
+.intro li { font-size:13px; color:#555; margin-bottom:5px; }
+.intro code { background:#f0ede8; padding:1px 5px; font-size:11px; }
+
+.tabs { display:flex; border-bottom:1px solid var(--line); margin-bottom:32px; }
 .tab {
-  background:none; border:none; font-family:var(--font);
-  font-size:11px; letter-spacing:0.15em; text-transform:uppercase;
-  color:#aaa; cursor:pointer; padding:12px 22px;
-  border-bottom:2px solid transparent; margin-bottom:-2px;
+  background:none; border:none; font-family:var(--mono);
+  font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--mid); cursor:pointer; padding:11px 20px 11px 0;
+  margin-right:20px; border-bottom:2px solid transparent; margin-bottom:-1px;
   transition:color 0.2s;
 }
 .tab.on { color:var(--ink); border-bottom-color:var(--ink); }
@@ -37,282 +46,302 @@ header a:hover { color:#fff; }
 .panel { display:none; }
 .panel.on { display:block; }
 
-.field { margin-bottom:22px; }
-label { display:block; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:#aaa; margin-bottom:6px; }
+.field { margin-bottom:20px; }
+label { display:block; font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:var(--mid); margin-bottom:6px; }
 input, textarea, select {
-  width:100%; padding:10px 12px;
-  background:#fff; border:1px solid #ddd;
-  font-family:var(--font); font-size:13px; color:var(--ink);
+  width:100%; padding:9px 12px;
+  background:#fff; border:1px solid var(--line);
+  font-family:var(--mono); font-size:13px; color:var(--ink);
   outline:none; transition:border-color 0.2s;
+  -webkit-appearance:none;
 }
 input:focus, textarea:focus, select:focus { border-color:var(--ink); }
-textarea { resize:vertical; min-height:90px; }
-
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+textarea { resize:vertical; min-height:86px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 
 .btn {
   background:var(--ink); color:#fff; border:none; cursor:pointer;
-  font-family:var(--font); font-size:11px; letter-spacing:0.15em;
-  text-transform:uppercase; padding:13px 28px; margin-top:8px;
+  font-family:var(--mono); font-size:10px; letter-spacing:0.18em;
+  text-transform:uppercase; padding:12px 26px;
   transition:background 0.2s;
 }
 .btn:hover { background:#333; }
-.btn-reset {
-  background:none; border:1px solid #ddd; color:#aaa;
-  font-family:var(--font); font-size:11px; letter-spacing:0.15em;
-  text-transform:uppercase; padding:12px 24px; margin-top:8px; margin-left:10px;
-  cursor:pointer; transition:color 0.2s, border-color 0.2s;
+.btn-sec {
+  background:none; border:1px solid var(--line); color:var(--mid);
+  font-family:var(--mono); font-size:10px; letter-spacing:0.18em;
+  text-transform:uppercase; padding:11px 22px; margin-left:10px; cursor:pointer;
+  transition:all 0.2s;
 }
-.btn-reset:hover { color:var(--ink); border-color:var(--ink); }
+.btn-sec:hover { color:var(--ink); border-color:var(--ink); }
 
-.output-box {
-  display:none; margin-top:32px;
-  background:#fff; border:1px solid #ddd;
-}
-.output-box.visible { display:block; }
-.output-header {
-  background:#111; color:#fff;
-  padding:10px 16px; font-size:10px; letter-spacing:0.2em; text-transform:uppercase;
+.output { display:none; margin-top:32px; }
+.output.visible { display:block; }
+.output-head {
+  background:#0e0e0e; color:#fff; padding:10px 16px;
+  font-size:9px; letter-spacing:0.2em; text-transform:uppercase;
   display:flex; align-items:center; justify-content:space-between;
 }
 .copy-btn {
-  background:none; border:1px solid rgba(255,255,255,0.3); color:#fff;
-  font-family:var(--font); font-size:10px; letter-spacing:0.1em;
-  padding:4px 12px; cursor:pointer; transition:background 0.2s;
+  background:none; border:1px solid rgba(255,255,255,0.2); color:#888;
+  font-family:var(--mono); font-size:9px; letter-spacing:0.12em;
+  padding:4px 13px; cursor:pointer; transition:all 0.2s;
 }
-.copy-btn:hover { background:rgba(255,255,255,0.1); }
-.copy-btn.copied { color:#7ec880; border-color:#7ec880; }
-pre {
-  padding:20px; font-size:12px; line-height:1.7; color:#333;
-  white-space:pre-wrap; word-break:break-word; overflow-x:auto;
-  max-height:420px; overflow-y:auto;
-}
+.copy-btn:hover { color:#fff; border-color:rgba(255,255,255,0.5); }
+.copy-btn.done { color:#7ec880; border-color:#7ec880; }
+pre { padding:18px; font-size:11.5px; line-height:1.75; color:#333; white-space:pre-wrap; word-break:break-word; overflow:auto; max-height:400px; border:1px solid var(--line); border-top:none; }
 
-.how-to {
-  background:#fff; border:1px solid #ddd; padding:24px 28px; margin-bottom:36px;
-}
-.how-to h2 { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:#aaa; margin-bottom:14px; }
-.how-to ol { padding-left:18px; }
-.how-to li { margin-bottom:6px; font-size:13px; color:#555; }
-.how-to code { background:#f0ede8; padding:1px 5px; font-size:12px; }
-
-@media(max-width:600px) {
-  .row2 { grid-template-columns:1fr; }
-  .container { padding:32px 18px; }
-}
+@media(max-width:600px){ .row2{grid-template-columns:1fr;} .container{padding:32px 18px;} }
 </style>
 </head>
 <body>
 
-<header>
+<div class="top-bar">
   <h1>Content Helper — tarik yigit</h1>
   <a href="index.html">← Back to site</a>
-</header>
+</div>
 
 <div class="container">
 
-  <div class="how-to">
+  <div class="intro">
     <h2>How to use</h2>
     <ol>
-      <li>Choose a type below (Artwork, Poem, or Article)</li>
-      <li>Fill in the form fields</li>
-      <li>Click <strong>Generate</strong></li>
-      <li>Copy the result and paste it at the top of the matching list in <code>content.js</code></li>
-      <li>Save <code>content.js</code> and reload the site — done!</li>
+      <li>Choose a type: Artwork, Poem, Article, or Book</li>
+      <li>Fill in the form and click <strong>Generate</strong></li>
+      <li>Click <strong>Copy</strong> and paste into the matching list in <code>content.js</code></li>
+      <li>New entries go at the <strong>top</strong> of the list, right after the opening <code>[</code></li>
+      <li>Save <code>content.js</code> and reload — done.</li>
     </ol>
   </div>
 
   <div class="tabs">
-    <button class="tab on" onclick="switchTab('artwork')">Artwork</button>
-    <button class="tab"    onclick="switchTab('poem')">Poem</button>
-    <button class="tab"    onclick="switchTab('article')">Article</button>
-    <button class="tab"    onclick="switchTab('project')">Project</button>
+    <button class="tab on" onclick="sw('artwork')">Artwork</button>
+    <button class="tab"    onclick="sw('poem')">Poem</button>
+    <button class="tab"    onclick="sw('article')">Article</button>
+    <button class="tab"    onclick="sw('book')">Book</button>
   </div>
 
-  <!-- ── ARTWORK ── -->
-  <div class="panel on" id="panel-artwork">
+  <!-- ARTWORK -->
+  <div class="panel on" id="p-artwork">
     <div class="row2">
-      <div class="field"><label>Title (English)</label><input id="aw-title-en" placeholder="e.g. Untitled V" /></div>
-      <div class="field"><label>Title (Turkish)</label><input id="aw-title-tr" placeholder="e.g. İsimsiz V" /></div>
+      <div class="field"><label>ID (unique slug, no spaces)</label><input id="aw-id" placeholder="e.g. fragment-5"/></div>
+      <div class="field"><label>Year</label><input id="aw-year" placeholder="2025" type="number"/></div>
     </div>
     <div class="row2">
-      <div class="field"><label>Year</label><input id="aw-year" placeholder="e.g. 2025" /></div>
-      <div class="field"><label>Medium (English)</label><input id="aw-medium-en" placeholder="e.g. Oil on Canvas" /></div>
-    </div>
-    <div class="field"><label>Medium (Turkish)</label><input id="aw-medium-tr" placeholder="e.g. Tuval Üzerine Yağlıboya" /></div>
-    <div class="field"><label>Description (English)</label><textarea id="aw-desc-en" placeholder="Describe the artwork — process, intent, materials…"></textarea></div>
-    <div class="field"><label>Description (Turkish)</label><textarea id="aw-desc-tr" placeholder="Eseri açıklayın…"></textarea></div>
-    <div class="field"><label>Main Image Path</label><input id="aw-main-img" placeholder="images/artworks/artwork5/main.jpg" /></div>
-    <div class="field"><label>Additional Images (one path per line)</label><textarea id="aw-extra-imgs" style="min-height:70px;" placeholder="images/artworks/artwork5/detail1.jpg&#10;images/artworks/artwork5/detail2.jpg"></textarea></div>
-    <button class="btn" onclick="generateArtwork()">Generate</button>
-    <button class="btn-reset" onclick="resetForm('artwork')">Clear</button>
-  </div>
-
-  <!-- ── POEM ── -->
-  <div class="panel" id="panel-poem">
-    <div class="row2">
-      <div class="field"><label>Title (English)</label><input id="pm-title-en" placeholder="e.g. Poem Title Four" /></div>
-      <div class="field"><label>Title (Turkish)</label><input id="pm-title-tr" placeholder="e.g. Şiir Başlık Dört" /></div>
-    </div>
-    <div class="field"><label>Year</label><input id="pm-year" placeholder="e.g. 2025" style="max-width:200px;" /></div>
-    <div class="field"><label>Poem Text (English)</label><textarea id="pm-body-en" style="min-height:160px;" placeholder="Write your poem here.&#10;Each line break is preserved."></textarea></div>
-    <div class="field"><label>Poem Text (Turkish)</label><textarea id="pm-body-tr" style="min-height:160px;" placeholder="Şiir metninizi buraya yazın."></textarea></div>
-    <button class="btn" onclick="generatePoem()">Generate</button>
-    <button class="btn-reset" onclick="resetForm('poem')">Clear</button>
-  </div>
-
-  <!-- ── ARTICLE ── -->
-  <div class="panel" id="panel-article">
-    <div class="row2">
-      <div class="field"><label>Title (English)</label><input id="ar-title-en" placeholder="e.g. Article Title Four" /></div>
-      <div class="field"><label>Title (Turkish)</label><input id="ar-title-tr" placeholder="e.g. Makale Başlık Dört" /></div>
-    </div>
-    <div class="row2">
-      <div class="field"><label>Year</label><input id="ar-year" placeholder="e.g. 2025" /></div>
-      <div class="field">
-        <label>Type (English)</label>
-        <select id="ar-type-en">
-          <option>Essay</option><option>Criticism</option><option>Review</option>
-          <option>Interview</option><option>Note</option><option>Other</option>
-        </select>
-      </div>
-    </div>
-    <div class="field"><label>Type (Turkish)</label><input id="ar-type-tr" placeholder="e.g. Deneme / Eleştiri / İnceleme" /></div>
-    <div class="field"><label>Article Body (English)</label><textarea id="ar-body-en" style="min-height:160px;" placeholder="Write the article text here.&#10;&#10;Blank lines become paragraphs."></textarea></div>
-    <div class="field"><label>Article Body (Turkish)</label><textarea id="ar-body-tr" style="min-height:160px;" placeholder="Makale metni buraya…"></textarea></div>
-    <button class="btn" onclick="generateArticle()">Generate</button>
-    <button class="btn-reset" onclick="resetForm('article')">Clear</button>
-  </div>
-
-  <!-- ── PROJECT ── -->
-  <div class="panel" id="panel-project">
-    <div class="row2">
-      <div class="field"><label>Title (English)</label><input id="pr-title-en" placeholder="e.g. Project Title Four" /></div>
-      <div class="field"><label>Title (Turkish)</label><input id="pr-title-tr" placeholder="e.g. Proje Dört" /></div>
-    </div>
-    <div class="row2">
-      <div class="field"><label>Description (English)</label><input id="pr-desc-en" placeholder="A short description." /></div>
-      <div class="field"><label>Description (Turkish)</label><input id="pr-desc-tr" placeholder="Kısa açıklama." /></div>
+      <div class="field"><label>Title — English</label><input id="aw-en" placeholder="Untitled V"/></div>
+      <div class="field"><label>Title — Turkish</label><input id="aw-tr" placeholder="İsimsiz V"/></div>
     </div>
     <div class="field">
-      <label>Status</label>
-      <select id="pr-status">
-        <option value="ongoing">Ongoing</option>
-        <option value="planned">Planned</option>
+      <label>Type</label>
+      <select id="aw-type">
+        <option>sculpture</option><option>installation</option><option>drawing</option>
+        <option>painting</option><option>print</option><option>photography</option>
+        <option>video</option><option>digital</option><option>mixed</option>
       </select>
     </div>
-    <button class="btn" onclick="generateProject()">Generate</button>
-    <button class="btn-reset" onclick="resetForm('project')">Clear</button>
+    <div class="row2">
+      <div class="field"><label>Medium — English</label><input id="aw-med-en" placeholder="Oil on canvas"/></div>
+      <div class="field"><label>Medium — Turkish</label><input id="aw-med-tr" placeholder="Tuval üzerine yağlıboya"/></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Dimensions</label><input id="aw-dim" placeholder="100 × 80 cm"/></div>
+      <div class="field"><label>Series (optional)</label><input id="aw-series" placeholder="e.g. stain"/></div>
+    </div>
+    <div class="field"><label>Main Image Path</label><input id="aw-img" placeholder="images/artworks/fragment5/main.jpg"/></div>
+    <div class="field"><label>Additional Images (one per line)</label><textarea id="aw-imgs" style="min-height:64px" placeholder="images/artworks/fragment5/1.jpg&#10;images/artworks/fragment5/2.jpg"></textarea></div>
+    <div class="field"><label>3D Model Path (optional, .glb)</label><input id="aw-3d" placeholder="models/fragment5.glb"/></div>
+    <div class="field"><label>Description — English</label><textarea id="aw-desc-en" placeholder="Describe the artwork…"></textarea></div>
+    <div class="field"><label>Description — Turkish</label><textarea id="aw-desc-tr" placeholder="Eseri açıklayın…"></textarea></div>
+    <button class="btn" onclick="genArtwork()">Generate</button>
+    <button class="btn-sec" onclick="clr('artwork')">Clear</button>
+  </div>
+
+  <!-- POEM -->
+  <div class="panel" id="p-poem">
+    <div class="row2">
+      <div class="field"><label>ID</label><input id="pm-id" placeholder="e.g. poem-4"/></div>
+      <div class="field"><label>Year</label><input id="pm-year" placeholder="2025" type="number"/></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Title — English</label><input id="pm-en" placeholder="Poem Title Four"/></div>
+      <div class="field"><label>Title — Turkish</label><input id="pm-tr" placeholder="Şiir Başlık Dört"/></div>
+    </div>
+    <div class="field"><label>Poem — English</label><textarea id="pm-body-en" style="min-height:160px" placeholder="First line.&#10;Second line.&#10;&#10;Second stanza."></textarea></div>
+    <div class="field"><label>Poem — Turkish</label><textarea id="pm-body-tr" style="min-height:160px" placeholder="Birinci satır.&#10;İkinci satır."></textarea></div>
+    <button class="btn" onclick="genPoem()">Generate</button>
+    <button class="btn-sec" onclick="clr('poem')">Clear</button>
+  </div>
+
+  <!-- ARTICLE -->
+  <div class="panel" id="p-article">
+    <div class="row2">
+      <div class="field"><label>ID</label><input id="ar-id" placeholder="e.g. article-4"/></div>
+      <div class="field"><label>Year</label><input id="ar-year" placeholder="2025" type="number"/></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Title — English</label><input id="ar-en" placeholder="Article Title Four"/></div>
+      <div class="field"><label>Title — Turkish</label><input id="ar-tr" placeholder="Makale Başlık Dört"/></div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Type — English</label>
+        <select id="ar-type-en"><option>Essay</option><option>Criticism</option><option>Review</option><option>Interview</option><option>Note</option></select>
+      </div>
+      <div class="field"><label>Type — Turkish</label><input id="ar-type-tr" placeholder="Deneme / Eleştiri / İnceleme"/></div>
+    </div>
+    <div class="field"><label>Body — English</label><textarea id="ar-body-en" style="min-height:160px" placeholder="First paragraph.&#10;&#10;Second paragraph."></textarea></div>
+    <div class="field"><label>Body — Turkish</label><textarea id="ar-body-tr" style="min-height:160px" placeholder="Birinci paragraf.&#10;&#10;İkinci paragraf."></textarea></div>
+    <button class="btn" onclick="genArticle()">Generate</button>
+    <button class="btn-sec" onclick="clr('article')">Clear</button>
+  </div>
+
+  <!-- BOOK -->
+  <div class="panel" id="p-book">
+    <div class="row2">
+      <div class="field"><label>ID</label><input id="bk-id" placeholder="e.g. book-3"/></div>
+      <div class="field"><label>Year</label><input id="bk-year" placeholder="2025" type="number"/></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Title — English</label><input id="bk-en" placeholder="Book Title Three"/></div>
+      <div class="field"><label>Title — Turkish</label><input id="bk-tr" placeholder="Kitap Başlık Üç"/></div>
+    </div>
+    <div class="field"><label>Cover Image Path (optional)</label><input id="bk-cover" placeholder="images/books/book3/cover.jpg"/></div>
+    <div id="bookPages"></div>
+    <button class="btn-sec" onclick="addPage()" style="margin-bottom:16px;">+ Add page</button><br>
+    <button class="btn" onclick="genBook()">Generate</button>
+    <button class="btn-sec" onclick="clr('book')">Clear</button>
   </div>
 
   <!-- OUTPUT -->
-  <div class="output-box" id="outputBox">
-    <div class="output-header">
-      <span id="outputLabel">Generated snippet — paste into content.js</span>
-      <button class="copy-btn" id="copyBtn" onclick="copyOutput()">Copy</button>
+  <div class="output" id="output">
+    <div class="output-head">
+      <span id="output-label">Paste into content.js</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyOut()">Copy</button>
     </div>
-    <pre id="outputPre"></pre>
+    <pre id="output-pre"></pre>
   </div>
 
 </div>
 
 <script>
-function esc(s) {
-  return s.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+let pageCount = 0;
+
+function sw(name) {
+  const tabs = document.querySelectorAll('.tab');
+  const names = ['artwork','poem','article','book'];
+  tabs.forEach((b,i)=>b.classList.toggle('on',names[i]===name));
+  names.forEach(n=>{ const el=document.getElementById('p-'+n); if(el) el.classList.toggle('on',n===name); });
+  document.getElementById('output').classList.remove('visible');
 }
-function val(id) { return document.getElementById(id).value.trim(); }
+
+function v(id) { return (document.getElementById(id)||{}).value?.trim()||''; }
+
+function esc(s) {
+  return s.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+}
 
 function showOutput(label, code) {
-  document.getElementById('outputLabel').textContent = label;
-  document.getElementById('outputPre').textContent = code;
-  const box = document.getElementById('outputBox');
-  box.classList.add('visible');
-  box.scrollIntoView({ behavior:'smooth', block:'nearest' });
-  const btn = document.getElementById('copyBtn');
-  btn.textContent = 'Copy'; btn.classList.remove('copied');
+  document.getElementById('output-label').textContent = label;
+  document.getElementById('output-pre').textContent   = code;
+  const o = document.getElementById('output');
+  o.classList.add('visible');
+  const btn = document.getElementById('copy-btn');
+  btn.textContent='Copy'; btn.classList.remove('done');
+  o.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function copyOutput() {
-  const text = document.getElementById('outputPre').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = 'Copied!'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+function copyOut() {
+  navigator.clipboard.writeText(document.getElementById('output-pre').textContent).then(()=>{
+    const b=document.getElementById('copy-btn');
+    b.textContent='Copied!'; b.classList.add('done');
+    setTimeout(()=>{b.textContent='Copy';b.classList.remove('done');},2000);
   });
 }
 
-function generateArtwork() {
-  const extraRaw = val('aw-extra-imgs');
-  const extras = extraRaw ? extraRaw.split('\n').map(s => s.trim()).filter(Boolean) : [];
-  const extrasStr = extras.length
-    ? '[\n    ' + extras.map(p => `'${p}'`).join(',\n    ') + ',\n  ]'
-    : '[]';
-
-  const code =
-`  {
-    title:    { en: '${esc(val('aw-title-en'))}', tr: '${esc(val('aw-title-tr'))}' },
-    year:     '${esc(val('aw-year'))}',
-    medium:   { en: '${esc(val('aw-medium-en'))}', tr: '${esc(val('aw-medium-tr'))}' },
-    desc:     { en: \`${esc(val('aw-desc-en'))}\`,
-                tr: \`${esc(val('aw-desc-tr'))}\` },
-    mainImage: '${esc(val('aw-main-img'))}',
-    images:    ${extrasStr},
-  },`;
-  showOutput('Paste at the top of the ARTWORKS list in content.js', code);
-}
-
-function generatePoem() {
-  const code =
-`  {
-    title: { en: '${esc(val('pm-title-en'))}', tr: '${esc(val('pm-title-tr'))}' },
-    year:  '${esc(val('pm-year'))}',
-    body: {
-      en: \`${esc(val('pm-body-en'))}\`,
-      tr: \`${esc(val('pm-body-tr'))}\`
+function genArtwork() {
+  const extras = v('aw-imgs').split('\n').map(s=>s.trim()).filter(Boolean);
+  const extStr = extras.length ? `[\n      '${extras.join("',\n      '")}',\n    ]` : '[]';
+  showOutput('Paste at top of ARTWORKS list in content.js', `  {
+    id:         '${esc(v('aw-id'))}',
+    title:      { en: '${esc(v('aw-en'))}', tr: '${esc(v('aw-tr'))}' },
+    year:       ${v('aw-year')||2025},
+    type:       '${v('aw-type')}',
+    medium:     { en: '${esc(v('aw-med-en'))}', tr: '${esc(v('aw-med-tr'))}' },
+    dimensions: '${esc(v('aw-dim'))}',
+    series:     '${esc(v('aw-series'))}',
+    mainImage:  '${esc(v('aw-img'))}',
+    images:     ${extStr},
+    model3d:    '${esc(v('aw-3d'))}',
+    description: {
+      en: \`${esc(v('aw-desc-en'))}\`,
+      tr: \`${esc(v('aw-desc-tr'))}\`
     }
-  },`;
-  showOutput('Paste at the top of the POEMS list in content.js', code);
+  },`);
 }
 
-function generateArticle() {
-  const code =
-`  {
-    title: { en: '${esc(val('ar-title-en'))}', tr: '${esc(val('ar-title-tr'))}' },
-    year:  '${esc(val('ar-year'))}',
-    type:  { en: '${esc(val('ar-type-en'))}', tr: '${esc(val('ar-type-tr'))}' },
-    body: {
-      en: \`${esc(val('ar-body-en'))}\`,
-      tr: \`${esc(val('ar-body-tr'))}\`
+function genPoem() {
+  showOutput('Paste at top of WRITINGS.poems list in content.js', `    {
+      id:    '${esc(v('pm-id'))}',
+      title: { en: '${esc(v('pm-en'))}', tr: '${esc(v('pm-tr'))}' },
+      year:  ${v('pm-year')||2025},
+      body: {
+        en: \`${esc(v('pm-body-en'))}\`,
+        tr: \`${esc(v('pm-body-tr'))}\`
+      }
+    },`);
+}
+
+function genArticle() {
+  showOutput('Paste at top of WRITINGS.articles list in content.js', `    {
+      id:    '${esc(v('ar-id'))}',
+      title: { en: '${esc(v('ar-en'))}', tr: '${esc(v('ar-tr'))}' },
+      year:  ${v('ar-year')||2025},
+      type:  { en: '${esc(v('ar-type-en'))}', tr: '${esc(v('ar-type-tr'))}' },
+      body: {
+        en: \`${esc(v('ar-body-en'))}\`,
+        tr: \`${esc(v('ar-body-tr'))}\`
+      }
+    },`);
+}
+
+function addPage() {
+  pageCount++;
+  const div = document.createElement('div');
+  div.style.cssText = 'background:#fff;border:1px solid #dedad5;padding:16px;margin-bottom:10px;';
+  div.innerHTML = `
+    <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#7a7672;margin-bottom:8px;">Page ${pageCount}</div>
+    <div style="margin-bottom:8px;"><label style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;display:block;margin-bottom:4px;">English</label>
+    <textarea id="pg-en-${pageCount}" style="width:100%;padding:8px;font-family:Inconsolata,monospace;font-size:12px;border:1px solid #dedad5;min-height:70px;resize:vertical;" placeholder="Page ${pageCount} text…"></textarea></div>
+    <div><label style="font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;display:block;margin-bottom:4px;">Turkish</label>
+    <textarea id="pg-tr-${pageCount}" style="width:100%;padding:8px;font-family:Inconsolata,monospace;font-size:12px;border:1px solid #dedad5;min-height:70px;resize:vertical;" placeholder="Sayfa ${pageCount} metni…"></textarea></div>`;
+  document.getElementById('bookPages').appendChild(div);
+}
+
+function genBook() {
+  let pages = '';
+  for (let i=1;i<=pageCount;i++) {
+    const en = document.getElementById('pg-en-'+i)?.value?.trim()||'';
+    const tr = document.getElementById('pg-tr-'+i)?.value?.trim()||'';
+    if (en||tr) {
+      pages += `        { en: \`${esc(en)}\`, tr: \`${esc(tr)}\` },\n`;
     }
-  },`;
-  showOutput('Paste at the top of the ARTICLES list in content.js', code);
+  }
+  showOutput('Paste at top of WRITINGS.books list in content.js', `    {
+      id:    '${esc(v('bk-id'))}',
+      title: { en: '${esc(v('bk-en'))}', tr: '${esc(v('bk-tr'))}' },
+      year:  ${v('bk-year')||2025},
+      cover: '${esc(v('bk-cover'))}',
+      pages: [
+${pages}      ]
+    },`);
 }
 
-function generateProject() {
-  const code =
-`  {
-    title:  { en: '${esc(val('pr-title-en'))}', tr: '${esc(val('pr-title-tr'))}' },
-    desc:   { en: '${esc(val('pr-desc-en'))}', tr: '${esc(val('pr-desc-tr'))}' },
-    status: '${val('pr-status')}',
-  },`;
-  showOutput('Paste at the top of the PROJECTS list in content.js', code);
+function clr(name) {
+  document.querySelectorAll(`#p-${name} input, #p-${name} textarea`).forEach(el=>el.value='');
+  if (name==='book') { document.getElementById('bookPages').innerHTML=''; pageCount=0; }
+  document.getElementById('output').classList.remove('visible');
 }
 
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((b, i) => {
-    const names = ['artwork','poem','article','project'];
-    b.classList.toggle('on', names[i] === name);
-  });
-  ['artwork','poem','article','project'].forEach(n => {
-    document.getElementById('panel-'+n).classList.toggle('on', n === name);
-  });
-  document.getElementById('outputBox').classList.remove('visible');
-}
-
-function resetForm(name) {
-  document.querySelectorAll(`#panel-${name} input, #panel-${name} textarea`).forEach(el => el.value = '');
-  document.getElementById('outputBox').classList.remove('visible');
-}
+// start with one page for books
 </script>
 </body>
 </html>
