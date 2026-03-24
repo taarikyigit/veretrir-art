@@ -5,57 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>About — tarik yigit</title>
 <link rel="stylesheet" href="style.css"/>
+<style>
+.about-text { max-width: 580px; font-size: 15px; line-height: 1.95; color: #555; }
+.about-text p + p { margin-top: 18px; }
+</style>
 </head>
-<body class="page-about">
-
-<div class="page-transition-overlay"></div>
-
-<header id="site-header">
-  <div class="hd-left">
-    <a href="index.html" class="hd-name">tarik yigit</a>
-  </div>
-  <nav class="hd-nav">
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    class="active" data-en="About" data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
-  </nav>
-  <div class="hd-right">
-    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5"/>
+<body>
+ 
+<header>
+  <div class="header-left">
+    <a href="index.html" class="header-name">tarik yigit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
-    <div class="hd-lang">
-      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
-      <span class="ls">·</span>
-      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
-    </div>
+  </div>
+  <nav>
+    <a href="artworks.html">Artworks</a>
+    <a href="writings.html">Writings</a>
+    <a href="about.html" class="active">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="header-right">
+    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">·</span>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
-
-<main class="about-main">
-  <div class="about-inner">
-    <h1 class="about-heading" data-en="About" data-tr="Hakkında">About</h1>
-    <div class="about-text" id="aboutText"></div>
+ 
+<div class="page-wrap">
+  <div class="sec">
+    <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
+    <div class="about-text">
+      <p data-en="Write your biography or artist statement here. Who you are, where you come from, what you make and why."
+         data-tr="Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.">
+        Write your biography or artist statement here. Who you are, where you come from, what you make and why.
+      </p>
+      <p data-en="A second paragraph about your practice — the themes you return to, the tensions that drive your work."
+         data-tr="Pratiğiniz hakkında ikinci paragraf — döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler.">
+        A second paragraph about your practice — the themes you return to, the tensions that drive your work.
+      </p>
+    </div>
   </div>
-</main>
-
-<footer class="site-footer">
-  <span id="footer-name"></span>
-  <span id="footer-domain"></span>
-</footer>
-
-<script src="content.js"></script>
-<script src="engine.js"></script>
-<script>
-  initSite();
-  document.getElementById('aboutText').innerHTML =
-    (currentLang === 'tr' ? SITE.about.tr : SITE.about.en)
-      .split(/\n\n+/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-  animateIn();
-</script>
+</div>
+ 
+<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
+ 
+<script src="data.js"></script>
+<script src="common.js"></script>
 </body>
 </html>
