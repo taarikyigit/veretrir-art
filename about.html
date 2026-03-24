@@ -3,31 +3,30 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>About — tarik yigit</title>
+<title>About — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.about-text { max-width: 580px; font-size: 15px; line-height: 1.95; color: #555; }
-.about-text p + p { margin-top: 18px; }
+.about-text { max-width:580px; font-size:16px; line-height:1.95; color:#555; }
+.about-text p + p { margin-top:18px; }
 </style>
 </head>
 <body>
- 
+<div id="page-transition-mask"></div>
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html">Artworks</a>
-    <a href="writings.html">Writings</a>
-    <a href="about.html" class="active">About</a>
-    <a href="contact.html">Contact</a>
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında" class="active">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -35,7 +34,6 @@
     <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
- 
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
@@ -51,10 +49,8 @@
     </div>
   </div>
 </div>
- 
-<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
- 
-<script src="data.js"></script>
-<script src="common.js"></script>
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
+<script src="data.js"></script><script src="common.js"></script>
 </body>
 </html>
+ 
