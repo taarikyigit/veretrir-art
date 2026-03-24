@@ -3,7 +3,6 @@
    Minimal · Typographic · Archive
 ═══════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&display=swap');
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
@@ -16,8 +15,8 @@ html { scroll-behavior: smooth; }
   --faint:   #cac7c1;
   --line:    #dedad5;
   --red:     #a82a1e;
-  --serif:   'IM Fell English', Georgia, serif;
-  --mono:    'Inconsolata', 'Courier New', monospace;
+--serif:   'Helvetica Neue', Helvetica, Arial, sans-serif;
+--mono:    'Helvetica Neue', Helvetica, Arial, sans-serif;
   --hh:      54px;
   --ease:    cubic-bezier(0.4,0,0.2,1);
 }
