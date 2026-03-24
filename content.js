@@ -17,10 +17,11 @@ const SITE = {
   email:      'hello@veretrir.art',
 
   about: {
-    en: `Sanat pratiğim, malzeme, iz ve zaman arasındaki ontolojik ilişkinin sorgulanmasına dayanmaktadır. Bir özne ile bir yüzey arasında gerçekleşen temasın, fiziksel, transfer veya enerjetik bir iz olarak maddede nasıl dönüştüğü; bu izin kendi bünyesinde süre (durée), geri döndürülemezlik (irreversibility) ve görelilik (relativity) gibi zamansal katmanları nasıl barındırdığı, araştırmamın temel sorunsalını oluşturmaktadır..
+    en: `My artistic practice is grounded in the interrogation of the ontological relationship between material, trace, and time. The central problematic of my research concerns how the contact between a subject and a surface transforms into matter as a physical, transfer, or energetic trace, and how this trace within itself contains temporal layers such as duration (durée), irreversibility, and relativity.
+
 
 A second paragraph about your practice — the themes you return to, the tensions that drive your work.`,
-    tr: `Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.
+    tr: `Sanat pratiğim, malzeme, iz ve zaman arasındaki ontolojik ilişkinin sorgulanmasına dayanmaktadır. Bir özne ile bir yüzey arasında gerçekleşen temasın, fiziksel, transfer veya enerjetik bir iz olarak maddede nasıl dönüştüğü; bu izin kendi bünyesinde süre (durée), geri döndürülemezlik (irreversibility) ve görelilik (relativity) gibi zamansal katmanları nasıl barındırdığı, araştırmamın temel sorunsalını oluşturmaktadır.
 
 Pratiğiniz hakkında ikinci paragraf — döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler.`
   },
