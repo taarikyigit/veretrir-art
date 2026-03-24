@@ -5,100 +5,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Artworks — tarik yigit</title>
 <link rel="stylesheet" href="style.css"/>
+<!-- model-viewer for 3D -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<style>
+/* ── ARTWORK GRID ── */
+.artwork-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.artwork-thumb {
+  position: relative; aspect-ratio: 1;
+  background: #e8e4de; overflow: hidden; cursor: pointer;
+}
+.artwork-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
+.artwork-thumb:hover img { transform:scale(1.04); }
+ 
+.aw-ph {
+  width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
+  transition:background .3s;
+}
+.artwork-thumb:hover .aw-ph { background:#dedad4; }
+.aw-ph-cross { width:20px; height:20px; position:relative; }
+.aw-ph-cross::before,.aw-ph-cross::after { content:''; position:absolute; background:#c8c4be; }
+.aw-ph-cross::before { width:1px; height:100%; left:50%; top:0; }
+.aw-ph-cross::after  { width:100%; height:1px; top:50%; left:0; }
+.aw-ph-lbl { font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:#bbb; }
+ 
+.aw-overlay {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.52);
+  display:flex; flex-direction:column; justify-content:flex-end; padding:12px;
+  opacity:0; transition:opacity .3s;
+}
+.artwork-thumb:hover .aw-overlay { opacity:1; }
+.aw-ov-title { font-size:13px; font-style:italic; color:#fff; margin-bottom:2px; line-height:1.3; }
+.aw-ov-meta  { font-size:8px; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+ 
+/* projects list */
+.project-item {
+  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
+  padding:20px 0; border-bottom:1px solid #e8e4de;
+}
+.project-item:first-child { border-top:1px solid #e8e4de; }
+.project-name { font-size:15px; font-weight:bold; margin-bottom:4px; }
+.project-desc { font-size:13px; font-style:italic; color:var(--mid); }
+.p-tag { font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border:1px solid; white-space:nowrap; margin-top:2px; }
+.tag-on { color:#c0392b; border-color:#c0392b; }
+.tag-pl { color:#ccc; border-color:#ccc; }
+ 
+@media(max-width:640px){ .artwork-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
 </head>
-<body class="page-artworks">
-
-<div class="page-transition-overlay"></div>
-
-<header id="site-header">
-  <div class="hd-left">
-    <a href="index.html" class="hd-name">tarik yigit</a>
-  </div>
-  <nav class="hd-nav">
-    <a href="artworks.html" class="active" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
-  </nav>
-  <div class="hd-right">
-    <a id="ig-link" href="#" target="_blank" rel="noopener" class="hd-ig" title="Instagram">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5"/>
+<body>
+ 
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <a href="index.html" class="header-name">tarik yigit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
-    <div class="hd-lang">
-      <button class="lb on" onclick="setLang('en')" id="b-en">EN</button>
-      <span class="ls">·</span>
-      <button class="lb" onclick="setLang('tr')" id="b-tr">TR</button>
-    </div>
+  </div>
+  <nav>
+    <a href="artworks.html" class="active">Artworks</a>
+    <a href="writings.html">Writings</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="header-right">
+    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <span class="lang-sep">·</span>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
-
-<!-- ARCHIVE HEADER -->
-<div class="archive-header">
-  <h1 class="archive-title" data-en="Artworks" data-tr="Eserler">Artworks</h1>
-  <div class="archive-count"><span id="archiveCount">0</span> <span data-en="works" data-tr="eser">works</span></div>
-</div>
-
-<!-- FILTERS -->
-<div class="filters-bar" id="filtersBar">
-  <div class="filter-group" id="filterType"></div>
-  <div class="filter-sep"></div>
-  <div class="filter-group" id="filterYear"></div>
-  <div class="filter-sep"></div>
-  <div class="filter-group" id="filterSeries"></div>
-  <button class="filter-reset" id="filterReset" onclick="resetFilters()" data-en="Clear" data-tr="Temizle">Clear</button>
-</div>
-
-<!-- GRID -->
-<div class="archive-grid" id="archiveGrid"></div>
-
-<!-- EMPTY STATE -->
-<div class="archive-empty" id="archiveEmpty" style="display:none">
-  <span data-en="No works match the selected filters." data-tr="Seçilen filtrelere uyan eser yok.">No works match the selected filters.</span>
-</div>
-
-<!-- DETAIL PANEL (slide-up) -->
-<div class="detail-panel" id="detailPanel">
-  <div class="detail-bar">
-    <button class="detail-close" onclick="closeDetail()" id="detailCloseBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      <span data-en="Close" data-tr="Kapat">Close</span>
-    </button>
-    <span class="detail-bar-title" id="detailBarTitle"></span>
+ 
+<div class="page-wrap">
+  <div class="sec">
+    <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
+ 
+    <div class="tabs">
+      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works"                 data-tr="Eserler">Works</button>
+      <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
+    </div>
+ 
+    <!-- WORKS GRID -->
+    <div class="tab-panel on" id="panel-works">
+      <div class="artwork-grid" id="artworkGrid"></div>
+    </div>
+ 
+    <!-- ONGOING / PLANNED -->
+    <div class="tab-panel" id="panel-projects">
+      <div id="projectsList"></div>
+    </div>
   </div>
-  <div class="detail-content" id="detailContent"></div>
 </div>
-
-<!-- 3D VIEWER (fullscreen overlay) -->
-<div class="viewer-overlay" id="viewerOverlay">
-  <button class="viewer-close" onclick="closeViewer()">✕</button>
-  <canvas id="viewer3d"></canvas>
-  <div class="viewer-hint" data-en="Drag to rotate · Scroll to zoom" data-tr="Döndürmek için sürükle · Yaklaştırmak için kaydır">Drag to rotate · Scroll to zoom</div>
+ 
+<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
+ 
+<!-- READING OVERLAY -->
+<div id="reading-overlay">
+  <div class="reading-topbar">
+    <span class="reading-badge" id="reading-badge"></span>
+    <span class="reading-top-title" id="reading-top-title"></span>
+  </div>
+  <div class="reading-body" id="reading-body"></div>
 </div>
-
-<footer class="site-footer">
-  <span id="footer-name"></span>
-  <span id="footer-domain"></span>
-</footer>
-
-<script src="content.js"></script>
-<script src="engine.js"></script>
-<script src="viewer3d.js"></script>
+ 
+<!-- FLOATING BACK BUTTON -->
+<button id="back-fab" onclick="closeReading()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <span data-en="Back" data-tr="Geri">Back</span>
+</button>
+ 
+<!-- 3D VIEWER OVERLAY -->
+<div id="viewer-overlay">
+  <div class="viewer-topbar">
+    <span class="viewer-title" id="viewer-title-el"></span>
+    <button class="viewer-close" onclick="closeViewer()" data-en="Close" data-tr="Kapat">Close</button>
+  </div>
+  <model-viewer
+    id="model-viewer-el"
+    camera-controls
+    auto-rotate
+    shadow-intensity="1"
+    exposure="0.8"
+    style="background:#000; width:100%; height:100%;">
+  </model-viewer>
+</div>
+ 
+<script src="data.js"></script>
+<script src="common.js"></script>
 <script>
-  initSite();
-  buildFilters();
-  renderArchive();
-  animateIn();
-
-  /* open artwork if ?id= in URL */
-  const urlId = new URLSearchParams(location.search).get('id');
-  if (urlId) {
-    const aw = ARTWORKS.find(a => a.id === urlId);
-    if (aw) openDetail(aw);
-  }
+/* Build artwork grid from data.js */
+(function(){
+  const grid = document.getElementById('artworkGrid');
+  SITE.artworks.forEach((aw, idx) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'artwork-thumb';
+    thumb.addEventListener('click', () => openArtwork(idx));
+ 
+    const inner = aw.image
+      ? `<img src="${aw.image}" alt="${aw.title}">`
+      : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>`;
+ 
+    thumb.innerHTML = `
+      ${inner}
+      <div class="aw-overlay">
+        <div class="aw-ov-title">${aw.title}</div>
+        <div class="aw-ov-meta">${aw.year}</div>
+      </div>`;
+    grid.appendChild(thumb);
+  });
+ 
+  /* Projects list — currently static, add to SITE object if needed */
+  const projEl = document.getElementById('projectsList');
+  projEl.innerHTML = `
+    <div class="project-item">
+      <div><div class="project-name">Project Title One</div><div class="project-desc">A short description of this project.</div></div>
+      <span class="p-tag tag-on">Ongoing</span>
+    </div>
+    <div class="project-item">
+      <div><div class="project-name">Project Title Two</div><div class="project-desc">A short description of this project.</div></div>
+      <span class="p-tag tag-pl">Planned</span>
+    </div>`;
+})();
+ 
+/* Tab switcher */
+function swTab(t) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('tab-' + t).classList.add('on');
+  document.getElementById('panel-' + t).classList.add('on');
+}
 </script>
 </body>
 </html>
