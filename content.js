@@ -67,7 +67,19 @@ const HERO_IMAGES = [
 ──────────────────────────────────────── */
 const ARTWORKS = [
   {
-    title:    { en: 'Untitled I',    tr: 'İsimsiz I'    },
+     {
+    title:    { en: 'Try 1', tr: 'Deneme 1' },
+    year:     '1999',
+    medium:   { en: 'Oil on canvas', tr: 'Tual üzerine yağlı boya' },
+    desc:     { en: `seol`,
+                tr: `seol` },
+    mainImage: 'images/Untitled-7.png',
+    images:    [
+    'images/Untitled-7.png',
+  ],
+  },
+     
+     title:    { en: 'Untitled I',    tr: 'İsimsiz I'    },
     year:     '2024',
     medium:   { en: 'Mixed Media',  tr: 'Karma Teknik'  },
     desc:     { en: 'Add a description of this artwork — the process, the intent, the materials, the context.',
