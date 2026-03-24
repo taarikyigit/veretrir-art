@@ -3,66 +3,119 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>tarik yigit</title>
+<title>tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
 /* ── HERO ── */
 #hero {
   position: relative; height: 100vh;
-  overflow: hidden; display: flex;
-  align-items: center; justify-content: center;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
 }
 .hero-slides-wrap {
   position: absolute; inset: 0; display: flex;
-  transition: transform 0.9s cubic-bezier(0.77,0,0.175,1);
+  transition: transform 0.95s cubic-bezier(0.77,0,0.175,1);
 }
-.hero-slide { flex: 0 0 100%; height: 100%; background: #1a1a1a; }
-.hero-slide img { width:100%; height:100%; object-fit:cover; display:block; opacity:.75; }
+.hero-slide { flex: 0 0 100%; height: 100%; background: #1c1c1c; overflow: hidden; }
+.hero-slide img { width:100%; height:100%; object-fit:cover; display:block; opacity:.72; }
 .hero-slide-ph {
   width:100%; height:100%;
-  background: linear-gradient(135deg,#1c1c1c,#242222,#1a1818);
+  background: linear-gradient(135deg,#1c1c1c 0%,#252222 60%,#1a1818 100%);
   display:flex; align-items:center; justify-content:center;
 }
-.hero-slide-ph span { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#444; }
-.hero-overlay { position:absolute; inset:0; background:rgba(0,0,0,.38); z-index:1; }
-.hero-name-wrap { position:relative; z-index:2; background:#000; padding:9px 24px; }
-.hero-name { font-size:clamp(15px,2.4vw,24px); font-weight:bold; letter-spacing:.14em; color:#fff; line-height:1; }
-.hero-dots { position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2; display:flex; gap:8px; }
-.hero-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.35); border:none; cursor:pointer; transition:background .3s,transform .2s; }
-.hero-dot.on { background:#fff; transform:scale(1.4); }
+.hero-slide-ph span { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#3a3a3a; font-family: var(--mono); }
+ 
+.hero-overlay { position:absolute; inset:0; background:rgba(0,0,0,.32); z-index:1; }
+ 
+/* Name — no black bar on large screens */
+.hero-name-wrap {
+  position: relative; z-index: 2;
+  padding: 8px 0;
+  /* black bar only on small screens */
+}
+.hero-name {
+  font-family: var(--font);
+  font-size: clamp(18px, 2.8vw, 34px);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.6);
+}
+ 
+/* black bar only on mobile where contrast is harder */
+@media (max-width: 600px) {
+  .hero-name-wrap {
+    background: rgba(0,0,0,0.75);
+    padding: 10px 22px;
+  }
+  .hero-name { text-shadow: none; }
+}
+ 
+.hero-dots {
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  z-index:2; display:flex; gap:8px;
+}
+.hero-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,.3); border:none; cursor:pointer;
+  transition:background .3s, transform .2s;
+}
+.hero-dot.on { background:#fff; transform:scale(1.5); }
+ 
 .hero-btn {
   position:absolute; top:50%; transform:translateY(-50%); z-index:2;
-  background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.18);
-  color:#fff; cursor:pointer; width:38px; height:38px;
-  font-family:var(--font); font-size:15px;
-  display:flex; align-items:center; justify-content:center; transition:background .2s;
+  background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.15);
+  color:#fff; cursor:pointer; width:40px; height:40px;
+  font-family: var(--mono); font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s;
 }
-.hero-btn:hover { background:rgba(0,0,0,.55); }
-.hero-btn.prev { left:18px; }
-.hero-btn.next { right:18px; }
+.hero-btn:hover { background:rgba(0,0,0,.5); }
+.hero-btn.prev { left:20px; }
+.hero-btn.next { right:20px; }
  
-/* ── HOME SECTIONS ── */
-.home-sections { background: var(--bg2); }
-.home-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; }
-.home-col-title { font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--line); }
-.home-link-item { display:block; padding:12px 0; border-bottom:1px solid #e8e4de; text-decoration:none; transition:padding-left .2s; }
-.home-link-item:hover { padding-left:7px; }
-.hli-title { font-size:14px; font-style:italic; color:var(--ink); transition:color .2s; margin-bottom:2px; }
-.home-link-item:hover .hli-title { color:var(--red); }
-.hli-meta { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:#bbb; }
-.view-all { display:inline-block; margin-top:20px; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--mid); text-decoration:none; border-bottom:1px solid transparent; transition:color .2s,border-color .2s; }
-.view-all:hover { color:var(--ink); border-bottom-color:var(--ink); }
+/* ── HOME PREVIEW SECTIONS ── */
+.home-preview { background: var(--bg2); }
+.home-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+}
+.home-col-title {
+  font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line); font-weight: 400;
+}
+.home-link-item {
+  display: block; padding: 12px 0;
+  border-bottom: 1px solid #e8e4de; text-decoration: none;
+  transition: padding-left .2s;
+}
+.home-link-item:hover { padding-left: 7px; }
+.hli-title { font-size: 14px; font-style: italic; color: var(--ink); transition: color .2s; margin-bottom: 2px; }
+.home-link-item:hover .hli-title { color: var(--red); }
+.hli-meta { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #bbb; font-family: var(--mono); }
+.view-all {
+  display: inline-block; margin-top: 18px;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.view-all:hover { color: var(--ink); border-bottom-color: var(--ink); }
  
-@media(max-width:640px){ .home-grid{grid-template-columns:1fr;gap:40px;} }
+@media(max-width:640px) { .home-grid { grid-template-columns:1fr; gap:40px; } }
 </style>
 </head>
 <body>
  
+<div id="page-transition-mask"></div>
+ 
 <!-- HEADER -->
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
@@ -71,10 +124,10 @@
     </a>
   </div>
   <nav>
-    <a href="artworks.html">Artworks</a>
-    <a href="writings.html">Writings</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
+    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -87,14 +140,14 @@
 <section id="hero">
   <div class="hero-slides-wrap" id="heroSlides"></div>
   <div class="hero-overlay"></div>
-  <div class="hero-name-wrap"><div class="hero-name">tarik yigit</div></div>
+  <div class="hero-name-wrap"><span class="hero-name">tarık yiğit</span></div>
   <button class="hero-btn prev" id="heroPrev">&#8592;</button>
   <button class="hero-btn next" id="heroNext">&#8594;</button>
   <div class="hero-dots" id="heroDots"></div>
 </section>
  
-<!-- HOME PREVIEW -->
-<section class="home-sections">
+<!-- HOME PREVIEWS -->
+<section class="home-preview">
   <div class="sec">
     <div class="home-grid">
       <div>
@@ -112,78 +165,72 @@
 </section>
  
 <footer>
-  <span>tarik yigit</span>
+  <span>tarık yiğit</span>
   <span>veretrir.art</span>
 </footer>
  
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ── HERO SLIDESHOW ── */
-(function(){
-  const wrap = document.getElementById('heroSlides');
+/* ── Hero Slideshow ── */
+(function () {
+  const wrap   = document.getElementById('heroSlides');
   const dotsEl = document.getElementById('heroDots');
   const slides = SITE.heroSlides;
-  let cur = 0, timer;
+  let cur = 0, total = slides.length, timer;
  
   slides.forEach(src => {
     const s = document.createElement('div');
     s.className = 'hero-slide';
-    if(src) {
-      const img = document.createElement('img');
-      img.src = src; img.alt = '';
-      s.appendChild(img);
-    } else {
-      s.innerHTML = '<div class="hero-slide-ph"><span>artwork</span></div>';
-    }
+    s.innerHTML = src
+      ? `<img src="${src}" alt="">`
+      : `<div class="hero-slide-ph"><span>artwork</span></div>`;
     wrap.appendChild(s);
   });
  
-  const total = slides.length;
- 
-  for(let i=0;i<total;i++){
+  for (let i = 0; i < total; i++) {
     const d = document.createElement('button');
-    d.className='hero-dot'+(i===0?' on':'');
-    d.addEventListener('click',()=>goTo(i));
+    d.className = 'hero-dot' + (i === 0 ? ' on' : '');
+    d.addEventListener('click', () => goTo(i));
     dotsEl.appendChild(d);
   }
  
-  function goTo(n){
-    cur=(n+total)%total;
-    wrap.style.transform=`translateX(-${cur*100}%)`;
-    dotsEl.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  function goTo(n) {
+    cur = (n + total) % total;
+    wrap.style.transform = `translateX(-${cur * 100}%)`;
+    dotsEl.querySelectorAll('.hero-dot').forEach((d, i) => d.classList.toggle('on', i === cur));
   }
-  function move(dir){ clearInterval(timer); goTo(cur+dir); timer=setInterval(()=>move(1),4500); }
+  function move(dir) { clearInterval(timer); goTo(cur + dir); timer = setInterval(() => move(1), 4500); }
  
-  document.getElementById('heroPrev').addEventListener('click',()=>move(-1));
-  document.getElementById('heroNext').addEventListener('click',()=>move(1));
+  document.getElementById('heroPrev').addEventListener('click', () => move(-1));
+  document.getElementById('heroNext').addEventListener('click', () => move(1));
  
-  let dx=0;
-  wrap.addEventListener('mousedown',e=>dx=e.clientX);
-  wrap.addEventListener('touchstart',e=>dx=e.touches[0].clientX,{passive:true});
-  wrap.addEventListener('mouseup',e=>{if(Math.abs(e.clientX-dx)>40)move(e.clientX<dx?1:-1);});
-  wrap.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-dx;if(Math.abs(d)>40)move(d<0?1:-1);});
+  let dx = 0;
+  wrap.addEventListener('mousedown',  e => dx = e.clientX);
+  wrap.addEventListener('touchstart', e => dx = e.touches[0].clientX, { passive: true });
+  wrap.addEventListener('mouseup',    e => { if (Math.abs(e.clientX - dx) > 40) move(e.clientX < dx ? 1 : -1); });
+  wrap.addEventListener('touchend',   e => { const d = e.changedTouches[0].clientX - dx; if (Math.abs(d) > 40) move(d < 0 ? 1 : -1); });
  
-  timer = setInterval(()=>move(1), 4500);
+  timer = setInterval(() => move(1), 4500);
 })();
  
-/* ── HOME PREVIEWS ── */
-(function(){
+/* ── Home Previews ── */
+(function () {
+  const l = currentLang;
   const artEl = document.getElementById('homeArtworks');
-  SITE.artworks.slice(0,3).forEach(a=>{
-    artEl.innerHTML += `<div class="home-link-item" onclick="location.href='artworks.html'">
-      <div class="hli-title">${a.title}</div>
-      <div class="hli-meta">${a.year} · ${a.medium}</div>
-    </div>`;
+  SITE.artworks.slice(0, 3).forEach(a => {
+    artEl.innerHTML += `<a href="artworks.html" class="home-link-item">
+      <div class="hli-title">${l === 'tr' ? a.titleTR : a.title}</div>
+      <div class="hli-meta">${a.year} · ${l === 'tr' ? a.mediumTR : a.medium}</div>
+    </a>`;
   });
   const wrEl = document.getElementById('homeWritings');
-  const writings = [...SITE.poems.slice(0,2), ...SITE.articles.slice(0,1)];
-  writings.forEach(w=>{
-    const type = w.type ? `${w.year} · ${w.type}` : w.year;
-    wrEl.innerHTML += `<div class="home-link-item" onclick="location.href='writings.html'">
-      <div class="hli-title">${w.title}</div>
-      <div class="hli-meta">${type}</div>
-    </div>`;
+  [...SITE.poems.slice(0, 2), ...SITE.articles.slice(0, 1)].forEach(w => {
+    const meta = w.type ? `${w.year} · ${l === 'tr' ? w.typeTR : w.type}` : w.year;
+    wrEl.innerHTML += `<a href="writings.html" class="home-link-item">
+      <div class="hli-title">${l === 'tr' ? w.titleTR : w.title}</div>
+      <div class="hli-meta">${meta}</div>
+    </a>`;
   });
 })();
 </script>
