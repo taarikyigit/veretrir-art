@@ -15,7 +15,7 @@ html { scroll-behavior: smooth; }
   --mid: #888;
   --faint: #ccc;
   --font: 'Courier New', Courier, monospace;
-  --header-h: 52px;
+  --hh: 52px;
 }
 
 body {
@@ -27,536 +27,375 @@ body {
   overflow-x: hidden;
 }
 
-/* ════════════════════════════════
+/* ══════════════════════════════
    HEADER
-════════════════════════════════ */
+══════════════════════════════ */
 header {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+  position: fixed; top:0; left:0; right:0;
   z-index: 200;
   background: var(--bg);
   border-bottom: 1px solid #ddd;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 28px;
-  height: var(--header-h);
+  padding: 0 24px;
+  height: var(--hh);
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.header-left { display:flex; align-items:center; gap:12px; }
 
 .header-name {
-  font-size: 13px;
-  font-weight: bold;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  color: var(--ink);
+  font-size: 13px; font-weight: bold;
+  letter-spacing: 0.04em; text-decoration: none; color: var(--ink);
 }
 
-/* Instagram button */
+/* IG icon only */
 .ig-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-  color: var(--mid);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  transition: color 0.2s;
-  padding: 4px 0;
+  display: flex; align-items: center;
+  text-decoration: none; color: var(--mid);
+  transition: color 0.2s; padding: 4px;
+  border-radius: 2px;
 }
 .ig-btn:hover { color: var(--ink); }
-.ig-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.ig-btn svg { width: 16px; height: 16px; display:block; }
 
-nav {
-  display: flex;
-  gap: 32px;
-}
+nav { display:flex; gap:28px; }
 nav a {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mid);
-  text-decoration: none;
-  transition: color 0.2s;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mid); text-decoration: none; transition: color 0.2s;
 }
-nav a:hover, nav a.active { color: var(--ink); }
+nav a:hover { color: var(--ink); }
 
-.header-right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 3px;
-}
+.header-right { display:flex; justify-content:flex-end; align-items:center; gap:3px; }
 .lb {
-  background: none; border: none;
-  font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.1em;
-  color: #aaa; cursor: pointer; padding: 2px 4px;
-  transition: color 0.2s;
+  background:none; border:none; font-family:var(--font);
+  font-size:11px; letter-spacing:0.1em; color:#aaa; cursor:pointer; padding:2px 4px;
+  transition:color 0.2s;
 }
-.lb.on { color: var(--ink); border-bottom: 1px solid var(--ink); }
-.lb:hover { color: var(--ink); }
-.ls { color: var(--faint); font-size: 9px; }
+.lb.on { color:var(--ink); border-bottom:1px solid var(--ink); }
+.lb:hover { color:var(--ink); }
+.ls { color:var(--faint); font-size:9px; }
 
-/* ════════════════════════════════
-   HERO — fullscreen slideshow bg
-════════════════════════════════ */
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
 #hero {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position:relative; height:100vh;
+  overflow:hidden; display:flex;
+  align-items:center; justify-content:center;
 }
 
-/* Background slideshow */
 .hero-slides {
-  position: absolute;
-  inset: 0;
-  display: flex;
+  position:absolute; inset:0; display:flex;
   transition: transform 0.9s cubic-bezier(0.77,0,0.175,1);
 }
-.hero-slide {
-  flex: 0 0 100%;
-  height: 100%;
-  background: #1a1a1a;
-  position: relative;
-  overflow: hidden;
-}
-.hero-slide img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  opacity: 0.7;
-}
-/* placeholder when no image */
+.hero-slide { flex:0 0 100%; height:100%; background:#1a1a1a; }
+.hero-slide img { width:100%; height:100%; object-fit:cover; display:block; opacity:0.7; }
 .hero-slide-ph {
-  width: 100%; height: 100%;
-  background: linear-gradient(135deg, #1c1c1c 0%, #2a2828 50%, #1a1818 100%);
-  display: flex; align-items: center; justify-content: center;
+  width:100%; height:100%;
+  background:linear-gradient(135deg,#1c1c1c,#2a2828,#1a1818);
+  display:flex; align-items:center; justify-content:center;
 }
-.hero-slide-ph span {
-  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: #444;
-}
+.hero-slide-ph span { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:#444; }
 
-/* dark overlay so name is always readable */
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 1;
-}
+.hero-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.38); z-index:1; }
 
-/* Name pill with black bar */
 .hero-name-wrap {
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-  background: #000;
-  padding: 10px 28px;
+  position:relative; z-index:2;
+  background:#000; padding:9px 24px;
 }
+/* 5 — all lowercase, no text-transform */
 .hero-name {
-  font-size: clamp(18px, 3vw, 30px);
+  font-size: clamp(16px,2.6vw,26px);
   font-weight: bold;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.14em;
   color: #fff;
   line-height: 1;
+  text-transform: none;
 }
 
-/* Slideshow dots — bottom center */
 .hero-dots {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  display: flex;
-  gap: 8px;
+  position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+  z-index:2; display:flex; gap:8px;
 }
 .hero-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  border: none; cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,0.35); border:none; cursor:pointer;
+  transition:background 0.3s, transform 0.2s;
 }
-.hero-dot.on { background: #fff; transform: scale(1.4); }
+.hero-dot.on { background:#fff; transform:scale(1.4); }
 
-/* Hero slide arrows */
 .hero-btn {
-  position: absolute;
-  top: 50%; transform: translateY(-50%);
-  z-index: 2;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff; cursor: pointer;
-  width: 40px; height: 40px;
-  font-family: var(--font); font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
+  position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+  background:rgba(0,0,0,0.28); border:1px solid rgba(255,255,255,0.18);
+  color:#fff; cursor:pointer; width:38px; height:38px;
+  font-family:var(--font); font-size:15px;
+  display:flex; align-items:center; justify-content:center; transition:background 0.2s;
 }
-.hero-btn:hover { background: rgba(0,0,0,0.55); }
-.hero-btn.prev { left: 20px; }
-.hero-btn.next { right: 20px; }
+.hero-btn:hover { background:rgba(0,0,0,0.55); }
+.hero-btn.prev { left:18px; }
+.hero-btn.next { right:18px; }
 
-/* ════════════════════════════════
-   MAIN PAGE (sections)
-════════════════════════════════ */
-#main-page { padding-top: var(--header-h); }
+/* ══════════════════════════════
+   MAIN CONTENT
+══════════════════════════════ */
+#main-page { padding-top: var(--hh); }
 
-.sec {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 72px 32px;
-}
+.sec { max-width:960px; margin:0 auto; padding:68px 32px; }
 
 .sec-title {
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: #aaa;
-  margin-bottom: 40px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ddd;
+  font-size:10px; letter-spacing:0.35em; text-transform:uppercase;
+  color:#aaa; margin-bottom:38px; padding-bottom:12px; border-bottom:1px solid #ddd;
 }
 
-/* ════════════════════════════════
-   ARTWORK TABS
-════════════════════════════════ */
-.art-tabs {
-  display: flex;
-  margin-bottom: 36px;
-  border-bottom: 1px solid #ddd;
-}
+/* artwork tabs */
+.art-tabs { display:flex; margin-bottom:32px; border-bottom:1px solid #ddd; }
 .art-tab {
-  background: none; border: none;
-  font-family: var(--font);
-  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: #aaa; cursor: pointer;
-  padding: 10px 20px 10px 0; margin-right: 20px;
-  border-bottom: 1px solid transparent; margin-bottom: -1px;
-  transition: color 0.2s;
+  background:none; border:none; font-family:var(--font);
+  font-size:10px; letter-spacing:0.15em; text-transform:uppercase;
+  color:#aaa; cursor:pointer;
+  padding:10px 18px 10px 0; margin-right:18px;
+  border-bottom:1px solid transparent; margin-bottom:-1px; transition:color 0.2s;
 }
-.art-tab.on { color: var(--ink); border-bottom-color: var(--ink); }
-.art-tab:hover { color: var(--ink); }
+.art-tab.on { color:var(--ink); border-bottom-color:var(--ink); }
+.art-tab:hover { color:var(--ink); }
 
-.panel { display: none; }
-.panel.on { display: block; }
+.panel { display:none; }
+.panel.on { display:block; }
 
-/* ════════════════════════════════
-   ARTWORK GRID — 4 squares
-════════════════════════════════ */
+/* ── 4-square grid ── */
 .artwork-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
 }
-
 .artwork-thumb {
-  position: relative;
-  aspect-ratio: 1;
-  background: #e0dcd6;
-  overflow: hidden;
-  cursor: pointer;
+  position:relative; aspect-ratio:1; background:#e0dcd6;
+  overflow:hidden; cursor:pointer;
 }
-.artwork-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-  transition: transform 0.4s ease;
-}
-.artwork-thumb:hover img { transform: scale(1.04); }
+.artwork-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.4s; }
+.artwork-thumb:hover img { transform:scale(1.04); }
 
-/* placeholder */
 .aw-ph {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 8px;
-  background: #e8e4de;
-  transition: background 0.3s;
+  width:100%; height:100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
+  background:#e8e4de; transition:background 0.3s;
 }
-.artwork-thumb:hover .aw-ph { background: #dedad4; }
-.aw-ph-cross {
-  width: 24px; height: 24px; position: relative;
-}
-.aw-ph-cross::before, .aw-ph-cross::after {
-  content:''; position:absolute; background:#c8c4be;
-}
+.artwork-thumb:hover .aw-ph { background:#dedad4; }
+.aw-ph-cross { width:22px; height:22px; position:relative; }
+.aw-ph-cross::before,.aw-ph-cross::after { content:''; position:absolute; background:#c8c4be; }
 .aw-ph-cross::before { width:1px; height:100%; left:50%; top:0; }
 .aw-ph-cross::after  { width:100%; height:1px; top:50%; left:0; }
-.aw-ph-lbl {
-  font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: #bbb;
-}
+.aw-ph-lbl { font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:#bbb; }
 
-/* hover overlay */
-.artwork-thumb-overlay {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex; flex-direction: column;
-  justify-content: flex-end; padding: 14px;
-  opacity: 0; transition: opacity 0.3s;
+.aw-overlay {
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.52);
+  display:flex; flex-direction:column; justify-content:flex-end; padding:12px;
+  opacity:0; transition:opacity 0.3s;
 }
-.artwork-thumb:hover .artwork-thumb-overlay { opacity: 1; }
-.aw-ov-title {
-  font-size: 13px; font-style: italic; color: #fff;
-  margin-bottom: 2px; line-height: 1.3;
-}
-.aw-ov-meta {
-  font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
-}
+.artwork-thumb:hover .aw-overlay { opacity:1; }
+.aw-ov-title { font-size:13px; font-style:italic; color:#fff; margin-bottom:2px; line-height:1.3; }
+.aw-ov-meta  { font-size:8px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.5); }
 
-/* ════════════════════════════════
-   PROJECTS LIST
-════════════════════════════════ */
+/* projects */
 .project-item {
-  display: grid; grid-template-columns: 1fr auto;
-  gap: 16px; align-items: start;
-  padding: 22px 0; border-bottom: 1px solid #e8e4de;
+  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
+  padding:20px 0; border-bottom:1px solid #e8e4de;
 }
-.project-item:first-child { border-top: 1px solid #e8e4de; }
-.project-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
-.project-desc { font-size: 13px; font-style: italic; color: var(--mid); }
-.p-tag {
-  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 3px 9px; border: 1px solid; white-space: nowrap; margin-top: 2px;
-}
-.tag-on { color: #c0392b; border-color: #c0392b; }
-.tag-pl { color: var(--faint); border-color: var(--faint); }
+.project-item:first-child { border-top:1px solid #e8e4de; }
+.project-name { font-size:15px; font-weight:bold; margin-bottom:4px; }
+.project-desc { font-size:13px; font-style:italic; color:var(--mid); }
+.p-tag { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; padding:3px 9px; border:1px solid; white-space:nowrap; margin-top:2px; }
+.tag-on { color:#c0392b; border-color:#c0392b; }
+.tag-pl { color:var(--faint); border-color:var(--faint); }
 
-/* ════════════════════════════════
-   WRITINGS
-════════════════════════════════ */
-#writings-sec { background: var(--bg2); }
-.writings-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
-.col-title {
-  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: #aaa; margin-bottom: 24px;
-  padding-bottom: 10px; border-bottom: 1px solid #ddd;
-}
+/* writings list */
+#writings-sec { background:var(--bg2); }
+.writings-cols { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
+.col-title { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:#aaa; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #ddd; }
+
 .writing-item {
-  display: block; padding: 14px 0;
-  border-bottom: 1px solid #e8e4de;
-  cursor: pointer; transition: padding-left 0.2s;
-  text-decoration: none;
+  display:block; padding:13px 0; border-bottom:1px solid #e8e4de;
+  cursor:pointer; transition:padding-left 0.2s; text-decoration:none;
 }
-.writing-item:hover { padding-left: 8px; }
-.wi-title {
-  font-size: 14px; font-style: italic; color: var(--ink);
-  margin-bottom: 3px; transition: color 0.2s;
-}
-.writing-item:hover .wi-title { color: #c0392b; }
-.wi-meta { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: #bbb; }
+.writing-item:hover { padding-left:7px; }
+.wi-title { font-size:14px; font-style:italic; color:var(--ink); margin-bottom:2px; transition:color 0.2s; }
+.writing-item:hover .wi-title { color:#c0392b; }
+.wi-meta { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:#bbb; }
 
-/* ════════════════════════════════
-   ABOUT
-════════════════════════════════ */
-.about-text {
-  max-width: 580px;
-  font-size: 15px; line-height: 1.9; color: #555;
-}
-.about-text p + p { margin-top: 18px; }
+/* about */
+.about-text { max-width:580px; font-size:15px; line-height:1.9; color:#555; }
+.about-text p+p { margin-top:16px; }
 
-/* ════════════════════════════════
-   CONTACT
-════════════════════════════════ */
-#contact-sec { background: var(--bg2); }
-#contact-sec .sec { text-align: center; }
+/* contact */
+#contact-sec { background:var(--bg2); }
 .contact-email {
-  display: inline-block; margin-top: 8px;
-  font-size: clamp(16px, 2.5vw, 28px); font-weight: bold;
-  color: var(--ink); text-decoration: none;
-  border-bottom: 2px solid var(--ink); padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
+  display:inline-block; margin-top:6px;
+  font-size:clamp(15px,2.4vw,26px); font-weight:bold;
+  color:var(--ink); text-decoration:none;
+  border-bottom:2px solid var(--ink); padding-bottom:2px;
+  transition:color 0.2s, border-color 0.2s;
 }
-.contact-email:hover { color: #c0392b; border-color: #c0392b; }
-.contact-note {
-  margin-top: 16px; font-style: italic;
-  font-size: 13px; color: #aaa;
-}
+.contact-email:hover { color:#c0392b; border-color:#c0392b; }
+.contact-note { margin-top:14px; font-style:italic; font-size:13px; color:#aaa; }
 
-/* ════════════════════════════════
-   FOOTER
-════════════════════════════════ */
 footer {
-  border-top: 1px solid #ddd;
-  padding: 22px 32px;
-  display: flex; justify-content: space-between;
-  font-size: 10px; letter-spacing: 0.1em; color: #bbb;
+  border-top:1px solid #ddd; padding:20px 32px;
+  display:flex; justify-content:space-between;
+  font-size:10px; letter-spacing:0.1em; color:#bbb;
 }
 
-/* ════════════════════════════════
-   ARTWORK DETAIL PAGE (full overlay)
-════════════════════════════════ */
+/* ══════════════════════════════
+   DETAIL PAGE — slide-up animation
+══════════════════════════════ */
 #detail-page {
-  display: none;
   position: fixed;
   inset: 0;
   z-index: 300;
   background: var(--bg);
   overflow-y: auto;
-  padding-top: var(--header-h);
+  /* slide-up animation */
+  transform: translateY(100%);
+  transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  visibility: hidden;
 }
-#detail-page.open { display: block; }
+#detail-page.open {
+  transform: translateY(0);
+  pointer-events: all;
+  visibility: visible;
+}
 
-/* Detail header — reuse main header style but for detail */
-#detail-header {
+/* floating back button — bottom left, always visible */
+.back-fab {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 400;
+  bottom: 28px;
+  left: 28px;
+  z-index: 500;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 10px;
+  transition: background 0.2s, opacity 0.3s, transform 0.3s;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+.back-fab svg { width:13px; height:13px; flex-shrink:0; }
+.back-fab.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+.back-fab:hover { background: #333; }
+
+/* detail header — minimal top bar inside detail */
+.detail-top-bar {
+  position: sticky; top:0;
   background: var(--bg);
   border-bottom: 1px solid #ddd;
-  height: var(--header-h);
-  display: flex;
-  align-items: center;
-  padding: 0 28px;
-  gap: 20px;
+  height: var(--hh);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  z-index: 10;
+}
+.detail-top-title {
+  font-size: 13px; font-style: italic; color: var(--mid);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.detail-type-badge {
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #aaa; border: 1px solid #ddd; padding: 2px 8px; white-space: nowrap;
 }
 
-.back-btn {
-  background: none; border: none;
-  font-family: var(--font);
-  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--mid); cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
-  transition: color 0.2s;
-  padding: 0;
-}
-.back-btn:hover { color: var(--ink); }
-.back-btn svg { width: 14px; height: 14px; }
-
-.detail-header-title {
-  font-size: 13px; font-style: italic;
-  color: var(--ink);
-}
-
-/* Detail body */
+/* detail body */
 .detail-body {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 56px 32px 80px;
+  max-width: 860px; margin: 0 auto;
+  padding: 52px 32px 120px;
 }
 
-.detail-hero-img {
-  width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  background: #111;
-  display: block;
-  margin-bottom: 40px;
-}
-
-/* placeholder hero */
 .detail-hero-ph {
-  width: 100%;
-  height: 50vh;
+  width: 100%; height: 52vh;
   background: #e0dcd6;
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
-.detail-hero-ph span {
-  font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: #bbb;
-}
-
-.detail-title {
-  font-size: clamp(22px, 4vw, 40px);
-  font-weight: bold;
-  letter-spacing: -0.01em;
-  margin-bottom: 6px;
-}
-.detail-meta {
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: #aaa; margin-bottom: 36px;
+.detail-hero-ph span { font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:#bbb; }
+.detail-hero-img {
+  width: 100%; max-height: 70vh; object-fit: contain;
+  background: #111; display: block; margin-bottom: 36px;
 }
 
-.detail-section-label {
-  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: #aaa; margin-bottom: 16px; margin-top: 48px;
-  padding-bottom: 10px; border-bottom: 1px solid #ddd;
+.detail-title { font-size:clamp(20px,3.5vw,36px); font-weight:bold; letter-spacing:-0.01em; margin-bottom:5px; }
+.detail-meta  { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#aaa; margin-bottom:40px; }
+
+.detail-sec-label {
+  font-size:10px; letter-spacing:0.3em; text-transform:uppercase;
+  color:#aaa; margin-bottom:14px; margin-top:44px;
+  padding-bottom:10px; border-bottom:1px solid #ddd;
 }
 
-.detail-description {
-  font-size: 15px; line-height: 1.9; color: #555;
-  max-width: 640px;
-}
-.detail-description p + p { margin-top: 16px; }
+.detail-description { font-size:15px; line-height:1.9; color:#555; max-width:640px; }
+.detail-description p+p { margin-top:14px; }
 
-/* Additional photos strip */
-.detail-photos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 6px;
+/* writing detail — full text */
+.detail-writing-body {
+  font-size: 16px; line-height: 2.0; color: #333;
+  max-width: 640px; white-space: pre-line;
 }
-.detail-photo {
-  aspect-ratio: 1;
-  background: #e8e4de;
-  overflow: hidden;
-  cursor: pointer;
-}
-.detail-photo img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.3s; }
-.detail-photo:hover img { transform: scale(1.05); }
-.detail-photo-ph {
-  width:100%; height:100%;
-  display:flex; align-items:center; justify-content:center;
-  background: #e8e4de;
-}
-.detail-photo-ph span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #bbb; }
 
-/* Detail writings */
+.detail-photos { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:6px; }
+.detail-photo { aspect-ratio:1; background:#e8e4de; overflow:hidden; cursor:pointer; }
+.detail-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.3s; }
+.detail-photo:hover img { transform:scale(1.05); }
+.detail-photo-ph { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+.detail-photo-ph span { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:#bbb; }
+
 .detail-writing-item {
-  padding: 14px 0; border-bottom: 1px solid #e8e4de;
-  font-size: 14px; font-style: italic; color: #555;
+  padding:13px 0; border-bottom:1px solid #e8e4de;
+  font-size:14px; font-style:italic; color:#555;
 }
 
-/* ════════════════════════════════
-   RESPONSIVE
-════════════════════════════════ */
-@media (max-width: 700px) {
-  .artwork-grid { grid-template-columns: repeat(2, 1fr); }
-  .writings-cols { grid-template-columns: 1fr; gap: 36px; }
-  .detail-photos { grid-template-columns: repeat(2, 1fr); }
-  nav { gap: 16px; }
-  .sec { padding: 56px 20px; }
-  .ig-btn span { display: none; }
-  header { padding: 0 16px; }
-}
-@media (max-width: 480px) {
-  .artwork-grid { grid-template-columns: repeat(2, 1fr); }
-  nav a[data-hide-sm] { display: none; }
+/* ── responsive ── */
+@media(max-width:700px){
+  .artwork-grid { grid-template-columns:repeat(2,1fr); }
+  .writings-cols { grid-template-columns:1fr; gap:32px; }
+  .detail-photos { grid-template-columns:repeat(2,1fr); }
+  nav { gap:14px; }
+  .sec { padding:52px 18px; }
+  .back-fab { bottom:18px; left:18px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     HEADER (always visible)
-══════════════════════════════ -->
-<header id="site-header">
+<!-- ══════════════════════
+     HEADER
+══════════════════════ -->
+<header>
   <div class="header-left">
-    <a href="#" class="header-name" onclick="showMain(); return false;">tarik yigit</a>
+    <a href="#" class="header-name" onclick="showMain();return false;">tarik yigit</a>
+    <!-- 1 — icon only, no label -->
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+        <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none"/>
       </svg>
-      <span>Instagram</span>
     </a>
   </div>
 
-  <nav id="main-nav">
-    <a href="#artworks-sec"  data-en="Artworks"  data-tr="Eserler">Artworks</a>
-    <a href="#writings-sec"  data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="#about-sec"     data-en="About"     data-tr="Hakkında">About</a>
-    <a href="#contact-sec"   data-en="Contact"   data-tr="İletişim">Contact</a>
+  <nav>
+    <a href="#artworks-sec" data-en="Artworks" data-tr="Eserler">Artworks</a>
+    <a href="#writings-sec" data-en="Writings"  data-tr="Yazılar">Writings</a>
+    <a href="#about-sec"    data-en="About"     data-tr="Hakkında">About</a>
+    <a href="#contact-sec"  data-en="Contact"   data-tr="İletişim">Contact</a>
   </nav>
 
   <div class="header-right">
@@ -566,45 +405,24 @@ footer {
   </div>
 </header>
 
-<!-- ══════════════════════════════
+<!-- ══════════════════════
      MAIN PAGE
-══════════════════════════════ -->
+══════════════════════ -->
 <div id="main-page">
 
   <!-- HERO -->
   <section id="hero">
-    <!-- Background slideshow -->
     <div class="hero-slides" id="heroSlides">
-      <!-- Slide 1 — replace .hero-slide-ph with <img src="your.jpg" alt=""> -->
-      <div class="hero-slide">
-        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
-      </div>
-      <!-- Slide 2 -->
-      <div class="hero-slide">
-        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
-      </div>
-      <!-- Slide 3 -->
-      <div class="hero-slide">
-        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
-      </div>
-      <!-- Slide 4 -->
-      <div class="hero-slide">
-        <div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı ekle">add artwork photo</span></div>
-      </div>
+      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
+      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
+      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
+      <div class="hero-slide"><div class="hero-slide-ph"><span data-en="add artwork photo" data-tr="eser fotoğrafı">add artwork photo</span></div></div>
     </div>
-
     <div class="hero-overlay"></div>
-
-    <!-- Name with black bar -->
-    <div class="hero-name-wrap">
-      <div class="hero-name">tarik yigit</div>
-    </div>
-
-    <!-- Arrows -->
+    <!-- 5 — lowercase name -->
+    <div class="hero-name-wrap"><div class="hero-name">tarik yigit</div></div>
     <button class="hero-btn prev" onclick="heroMove(-1)">&#8592;</button>
     <button class="hero-btn next" onclick="heroMove(1)">&#8594;</button>
-
-    <!-- Dots -->
     <div class="hero-dots" id="heroDots"></div>
   </section>
 
@@ -612,7 +430,6 @@ footer {
   <section id="artworks-sec">
     <div class="sec">
       <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
-
       <div class="art-tabs">
         <button class="art-tab on" onclick="swTab('g')" data-en="Works" data-tr="Eserler">Works</button>
         <button class="art-tab"    onclick="swTab('p')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
@@ -620,70 +437,38 @@ footer {
 
       <!-- WORKS GRID -->
       <div class="panel on" id="pg">
-        <div class="artwork-grid" id="artworkGrid">
-
-          <!-- ╔═══════════════════════════════════════╗
-               ║  To add real images:                  ║
-               ║  Replace .aw-ph with:                 ║
-               ║  <img src="file.jpg" alt="Title">     ║
-               ╚═══════════════════════════════════════╝ -->
-
-          <div class="artwork-thumb" onclick="openDetail(0)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
-            <div class="artwork-thumb-overlay">
-              <div class="aw-ov-title" data-en="Untitled I" data-tr="İsimsiz I">Untitled I</div>
-              <div class="aw-ov-meta" data-en="2024" data-tr="2024">2024</div>
-            </div>
+        <div class="artwork-grid">
+          <div class="artwork-thumb" onclick="openDetail('artwork',0)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
+            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled I" data-tr="İsimsiz I">Untitled I</div><div class="aw-ov-meta">2024</div></div>
           </div>
-
-          <div class="artwork-thumb" onclick="openDetail(1)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
-            <div class="artwork-thumb-overlay">
-              <div class="aw-ov-title" data-en="Untitled II" data-tr="İsimsiz II">Untitled II</div>
-              <div class="aw-ov-meta" data-en="2024" data-tr="2024">2024</div>
-            </div>
+          <div class="artwork-thumb" onclick="openDetail('artwork',1)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
+            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled II" data-tr="İsimsiz II">Untitled II</div><div class="aw-ov-meta">2024</div></div>
           </div>
-
-          <div class="artwork-thumb" onclick="openDetail(2)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
-            <div class="artwork-thumb-overlay">
-              <div class="aw-ov-title" data-en="Untitled III" data-tr="İsimsiz III">Untitled III</div>
-              <div class="aw-ov-meta" data-en="2023" data-tr="2023">2023</div>
-            </div>
+          <div class="artwork-thumb" onclick="openDetail('artwork',2)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
+            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled III" data-tr="İsimsiz III">Untitled III</div><div class="aw-ov-meta">2023</div></div>
           </div>
-
-          <div class="artwork-thumb" onclick="openDetail(3)">
-            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl" data-en="image" data-tr="görsel">image</span></div>
-            <div class="artwork-thumb-overlay">
-              <div class="aw-ov-title" data-en="Untitled IV" data-tr="İsimsiz IV">Untitled IV</div>
-              <div class="aw-ov-meta" data-en="2023" data-tr="2023">2023</div>
-            </div>
+          <div class="artwork-thumb" onclick="openDetail('artwork',3)">
+            <div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
+            <div class="aw-overlay"><div class="aw-ov-title" data-en="Untitled IV" data-tr="İsimsiz IV">Untitled IV</div><div class="aw-ov-meta">2023</div></div>
           </div>
-
         </div>
       </div>
 
       <!-- ONGOING / PLANNED -->
       <div class="panel" id="pp">
         <div class="project-item">
-          <div>
-            <div class="project-name" data-en="Project Title One" data-tr="Proje Bir">Project Title One</div>
-            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
-          </div>
+          <div><div class="project-name" data-en="Project Title One" data-tr="Proje Bir">Project Title One</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
           <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
         </div>
         <div class="project-item">
-          <div>
-            <div class="project-name" data-en="Project Title Two" data-tr="Proje İki">Project Title Two</div>
-            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
-          </div>
+          <div><div class="project-name" data-en="Project Title Two" data-tr="Proje İki">Project Title Two</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
           <span class="p-tag tag-pl" data-en="Planned" data-tr="Planlandı">Planned</span>
         </div>
         <div class="project-item">
-          <div>
-            <div class="project-name" data-en="Project Title Three" data-tr="Proje Üç">Project Title Three</div>
-            <div class="project-desc" data-en="A short description of this project." data-tr="Kısa açıklama.">A short description of this project.</div>
-          </div>
+          <div><div class="project-name" data-en="Project Title Three" data-tr="Proje Üç">Project Title Three</div><div class="project-desc" data-en="A short description." data-tr="Kısa açıklama.">A short description.</div></div>
           <span class="p-tag tag-on" data-en="Ongoing" data-tr="Devam">Ongoing</span>
         </div>
       </div>
@@ -695,18 +480,41 @@ footer {
     <div class="sec">
       <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
       <div class="writings-cols">
+
         <div>
           <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title One" data-tr="Şiir Bir">Poem Title One</div><div class="wi-meta">2024</div></a>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title Two" data-tr="Şiir İki">Poem Title Two</div><div class="wi-meta">2024</div></a>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Poem Title Three" data-tr="Şiir Üç">Poem Title Three</div><div class="wi-meta">2023</div></a>
+          <!-- 4 — poems now clickable with openDetail -->
+          <a href="#" class="writing-item" onclick="openDetail('poem',0);return false;">
+            <div class="wi-title" data-en="Poem Title One" data-tr="Şiir Bir">Poem Title One</div>
+            <div class="wi-meta">2024</div>
+          </a>
+          <a href="#" class="writing-item" onclick="openDetail('poem',1);return false;">
+            <div class="wi-title" data-en="Poem Title Two" data-tr="Şiir İki">Poem Title Two</div>
+            <div class="wi-meta">2024</div>
+          </a>
+          <a href="#" class="writing-item" onclick="openDetail('poem',2);return false;">
+            <div class="wi-title" data-en="Poem Title Three" data-tr="Şiir Üç">Poem Title Three</div>
+            <div class="wi-meta">2023</div>
+          </a>
         </div>
+
         <div>
           <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title One" data-tr="Makale Bir">Article Title One</div><div class="wi-meta" data-en="2024 · Essay" data-tr="2024 · Deneme">2024 · Essay</div></a>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title Two" data-tr="Makale İki">Article Title Two</div><div class="wi-meta" data-en="2023 · Criticism" data-tr="2023 · Eleştiri">2023 · Criticism</div></a>
-          <a href="#" class="writing-item"><div class="wi-title" data-en="Article Title Three" data-tr="Makale Üç">Article Title Three</div><div class="wi-meta" data-en="2023 · Essay" data-tr="2023 · Deneme">2023 · Essay</div></a>
+          <!-- 4 — articles now clickable with openDetail -->
+          <a href="#" class="writing-item" onclick="openDetail('article',0);return false;">
+            <div class="wi-title" data-en="Article Title One" data-tr="Makale Bir">Article Title One</div>
+            <div class="wi-meta" data-en="2024 · Essay" data-tr="2024 · Deneme">2024 · Essay</div>
+          </a>
+          <a href="#" class="writing-item" onclick="openDetail('article',1);return false;">
+            <div class="wi-title" data-en="Article Title Two" data-tr="Makale İki">Article Title Two</div>
+            <div class="wi-meta" data-en="2023 · Criticism" data-tr="2023 · Eleştiri">2023 · Criticism</div>
+          </a>
+          <a href="#" class="writing-item" onclick="openDetail('article',2);return false;">
+            <div class="wi-title" data-en="Article Title Three" data-tr="Makale Üç">Article Title Three</div>
+            <div class="wi-meta" data-en="2023 · Essay" data-tr="2023 · Deneme">2023 · Essay</div>
+          </a>
         </div>
+
       </div>
     </div>
   </section>
@@ -735,72 +543,123 @@ footer {
     <span>tarik yigit</span>
     <span>veretrir.art</span>
   </footer>
+</div>
 
-</div><!-- /main-page -->
-
-
-<!-- ══════════════════════════════
-     DETAIL PAGE (overlay)
-══════════════════════════════ -->
+<!-- ══════════════════════
+     DETAIL PAGE (slide-up)
+══════════════════════ -->
 <div id="detail-page">
 
-  <!-- Detail header replaces main header visually -->
-  <div id="detail-header">
-    <button class="back-btn" onclick="closeDetail()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      <span data-en="Back" data-tr="Geri">Back</span>
-    </button>
-    <span class="detail-header-title" id="detailHeaderTitle"></span>
+  <!-- sticky top bar inside detail -->
+  <div class="detail-top-bar">
+    <span class="detail-type-badge" id="detailBadge">artwork</span>
+    <span class="detail-top-title" id="detailTopTitle"></span>
   </div>
 
-  <div class="detail-body">
-    <!-- Main image -->
-    <div class="detail-hero-ph" id="detailHeroPh">
-      <span data-en="add main artwork image" data-tr="ana eser görseli ekle">add main artwork image</span>
-    </div>
-    <!-- or: <img class="detail-hero-img" id="detailHeroImg" src="" alt=""> -->
-
-    <div class="detail-title" id="detailTitle"></div>
-    <div class="detail-meta"  id="detailMeta"></div>
-
-    <!-- Description -->
-    <div class="detail-section-label" data-en="About this work" data-tr="Bu eser hakkında">About this work</div>
-    <div class="detail-description" id="detailDesc">
-      <p data-en="Add a description of this artwork — the process, the intent, the materials, the context. Replace this placeholder with your real text." data-tr="Bu eserle ilgili açıklama ekleyin — süreç, niyet, malzeme, bağlam. Bu yer tutucuyu gerçek metninizle değiştirin.">Add a description of this artwork — the process, the intent, the materials, the context. Replace this placeholder with your real text.</p>
-    </div>
-
-    <!-- Additional photos -->
-    <div class="detail-section-label" data-en="Additional photos" data-tr="Ek fotoğraflar">Additional photos</div>
-    <div class="detail-photos">
-      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
-      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
-      <div class="detail-photo"><div class="detail-photo-ph"><span data-en="photo" data-tr="fotoğraf">photo</span></div></div>
-    </div>
-
-    <!-- Related writings -->
-    <div class="detail-section-label" data-en="Related writings" data-tr="İlgili yazılar">Related writings</div>
-    <div class="detail-writing-item" data-en="Writing or note related to this work — replace with real content." data-tr="Bu eserle ilgili bir yazı veya not — gerçek içerikle değiştirin.">Writing or note related to this work — replace with real content.</div>
-    <div class="detail-writing-item" data-en="Another note, poem, or essay connected to this piece." data-tr="Bu esere bağlı başka bir not, şiir veya deneme.">Another note, poem, or essay connected to this piece.</div>
-
+  <!-- scrollable body -->
+  <div class="detail-body" id="detailBody">
+    <!-- filled by JS -->
   </div>
 </div>
 
+<!-- 3 — floating back button, bottom-left, always accessible -->
+<button class="back-fab" id="backFab" onclick="closeDetail()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="15 18 9 12 15 6"/>
+  </svg>
+  <span data-en="Back" data-tr="Geri">Back</span>
+</button>
 
 <script>
-/* ── Artwork data (edit here to set titles/years per artwork) ── */
+/* ════════════════════════════
+   DATA — edit your content here
+════════════════════════════ */
 const ARTWORKS = [
-  { title: 'Untitled I',   titleTR: 'İsimsiz I',   year: '2024', medium: 'Mixed Media',    mediumTR: 'Karma Teknik' },
-  { title: 'Untitled II',  titleTR: 'İsimsiz II',  year: '2024', medium: 'Digital',         mediumTR: 'Dijital' },
-  { title: 'Untitled III', titleTR: 'İsimsiz III', year: '2023', medium: 'Print',            mediumTR: 'Baskı' },
-  { title: 'Untitled IV',  titleTR: 'İsimsiz IV',  year: '2023', medium: 'Oil on Canvas',   mediumTR: 'Tuval Üzerine Yağlıboya' },
+  {
+    title:'Untitled I', titleTR:'İsimsiz I',
+    year:'2024', medium:'Mixed Media', mediumTR:'Karma Teknik',
+    desc:'Add a description of this artwork — the process, the intent, the materials, the context.',
+    descTR:'Bu eserle ilgili açıklama ekleyin — süreç, niyet, malzeme, bağlam.'
+  },
+  {
+    title:'Untitled II', titleTR:'İsimsiz II',
+    year:'2024', medium:'Digital', mediumTR:'Dijital',
+    desc:'Add a description of this artwork.',
+    descTR:'Bu eserle ilgili açıklama ekleyin.'
+  },
+  {
+    title:'Untitled III', titleTR:'İsimsiz III',
+    year:'2023', medium:'Print', mediumTR:'Baskı',
+    desc:'Add a description of this artwork.',
+    descTR:'Bu eserle ilgili açıklama ekleyin.'
+  },
+  {
+    title:'Untitled IV', titleTR:'İsimsiz IV',
+    year:'2023', medium:'Oil on Canvas', mediumTR:'Tuval Üzerine Yağlıboya',
+    desc:'Add a description of this artwork.',
+    descTR:'Bu eserle ilgili açıklama ekleyin.'
+  },
 ];
 
-let currentLang = 'en';
-let scrollY = 0;
+const POEMS = [
+  {
+    title:'Poem Title One', titleTR:'Şiir Başlık Bir',
+    year:'2024',
+    body:`Add your full poem text here.
+Each line break is preserved.
+This is where your verses go.`,
+    bodyTR:`Şiir metninizi buraya ekleyin.
+Her satır sonu korunur.
+Dizeleriniz burada yer alacak.`
+  },
+  {
+    title:'Poem Title Two', titleTR:'Şiir Başlık İki',
+    year:'2024',
+    body:`Second poem goes here.\nAdd as many lines as you like.`,
+    bodyTR:`İkinci şiir buraya gelir.\nİstediğiniz kadar satır ekleyebilirsiniz.`
+  },
+  {
+    title:'Poem Title Three', titleTR:'Şiir Başlık Üç',
+    year:'2023',
+    body:`Third poem goes here.`,
+    bodyTR:`Üçüncü şiir buraya gelir.`
+  },
+];
 
-/* ── LANG ── */
+const ARTICLES = [
+  {
+    title:'Article Title One', titleTR:'Makale Başlık Bir',
+    year:'2024', type:'Essay', typeTR:'Deneme',
+    body:`Add your full article text here. This is the body of the essay — you can write as much as you need. Replace this placeholder with your actual writing.
+
+A second paragraph of the article continues here.`,
+    bodyTR:`Makale metninizi buraya ekleyin. Bu, denemenin gövdesidir. Bu yer tutucuyu gerçek yazınızla değiştirin.
+
+Makalenin ikinci paragrafı burada devam eder.`
+  },
+  {
+    title:'Article Title Two', titleTR:'Makale Başlık İki',
+    year:'2023', type:'Criticism', typeTR:'Eleştiri',
+    body:`Second article body goes here.`,
+    bodyTR:`İkinci makale metni buraya gelir.`
+  },
+  {
+    title:'Article Title Three', titleTR:'Makale Başlık Üç',
+    year:'2023', type:'Essay', typeTR:'Deneme',
+    body:`Third article body goes here.`,
+    bodyTR:`Üçüncü makale metni buraya gelir.`
+  },
+];
+
+/* ════════════════════════════
+   STATE
+════════════════════════════ */
+let currentLang = 'en';
+let savedScrollY = 0;
+
+/* ════════════════════════════
+   LANG
+════════════════════════════ */
 function setLang(l) {
   currentLang = l;
   document.documentElement.lang = l;
@@ -808,95 +667,170 @@ function setLang(l) {
     const v = el.getAttribute('data-' + l);
     if (v !== null) el.innerHTML = v;
   });
-  document.getElementById('b-en').classList.toggle('on', l === 'en');
-  document.getElementById('b-tr').classList.toggle('on', l === 'tr');
+  document.getElementById('b-en').classList.toggle('on', l==='en');
+  document.getElementById('b-tr').classList.toggle('on', l==='tr');
 }
 
-/* ── TABS ── */
+/* ════════════════════════════
+   TABS
+════════════════════════════ */
 function swTab(t) {
-  document.querySelectorAll('.art-tab').forEach((b, i) => {
+  document.querySelectorAll('.art-tab').forEach((b,i) => {
     b.classList.toggle('on', (t==='g'&&i===0)||(t==='p'&&i===1));
   });
   document.getElementById('pg').classList.toggle('on', t==='g');
   document.getElementById('pp').classList.toggle('on', t==='p');
 }
 
-/* ── HERO SLIDESHOW ── */
+/* ════════════════════════════
+   HERO SLIDESHOW
+════════════════════════════ */
 const heroSlidesEl = document.getElementById('heroSlides');
 const heroDotsEl   = document.getElementById('heroDots');
-let hCur = 0, hTotal = 0, hTimer;
+let hCur=0, hTotal=0, hTimer;
 
 function heroInit() {
   hTotal = heroSlidesEl.querySelectorAll('.hero-slide').length;
   heroDotsEl.innerHTML = '';
-  for (let i = 0; i < hTotal; i++) {
+  for(let i=0;i<hTotal;i++){
     const d = document.createElement('button');
-    d.className = 'hero-dot' + (i===0?' on':'');
-    d.onclick = () => heroGoTo(i);
+    d.className = 'hero-dot'+(i===0?' on':'');
+    d.onclick = ()=>heroGoTo(i);
     heroDotsEl.appendChild(d);
   }
-  hTimer = setInterval(() => heroMove(1), 4500);
+  hTimer = setInterval(()=>heroMove(1), 4500);
 }
-
 function heroGoTo(n) {
-  hCur = (n + hTotal) % hTotal;
-  heroSlidesEl.style.transform = `translateX(-${hCur * 100}%)`;
-  heroDotsEl.querySelectorAll('.hero-dot').forEach((d,i) => d.classList.toggle('on', i===hCur));
+  hCur = (n+hTotal)%hTotal;
+  heroSlidesEl.style.transform = `translateX(-${hCur*100}%)`;
+  heroDotsEl.querySelectorAll('.hero-dot').forEach((d,i)=>d.classList.toggle('on',i===hCur));
 }
-
 function heroMove(dir) {
   clearInterval(hTimer);
-  heroGoTo(hCur + dir);
-  hTimer = setInterval(() => heroMove(1), 4500);
+  heroGoTo(hCur+dir);
+  hTimer = setInterval(()=>heroMove(1), 4500);
+}
+let hDx=0;
+heroSlidesEl.addEventListener('mousedown',  e=>hDx=e.clientX);
+heroSlidesEl.addEventListener('touchstart', e=>hDx=e.touches[0].clientX,{passive:true});
+heroSlidesEl.addEventListener('mouseup',    e=>{if(Math.abs(e.clientX-hDx)>40)heroMove(e.clientX<hDx?1:-1);});
+heroSlidesEl.addEventListener('touchend',   e=>{const d=e.changedTouches[0].clientX-hDx;if(Math.abs(d)>40)heroMove(d<0?1:-1);});
+
+/* ════════════════════════════
+   DETAIL PAGE
+════════════════════════════ */
+const detailPage  = document.getElementById('detail-page');
+const detailBody  = document.getElementById('detailBody');
+const detailBadge = document.getElementById('detailBadge');
+const detailTopTi = document.getElementById('detailTopTitle');
+const backFab     = document.getElementById('backFab');
+
+function buildArtworkHTML(aw) {
+  const l = currentLang;
+  const title  = l==='tr' ? aw.titleTR  : aw.title;
+  const medium = l==='tr' ? aw.mediumTR : aw.medium;
+  const desc   = l==='tr' ? aw.descTR   : aw.desc;
+  const photoLbl = l==='tr'?'fotoğraf':'photo';
+  const addPhLbl = l==='tr'?'ana eser görseli ekle':'add main artwork image';
+  const aboutLbl = l==='tr'?'Bu eser hakkında':'About this work';
+  const addPhoLbl= l==='tr'?'Ek fotoğraflar':'Additional photos';
+  const relWrtLbl= l==='tr'?'İlgili yazılar':'Related writings';
+  const wrtPlLbl = l==='tr'?'Bu eserle ilgili bir yazı veya not ekleyin.':'Add a writing or note related to this work.';
+  return `
+    <div class="detail-hero-ph"><span>${addPhLbl}</span></div>
+    <div class="detail-title">${title}</div>
+    <div class="detail-meta">${aw.year} · ${medium}</div>
+    <div class="detail-sec-label">${aboutLbl}</div>
+    <div class="detail-description"><p>${desc}</p></div>
+    <div class="detail-sec-label">${addPhoLbl}</div>
+    <div class="detail-photos">
+      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
+      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
+      <div class="detail-photo"><div class="detail-photo-ph"><span>${photoLbl}</span></div></div>
+    </div>
+    <div class="detail-sec-label">${relWrtLbl}</div>
+    <div class="detail-writing-item">${wrtPlLbl}</div>
+  `;
 }
 
-/* Hero touch/drag */
-let hDx = 0;
-heroSlidesEl.addEventListener('mousedown',  e => hDx = e.clientX);
-heroSlidesEl.addEventListener('touchstart', e => hDx = e.touches[0].clientX, {passive:true});
-heroSlidesEl.addEventListener('mouseup',    e => { if(Math.abs(e.clientX-hDx)>40) heroMove(e.clientX<hDx?1:-1); });
-heroSlidesEl.addEventListener('touchend',   e => { const d=e.changedTouches[0].clientX-hDx; if(Math.abs(d)>40) heroMove(d<0?1:-1); });
+function buildPoemHTML(pm) {
+  const l = currentLang;
+  const title = l==='tr' ? pm.titleTR : pm.title;
+  const body  = l==='tr' ? pm.bodyTR  : pm.body;
+  return `
+    <div class="detail-title">${title}</div>
+    <div class="detail-meta">${pm.year}</div>
+    <div class="detail-sec-label" data-en="Poem" data-tr="Şiir">${l==='tr'?'Şiir':'Poem'}</div>
+    <div class="detail-writing-body">${body}</div>
+  `;
+}
 
-/* ── DETAIL PAGE ── */
-function openDetail(idx) {
-  scrollY = window.scrollY;
-  const aw = ARTWORKS[idx];
-  const lang = currentLang;
+function buildArticleHTML(ar) {
+  const l = currentLang;
+  const title = l==='tr' ? ar.titleTR : ar.title;
+  const type  = l==='tr' ? ar.typeTR  : ar.type;
+  const body  = l==='tr' ? ar.bodyTR  : ar.body;
+  return `
+    <div class="detail-title">${title}</div>
+    <div class="detail-meta">${ar.year} · ${type}</div>
+    <div class="detail-sec-label">${l==='tr'?'Makale':'Article'}</div>
+    <div class="detail-writing-body">${body}</div>
+  `;
+}
 
-  /* Set header title */
-  document.getElementById('detailHeaderTitle').textContent = lang==='tr' ? aw.titleTR : aw.title;
+function openDetail(type, idx) {
+  savedScrollY = window.scrollY;
 
-  /* Set title + meta */
-  document.getElementById('detailTitle').textContent = lang==='tr' ? aw.titleTR : aw.title;
-  document.getElementById('detailMeta').textContent  = aw.year + ' · ' + (lang==='tr' ? aw.mediumTR : aw.medium);
+  let html = '';
+  let badge = '';
+  let topTitle = '';
 
-  /* Open overlay */
-  const dp = document.getElementById('detail-page');
-  dp.classList.add('open');
-  dp.scrollTop = 0;
+  if(type==='artwork') {
+    const aw = ARTWORKS[idx];
+    html = buildArtworkHTML(aw);
+    badge = currentLang==='tr' ? 'Eser' : 'Artwork';
+    topTitle = currentLang==='tr' ? aw.titleTR : aw.title;
+  } else if(type==='poem') {
+    const pm = POEMS[idx];
+    html = buildPoemHTML(pm);
+    badge = currentLang==='tr' ? 'Şiir' : 'Poem';
+    topTitle = currentLang==='tr' ? pm.titleTR : pm.title;
+  } else if(type==='article') {
+    const ar = ARTICLES[idx];
+    html = buildArticleHTML(ar);
+    badge = currentLang==='tr' ? 'Makale' : 'Article';
+    topTitle = currentLang==='tr' ? ar.titleTR : ar.title;
+  }
 
-  /* Freeze main page scroll */
+  detailBody.innerHTML = html;
+  detailBadge.textContent = badge;
+  detailTopTi.textContent = topTitle;
+
+  /* lock main scroll */
   document.body.style.overflow = 'hidden';
+
+  /* trigger slide-up animation */
+  detailPage.scrollTop = 0;
+  detailPage.classList.add('open');
+
+  /* show back FAB slightly after */
+  setTimeout(()=>backFab.classList.add('visible'), 200);
 }
 
 function closeDetail() {
-  document.getElementById('detail-page').classList.remove('open');
+  detailPage.classList.remove('open');
+  backFab.classList.remove('visible');
   document.body.style.overflow = '';
-  /* Restore scroll position */
-  window.scrollTo(0, scrollY);
+  window.scrollTo(0, savedScrollY);
 }
 
 function showMain() {
   closeDetail();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
-/* ESC to close */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeDetail();
-});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
 
-/* Init */
 heroInit();
 </script>
 </body>
