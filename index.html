@@ -27,31 +27,7 @@
  
 .hero-overlay { position:absolute; inset:0; background:rgba(0,0,0,.32); z-index:1; }
  
-/* Name — no black bar on large screens */
-.hero-name-wrap {
-  position: relative; z-index: 2;
-  padding: 8px 0;
-  /* black bar only on small screens */
-}
-.hero-name {
-  font-family: var(--font);
-  font-size: clamp(18px, 2.8vw, 34px);
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: 0.06em;
-  color: #fff;
-  line-height: 1;
-  text-shadow: 0 2px 24px rgba(0,0,0,0.6);
-}
  
-/* black bar only on mobile where contrast is harder */
-@media (max-width: 600px) {
-  .hero-name-wrap {
-    background: rgba(0,0,0,0.75);
-    padding: 10px 22px;
-  }
-  .hero-name { text-shadow: none; }
-}
  
 .hero-dots {
   position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
@@ -140,7 +116,6 @@
 <section id="hero">
   <div class="hero-slides-wrap" id="heroSlides"></div>
   <div class="hero-overlay"></div>
-  <div class="hero-name-wrap"><span class="hero-name">tarık yiğit</span></div>
   <button class="hero-btn prev" id="heroPrev">&#8592;</button>
   <button class="hero-btn next" id="heroNext">&#8594;</button>
   <div class="hero-dots" id="heroDots"></div>
