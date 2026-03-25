@@ -215,4 +215,3 @@ document.addEventListener('keydown', e => {
   if (viewer && viewer.classList.contains('open')) { closeViewer(); return; }
   closeReading();
 });
- 
