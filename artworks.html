@@ -130,36 +130,60 @@ function swTab(t) {
   });
 }
  
-(function buildPage() {
+/* Build the full page — called on load AND on every lang switch */
+function buildPage() {
   const l    = currentLang;
+ 
+  /* Artwork grid — rebuild titles reactively */
   const grid = document.getElementById('artworkGrid');
+  grid.innerHTML = '';
   SITE.artworks.forEach((aw, idx) => {
+    const title = l === 'tr' ? aw.titleTR : aw.title;
     const div = document.createElement('div');
     div.className = 'artwork-thumb';
     div.addEventListener('click', () => openArtwork(idx));
     div.innerHTML = aw.image
-      ? `<img src="${aw.image}" alt="${aw.title}">
-         <div class="aw-overlay"><div class="aw-ov-title">${aw.title}</div><div class="aw-ov-meta">${aw.year}</div></div>`
+      ? `<img src="${aw.image}" alt="${title}">
+         <div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year}</div></div>`
       : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>
-         <div class="aw-overlay"><div class="aw-ov-title">${aw.title}</div><div class="aw-ov-meta">${aw.year}</div></div>`;
+         <div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year}</div></div>`;
     grid.appendChild(div);
   });
  
+  /* Projects list — fully reactive */
   const projEl = document.getElementById('projectsList');
+  projEl.innerHTML = '';
   SITE.projects.forEach(p => {
-    const statusLabel = p.status === 'ongoing'
+    const name   = l === 'tr' ? p.titleTR : p.title;
+    const desc   = l === 'tr' ? p.descTR  : p.desc;
+    const status = p.status === 'ongoing'
       ? (l === 'tr' ? 'Devam Ediyor' : 'Ongoing')
       : (l === 'tr' ? 'Planlandı'    : 'Planned');
-    projEl.innerHTML += `<div class="project-item">
+    const div = document.createElement('div');
+    div.className = 'project-item';
+    div.innerHTML = `
       <div>
-        <div class="project-name">${l === 'tr' ? p.titleTR : p.title}</div>
-        <div class="project-desc">${l === 'tr' ? p.descTR  : p.desc}</div>
+        <div class="project-name">${name}</div>
+        <div class="project-desc">${desc}</div>
       </div>
-      <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${statusLabel}</span>
-    </div>`;
+      <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${status}</span>`;
+    projEl.appendChild(div);
   });
-})();
+}
+ 
+/* Override setLang so the page rebuilds on every language switch */
+const _baseLang = window.setLang;
+window.setLang = function(l) {
+  _baseLang(l);
+  buildPage();
+};
+ 
+document.addEventListener('DOMContentLoaded', () => {
+  buildPage();
+  /* Also hook directly on buttons as a safety net */
+  document.getElementById('b-en').addEventListener('click', () => buildPage());
+  document.getElementById('b-tr').addEventListener('click', () => buildPage());
+});
 </script>
 </body>
 </html>
- 
