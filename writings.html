@@ -148,15 +148,14 @@ function swTab(t) {
   });
 }
  
-/* Override setLang to also rebuild lists */
-const _baseLang = window.setLang;
-window.setLang = function(l) {
-  _baseLang(l);
-  buildLists();
-};
+/* Hook into lang changes — done after DOM ready so setLang exists */
+document.addEventListener('DOMContentLoaded', () => {
+  buildLists(); // initial render
  
-/* Initial build — after DOMContentLoaded fires in common.js */
-document.addEventListener('DOMContentLoaded', buildLists);
+  /* Wrap the lang buttons so every switch also rebuilds lists */
+  document.getElementById('b-en').addEventListener('click', () => buildLists());
+  document.getElementById('b-tr').addEventListener('click', () => buildLists());
+});
 </script>
 </body>
 </html>
