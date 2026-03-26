@@ -3,182 +3,172 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Writings — tarik yigit</title>
+<title>Writings — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-/* ---- writings grid ---- */
 .writings-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
 @media(max-width:640px){ .writings-grid{ grid-template-columns:1fr; gap:32px; } }
  
-/* ---- book list items ---- */
+/* ── book list ── */
 .book-item {
-  display: flex; align-items: center; gap: 20px;
-  padding: 18px 0; border-bottom: 1px solid #e8e4de;
-  cursor: pointer; transition: padding-left .2s; text-decoration: none;
+  display:flex; align-items:center; gap:20px;
+  padding:18px 0; border-bottom:1px solid #e8e4de;
+  cursor:pointer; transition:padding-left .2s;
 }
-.book-item:hover { padding-left: 8px; }
+.book-item:hover { padding-left:8px; }
 .book-cover-thumb {
-  width: 52px; height: 70px; flex-shrink: 0;
-  background: #e0dcd6; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: #bbb;
+  width:48px; height:64px; flex-shrink:0;
+  background:#e0dcd6; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
 }
-.book-cover-thumb img { width:100%; height:100%; object-fit:cover; }
-.book-info-title {
-  font-size: 15px; font-style: italic; color: var(--ink);
-  margin-bottom: 3px; transition: color .2s;
-}
-.book-item:hover .book-info-title { color: var(--red); }
-.book-info-meta { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #bbb; font-family: var(--mono); }
+.book-cover-thumb img { width:100%;height:100%;object-fit:cover; }
+.book-cover-ph { font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#bbb;font-family:var(--mono); }
+.book-info-title { font-size:15px;font-style:italic;color:var(--ink);margin-bottom:3px;transition:color .2s; }
+.book-item:hover .book-info-title { color:var(--red); }
+.book-info-meta { font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#bbb;font-family:var(--mono); }
  
-/* ====================================================
+/* ════════════════════════════════════════
    BOOK READER OVERLAY
-   ==================================================== */
+════════════════════════════════════════ */
 #book-overlay {
-  position: fixed; inset: 0; z-index: 700;
-  background: #1a1710;
-  display: flex; flex-direction: column;
-  transform: translateY(100%);
-  transition: transform .45s cubic-bezier(.4,0,.2,1);
-  pointer-events: none; visibility: hidden;
+  position:fixed; inset:0; z-index:800;
+  background:#18160f;
+  display:flex; flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .42s cubic-bezier(.4,0,.2,1);
+  pointer-events:none; visibility:hidden;
 }
-#book-overlay.open {
-  transform: translateY(0);
-  pointer-events: all; visibility: visible;
+#book-overlay.open { transform:translateY(0); pointer-events:all; visibility:visible; }
+ 
+/* ── toolbar ── */
+.br-toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:8px;
+  padding:0 16px; height:52px; flex-shrink:0;
+  background:#111; border-bottom:1px solid #2a2a20;
+  font-family:var(--mono);
+}
+.br-title { font-size:13px;font-style:italic;color:#aaa;font-family:var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px; }
+ 
+.br-tools { display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+ 
+.br-btn {
+  background:none; border:1px solid #2e2e22; color:#888;
+  font-family:var(--mono); font-size:13px;
+  width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color .15s,color .15s;
+  flex-shrink:0; padding:0;
+}
+.br-btn:hover:not(:disabled) { border-color:#aaa;color:#fff; }
+.br-btn:disabled { opacity:.25;cursor:default; }
+ 
+.br-page-input {
+  background:#1e1e16; border:1px solid #2e2e22; color:#ccc;
+  font-family:var(--mono); font-size:12px;
+  width:46px; height:34px; text-align:center;
+  outline:none; transition:border-color .15s;
+}
+.br-page-input:focus { border-color:#888; }
+.br-page-total { font-size:11px;color:#555;white-space:nowrap; }
+ 
+.br-zoom-val { font-size:11px;color:#666;min-width:36px;text-align:center; }
+ 
+.br-sep { width:1px;height:22px;background:#2a2a20;margin:0 2px; }
+ 
+.br-download-btn {
+  background:none; border:1px solid #2e2e22; color:#888;
+  font-family:var(--font); font-size:11px; letter-spacing:.06em;
+  padding:0 14px; height:34px;
+  cursor:pointer; transition:border-color .15s,color .15s;
+  white-space:nowrap;
+}
+.br-download-btn:hover { border-color:#aaa;color:#fff; }
+ 
+.br-close-btn {
+  background:none; border:1px solid #2e2e22; color:#777;
+  font-family:var(--font); font-size:11px; letter-spacing:.06em;
+  padding:0 16px; height:34px;
+  cursor:pointer; transition:border-color .15s,color .15s;
+}
+.br-close-btn:hover { border-color:#fff;color:#fff; }
+ 
+/* ── stage ── */
+.br-stage {
+  flex:1; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; user-select:none;
 }
  
-/* top bar */
-.book-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 28px; height: 52px; flex-shrink: 0;
-  border-bottom: 1px solid #2e2b22;
-  background: #111;
+/* loading */
+.br-loading {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; color:#555; font-style:italic;
 }
-.book-topbar-title { font-size: 14px; font-style: italic; color: #aaa; }
-.book-topbar-right { display: flex; align-items: center; gap: 16px; }
-.book-page-label { font-size: 11px; color: #555; font-family: var(--mono); letter-spacing: .1em; }
-.book-close-btn {
-  background: none; border: 1px solid #333; color: #888;
-  font-family: var(--font); font-size: 12px; letter-spacing: .06em;
-  padding: 7px 18px; cursor: pointer; transition: border-color .2s, color .2s;
+.br-spinner {
+  width:26px;height:26px;
+  border:2px solid #2a2a20;border-top-color:#777;
+  border-radius:50%;animation:spin .7s linear infinite;
 }
-.book-close-btn:hover { border-color: #fff; color: #fff; }
+@keyframes spin{to{transform:rotate(360deg)}}
  
-/* stage */
-.book-stage {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; position: relative;
-  perspective: 2400px;
+/* ── spread container ── */
+#br-spread-wrap {
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  /* size set via JS */
 }
  
-/* the two-page spread */
-.book-spread {
-  display: flex; align-items: stretch;
-  position: relative;
-  box-shadow: 0 20px 80px rgba(0,0,0,.7);
+/* two canvases side by side */
+.br-page-canvas {
+  display:block;
+  background:#faf8f2;
+  box-shadow:4px 0 16px rgba(0,0,0,.5);
+  flex-shrink:0;
+}
+.br-page-canvas.left  { box-shadow: 4px 0 20px rgba(0,0,0,.55), inset -2px 0 6px rgba(0,0,0,.12); }
+.br-page-canvas.right { box-shadow:-4px 0 20px rgba(0,0,0,.55), inset  2px 0 6px rgba(0,0,0,.12); }
+ 
+/* flip canvas overlay — sits on top of spread */
+#br-flip-canvas {
+  position:absolute;
+  top:0; left:0;
+  pointer-events:none;
+  display:none;
 }
  
-/* each side (left / right) */
-.book-page-side {
-  width: var(--page-w);
-  height: var(--page-h);
-  overflow: hidden;
-  position: relative;
-  background: #faf8f2;
-}
-.book-page-side canvas { display: block; width: 100%; height: 100%; }
- 
-/* spine shadow */
-.book-spine {
-  width: 6px; flex-shrink: 0;
-  background: linear-gradient(to right, #c8c0a8, #ede8de, #c8c0a8);
-  box-shadow: inset -2px 0 4px rgba(0,0,0,.15), inset 2px 0 4px rgba(0,0,0,.15);
+.br-spine {
+  width:8px; flex-shrink:0;
+  background:linear-gradient(to right,#b8b0a0,#ede8de 40%,#ede8de 60%,#b8b0a0);
+  box-shadow:inset -1px 0 3px rgba(0,0,0,.2), inset 1px 0 3px rgba(0,0,0,.2);
+  align-self:stretch;
 }
  
-/* ---- FLIP ANIMATION ---- */
-/* The turning page sits on top of the spread */
-.flip-page {
-  position: absolute;
-  top: 0;
-  width: var(--page-w);
-  height: var(--page-h);
-  transform-origin: left center;
-  transform-style: preserve-3d;
-  pointer-events: none;
-  z-index: 10;
+/* ── bottom nav ── */
+.br-bottom {
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  padding:12px 16px; flex-shrink:0;
+  background:#111; border-top:1px solid #2a2a20;
 }
-.flip-page.flip-right { left: calc(var(--page-w) + 6px); transform-origin: left center; }
-.flip-page.flip-left  { left: 0;                          transform-origin: right center; }
+.br-nav-btn {
+  background:none; border:1px solid #2e2e22; color:#888;
+  font-family:var(--mono); font-size:16px;
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:border-color .15s,color .15s;
+}
+.br-nav-btn:hover:not(:disabled) { border-color:#ccc;color:#ccc; }
+.br-nav-btn:disabled { opacity:.25;cursor:default; }
+.br-progress-bar {
+  width:160px; height:3px; background:#222;
+  border-radius:2px; overflow:hidden; cursor:pointer;
+}
+.br-progress-fill { height:100%;background:#666;border-radius:2px;transition:width .2s; }
  
-.flip-front, .flip-back {
-  position: absolute; inset: 0;
-  backface-visibility: hidden;
-  overflow: hidden; background: #faf8f2;
-}
-.flip-back { transform: rotateY(180deg); }
-.flip-front canvas, .flip-back canvas { display: block; width: 100%; height: 100%; }
- 
-/* forward flip: right page folds to the left */
-@keyframes flipForward {
-  0%   { transform: rotateY(0deg);    }
-  100% { transform: rotateY(-180deg); }
-}
-/* backward flip: flipped page folds back to the right */
-@keyframes flipBackward {
-  0%   { transform: rotateY(-180deg); }
-  100% { transform: rotateY(0deg);    }
-}
- 
-.flip-page.animating-forward  { animation: flipForward  .55s cubic-bezier(.4,0,.2,1) forwards; }
-.flip-page.animating-backward { animation: flipBackward .55s cubic-bezier(.4,0,.2,1) forwards; }
- 
-/* curl shadow during flip */
-.flip-page.animating-forward .flip-front::after,
-.flip-page.animating-backward .flip-back::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(to left, rgba(0,0,0,.18) 0%, transparent 40%);
-  pointer-events: none;
-}
- 
-/* bottom bar */
-.book-bottombar {
-  display: flex; align-items: center; justify-content: center;
-  gap: 24px; padding: 16px; flex-shrink: 0;
-  border-top: 1px solid #2e2b22; background: #111;
-}
-.book-nav-btn {
-  background: none; border: 1px solid #333; color: #888;
-  font-family: var(--mono); font-size: 18px; width: 42px; height: 42px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: border-color .2s, color .2s;
-}
-.book-nav-btn:hover:not(:disabled) { border-color: #ccc; color: #ccc; }
-.book-nav-btn:disabled { opacity: .25; cursor: default; }
-.book-progress {
-  font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: #555;
-  min-width: 80px; text-align: center;
-}
- 
-/* loading spinner inside stage */
-.book-loading {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: #555; font-style: italic; font-size: 14px; gap: 16px;
-}
-.book-spinner {
-  width: 28px; height: 28px;
-  border: 2px solid #333;
-  border-top-color: #888;
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
- 
-/* mobile: single page */
-@media (max-width: 700px) {
-  .book-page-side:first-child,
-  .book-spine { display: none; }
+@media(max-width:700px){
+  .br-title{max-width:100px;}
+  .br-zoom-val,.br-sep{display:none;}
 }
 </style>
 </head>
@@ -187,7 +177,7 @@
  
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarik yigit</a>
+    <a href="index.html" class="header-name">tarık yiğit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -198,9 +188,9 @@
   </div>
   <nav>
     <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazilar">Writings</a>
-    <a href="about.html"    data-en="About"    data-tr="Hakkinda">About</a>
-    <a href="contact.html"  data-en="Contact"  data-tr="Iletisim">Contact</a>
+    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazılar">Writings</a>
+    <a href="about.html"    data-en="About"    data-tr="Hakkında">About</a>
+    <a href="contact.html"  data-en="Contact"  data-tr="İletişim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -211,16 +201,16 @@
  
 <div class="page-wrap">
   <div class="sec">
-    <div class="sec-title" data-en="Writings" data-tr="Yazilar">Writings</div>
+    <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
  
     <div class="tabs">
-      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tumu">All</button>
+      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tümü">All</button>
       <button class="tab-btn"    id="tab-books"    onclick="swTab('books')"    data-en="Books"    data-tr="Kitaplar">Books</button>
-      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Siirler">Poems</button>
+      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Şiirler">Poems</button>
       <button class="tab-btn"    id="tab-articles" onclick="swTab('articles')" data-en="Articles" data-tr="Makaleler">Articles</button>
     </div>
  
-    <!-- ALL tab -->
+    <!-- ALL -->
     <div class="tab-panel on" id="panel-all">
       <div style="margin-bottom:36px;">
         <div class="col-title" data-en="Books" data-tr="Kitaplar">Books</div>
@@ -228,7 +218,7 @@
       </div>
       <div class="writings-grid">
         <div>
-          <div class="col-title" data-en="Poems" data-tr="Siirler">Poems</div>
+          <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
           <div id="all-poems"></div>
         </div>
         <div>
@@ -238,24 +228,16 @@
       </div>
     </div>
  
-    <!-- BOOKS tab -->
-    <div class="tab-panel" id="panel-books">
-      <div id="only-books"></div>
-    </div>
- 
-    <!-- POEMS tab -->
-    <div class="tab-panel" id="panel-poems">
-      <div id="only-poems"></div>
-    </div>
- 
-    <!-- ARTICLES tab -->
-    <div class="tab-panel" id="panel-articles">
-      <div id="only-articles"></div>
-    </div>
+    <!-- BOOKS -->
+    <div class="tab-panel" id="panel-books"><div id="only-books"></div></div>
+    <!-- POEMS -->
+    <div class="tab-panel" id="panel-poems"><div id="only-poems"></div></div>
+    <!-- ARTICLES -->
+    <div class="tab-panel" id="panel-articles"><div id="only-articles"></div></div>
   </div>
 </div>
  
-<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
  
 <!-- READING OVERLAY (poems / articles) -->
 <div id="reading-overlay">
@@ -270,361 +252,608 @@
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
  
-<!-- BOOK READER OVERLAY -->
+<!-- ════════════════════════════════════════
+     BOOK READER OVERLAY
+════════════════════════════════════════ -->
 <div id="book-overlay">
-  <div class="book-topbar">
-    <span class="book-topbar-title" id="bookTitle"></span>
-    <div class="book-topbar-right">
-      <span class="book-page-label" id="bookPageLabel"></span>
-      <button class="book-close-btn" onclick="closeBook()" data-en="Close" data-tr="Kapat">Close</button>
+ 
+  <!-- toolbar -->
+  <div class="br-toolbar">
+    <span class="br-title" id="brTitle"></span>
+ 
+    <div class="br-tools">
+      <!-- page nav -->
+      <span class="br-page-total" id="brPageOf" style="margin-right:2px;"></span>
+      <span class="br-page-total" data-en="Page" data-tr="Sayfa">Page</span>
+      <input class="br-page-input" id="brPageInput" type="number" min="1" value="1"/>
+      <span class="br-page-total" id="brPageTotal"></span>
+ 
+      <div class="br-sep"></div>
+ 
+      <!-- zoom -->
+      <button class="br-btn" id="brZoomOut" onclick="brZoom(-1)" title="Zoom out">−</button>
+      <span class="br-zoom-val" id="brZoomVal">100%</span>
+      <button class="br-btn" id="brZoomIn"  onclick="brZoom(+1)" title="Zoom in">+</button>
+      <button class="br-btn" id="brZoomFit" onclick="brZoomFit()" title="Fit to window" style="font-size:10px;letter-spacing:-.02em;">FIT</button>
+ 
+      <div class="br-sep"></div>
+ 
+      <!-- download (shown only if book.allowDownload) -->
+      <a id="brDownload" class="br-download-btn" style="display:none;text-decoration:none;line-height:34px;"
+         target="_blank" rel="noopener"
+         data-en="↓ Download" data-tr="↓ İndir">↓ Download</a>
+ 
+      <button class="br-close-btn" onclick="closeBook()" data-en="Close" data-tr="Kapat">Close</button>
     </div>
   </div>
  
-  <div class="book-stage" id="bookStage">
-    <div class="book-loading" id="bookLoading">
-      <div class="book-spinner"></div>
-      <span data-en="Loading book..." data-tr="Kitap yukleniyor...">Loading book...</span>
+  <!-- stage -->
+  <div class="br-stage" id="brStage">
+    <div class="br-loading" id="brLoading">
+      <div class="br-spinner"></div>
+      <span data-en="Loading…" data-tr="Yükleniyor…">Loading…</span>
     </div>
-    <!-- spread injected by JS -->
+ 
+    <!-- spread: left canvas + spine + right canvas + flip overlay canvas -->
+    <div id="br-spread-wrap" style="display:none;">
+      <canvas class="br-page-canvas left"  id="brCanvasL"></canvas>
+      <div    class="br-spine"             id="brSpine"></div>
+      <canvas class="br-page-canvas right" id="brCanvasR"></canvas>
+      <canvas id="br-flip-canvas"></canvas>
+    </div>
   </div>
  
-  <div class="book-bottombar">
-    <button class="book-nav-btn" id="btnPrev" onclick="flipPage(-1)" title="Previous">&#8592;</button>
-    <span class="book-progress" id="bookProgress"></span>
-    <button class="book-nav-btn" id="btnNext" onclick="flipPage(1)"  title="Next">&#8594;</button>
+  <!-- bottom nav -->
+  <div class="br-bottom">
+    <button class="br-nav-btn" id="brPrev" onclick="brGo(-1)">&#8592;</button>
+    <div class="br-progress-bar" id="brProgressBar" onclick="brProgressClick(event)">
+      <div class="br-progress-fill" id="brProgressFill" style="width:0%"></div>
+    </div>
+    <button class="br-nav-btn" id="brNext" onclick="brGo(+1)">&#8594;</button>
   </div>
 </div>
  
-<!-- PDF.js from CDN -->
+<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-// Point pdf.js worker to CDN
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 </script>
  
 <script src="data.js"></script>
 <script src="common.js"></script>
- 
 <script>
-/* ===================================================
-   WRITINGS PAGE LOGIC
-   =================================================== */
- 
-/* -- List item builders -- */
+/* ════════════════════════════════════════════
+   WRITINGS LIST
+════════════════════════════════════════════ */
 function makeWritingItem(type, idx, title, meta) {
   const a = document.createElement('a');
-  a.href = '#'; a.className = 'writing-item';
-  a.innerHTML = `<div class="wi-title">${title}</div><div class="wi-meta">${meta}</div>`;
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    if (type === 'poem')    openPoem(idx);
-    if (type === 'article') openArticle(idx);
-  });
+  a.href='#'; a.className='writing-item';
+  a.innerHTML=`<div class="wi-title">${title}</div><div class="wi-meta">${meta}</div>`;
+  a.addEventListener('click',e=>{e.preventDefault();type==='poem'?openPoem(idx):openArticle(idx);});
   return a;
 }
  
 function makeBookItem(idx) {
-  const book = SITE.books[idx];
-  const l    = currentLang;
-  const title = l === 'tr' ? book.titleTR : book.title;
-  const a = document.createElement('div');
-  a.className = 'book-item';
-  a.innerHTML = `
+  const b=SITE.books[idx], l=currentLang;
+  const title=l==='tr'?b.titleTR:b.title;
+  const div=document.createElement('div');
+  div.className='book-item';
+  div.innerHTML=`
     <div class="book-cover-thumb">
-      ${book.cover
-        ? `<img src="${book.cover}" alt="${title}">`
-        : `<span>PDF</span>`}
+      ${b.cover?`<img src="${b.cover}" alt="${title}">`:`<span class="book-cover-ph">PDF</span>`}
     </div>
     <div>
       <div class="book-info-title">${title}</div>
-      <div class="book-info-meta">${book.year}</div>
+      <div class="book-info-meta">${b.year}</div>
     </div>`;
-  a.addEventListener('click', () => openBook(idx));
-  return a;
+  div.addEventListener('click',()=>openBook(idx));
+  return div;
 }
  
 function buildLists() {
-  const l = currentLang;
- 
-  /* Books */
-  ['all-books','only-books'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    SITE.books.forEach((_, i) => el.appendChild(makeBookItem(i)));
+  const l=currentLang;
+  ['all-books','only-books'].forEach(id=>{
+    const el=document.getElementById(id); el.innerHTML='';
+    SITE.books.forEach((_,i)=>el.appendChild(makeBookItem(i)));
   });
- 
-  /* Poems */
-  ['all-poems','only-poems'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    SITE.poems.forEach((p, i) => {
-      el.appendChild(makeWritingItem('poem', i,
-        l === 'tr' ? p.titleTR : p.title, p.year));
-    });
+  ['all-poems','only-poems'].forEach(id=>{
+    const el=document.getElementById(id); el.innerHTML='';
+    SITE.poems.forEach((p,i)=>el.appendChild(makeWritingItem('poem',i,
+      l==='tr'?p.titleTR:p.title, p.year)));
   });
- 
-  /* Articles */
-  ['all-articles','only-articles'].forEach(id => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    SITE.articles.forEach((a, i) => {
-      const type = l === 'tr' ? a.typeTR : a.type;
-      el.appendChild(makeWritingItem('article', i,
-        l === 'tr' ? a.titleTR : a.title, `${a.year} · ${type}`));
-    });
+  ['all-articles','only-articles'].forEach(id=>{
+    const el=document.getElementById(id); el.innerHTML='';
+    SITE.articles.forEach((a,i)=>el.appendChild(makeWritingItem('article',i,
+      l==='tr'?a.titleTR:a.title, `${a.year} · ${l==='tr'?a.typeTR:a.type}`)));
   });
 }
  
 function swTab(t) {
-  ['all','books','poems','articles'].forEach(id => {
-    document.getElementById('tab-'   + id).classList.toggle('on', id === t);
-    document.getElementById('panel-' + id).classList.toggle('on', id === t);
+  ['all','books','poems','articles'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.toggle('on',id===t);
+    document.getElementById('panel-'+id).classList.toggle('on',id===t);
   });
 }
  
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
   buildLists();
-  document.getElementById('b-en').addEventListener('click', () => buildLists());
-  document.getElementById('b-tr').addEventListener('click', () => buildLists());
+  document.getElementById('b-en').addEventListener('click',buildLists);
+  document.getElementById('b-tr').addEventListener('click',buildLists);
 });
  
-/* ===================================================
+/* ════════════════════════════════════════════
    BOOK READER
-   =================================================== */
-let pdfDoc      = null;
-let totalPages  = 0;
-// currentSpread = index of the LEFT page in the two-page view (0-based).
-// Spread 0 => cover alone | Spread 1 => pages 2-3 | Spread 2 => pages 4-5 ...
-// We use a simple model: spreadIndex * 2 gives the left page number (1-based).
-// Cover (page 1) is shown alone as spread 0.
-let spreadIndex = 0;
-let isAnimating = false;
+   State
+════════════════════════════════════════════ */
+let BR = {
+  pdf:        null,
+  total:      0,
+  // leftPage = 1-based page number shown on the LEFT canvas
+  // We use a two-page spread model:
+  //   leftPage 1 => show only page 1 (cover, right side)
+  //   leftPage 2 => show pages 2 (left) and 3 (right)
+  //   leftPage 4 => show pages 4 (left) and 5 (right)  etc.
+  leftPage:   1,
+  zoom:       1.0,     // multiplier applied on top of fit
+  fitScale:   1.0,     // scale that fits the spread to the stage
+  pageW:      0,       // rendered PDF page width at scale=1
+  pageH:      0,
+  animating:  false,
+  bookData:   null,
+};
  
-// Page dimensions for CSS variables
-const PAGE_W = 420;
-const PAGE_H = 580;
- 
-function setPageDimVars() {
-  document.documentElement.style.setProperty('--page-w', PAGE_W + 'px');
-  document.documentElement.style.setProperty('--page-h', PAGE_H + 'px');
-}
-setPageDimVars();
- 
-/* -- Open a book -- */
+/* ── Open a book ── */
 async function openBook(idx) {
   const book = SITE.books[idx];
-  const l    = currentLang;
+  BR.bookData = book;
+  const l = currentLang;
  
-  document.getElementById('bookTitle').textContent = l === 'tr' ? book.titleTR : book.title;
-  document.getElementById('bookLoading').style.display = 'flex';
+  document.getElementById('brTitle').textContent = l==='tr'?book.titleTR:book.title;
+  document.getElementById('brLoading').style.display='flex';
+  document.getElementById('br-spread-wrap').style.display='none';
+ 
+  /* download button */
+  const dlBtn = document.getElementById('brDownload');
+  if (book.allowDownload) {
+    dlBtn.style.display='inline-flex';
+    dlBtn.href=book.pdf;
+    dlBtn.download='';
+  } else {
+    dlBtn.style.display='none';
+  }
+ 
   document.getElementById('book-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
- 
-  // Clear any previous spread
-  const stage = document.getElementById('bookStage');
-  stage.querySelectorAll('.book-spread').forEach(n => n.remove());
+  document.body.style.overflow='hidden';
  
   try {
-    pdfDoc = await pdfjsLib.getDocument(book.pdf).promise;
-    totalPages  = pdfDoc.numPages;
-    spreadIndex = 0;
-    document.getElementById('bookLoading').style.display = 'none';
-    await renderSpread();
+    BR.pdf = await pdfjsLib.getDocument(book.pdf).promise;
+    BR.total = BR.pdf.numPages;
+ 
+    /* measure one page to get aspect ratio */
+    const pg1 = await BR.pdf.getPage(1);
+    const vp  = pg1.getViewport({scale:1});
+    BR.pageW  = vp.width;
+    BR.pageH  = vp.height;
+ 
+    BR.leftPage = 1;
+    BR.zoom = 1.0;
+ 
+    document.getElementById('brPageTotal').textContent = '/ ' + BR.total;
+    document.getElementById('brLoading').style.display='none';
+ 
+    brCalcFit();
+    await brRender();
+    document.getElementById('br-spread-wrap').style.display='flex';
   } catch(e) {
-    document.getElementById('bookLoading').innerHTML =
-      `<span style="color:#a55;">Could not load PDF: ${e.message}</span>`;
-    console.error('PDF load error:', e);
+    document.getElementById('brLoading').innerHTML =
+      `<span style="color:#c55;font-style:italic;">Could not load: ${e.message}</span>`;
+    console.error(e);
   }
 }
  
 function closeBook() {
   document.getElementById('book-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  pdfDoc = null;
-  document.getElementById('bookStage').querySelectorAll('.book-spread').forEach(n => n.remove());
+  document.body.style.overflow='';
+  BR.pdf=null;
+  document.getElementById('br-spread-wrap').style.display='none';
+  // clear canvases
+  ['brCanvasL','brCanvasR','br-flip-canvas'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(c){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);}
+  });
 }
  
-/* -- Render the current spread (no animation) -- */
-async function renderSpread() {
-  if (!pdfDoc) return;
+/* ── Calculate fit scale ── */
+function brCalcFit() {
+  const stage = document.getElementById('brStage');
+  const sw = stage.clientWidth  - 40;   // 20px padding each side
+  const sh = stage.clientHeight - 32;
  
-  const stage = document.getElementById('bookStage');
-  stage.querySelectorAll('.book-spread').forEach(n => n.remove());
+  // spread is 2 pages wide + 8px spine, or 1 page for cover
+  const isCover = (BR.leftPage === 1);
+  const spreadW = isCover ? BR.pageW : BR.pageW * 2 + 8;
+  const spreadH = BR.pageH;
  
-  const spread = document.createElement('div');
-  spread.className = 'book-spread';
-  spread.id = 'currentSpread';
+  const scaleW = sw / spreadW;
+  const scaleH = sh / spreadH;
+  BR.fitScale  = Math.min(scaleW, scaleH, 2.0); // cap at 2x
+}
  
-  const isMobile = window.innerWidth <= 700;
+function brCurrentScale() {
+  return BR.fitScale * BR.zoom;
+}
  
-  if (spreadIndex === 0) {
-    // Cover: single page centred
-    if (!isMobile) {
-      // empty left side
-      const leftBlank = document.createElement('div');
-      leftBlank.className = 'book-page-side';
-      leftBlank.style.background = '#1a1710';
-      spread.appendChild(leftBlank);
-      spread.appendChild(makeSVGSpine());
+/* ── Render current spread to canvases ── */
+async function brRender() {
+  if (!BR.pdf) return;
+ 
+  const scale    = brCurrentScale();
+  const DPR      = Math.min(window.devicePixelRatio || 1, 2);
+  const finalScale = scale * DPR;
+ 
+  const isCover = (BR.leftPage === 1);
+  const lPage   = BR.leftPage;       // 0 means blank
+  const rPage   = isCover ? 1 : BR.leftPage + 1;
+ 
+  const cW = Math.round(BR.pageW * scale);
+  const cH = Math.round(BR.pageH * scale);
+ 
+  /* ── left canvas ── */
+  const cL = document.getElementById('brCanvasL');
+  cL.style.display = isCover ? 'none' : 'block';
+  document.getElementById('brSpine').style.display = isCover ? 'none' : 'block';
+ 
+  if (!isCover) {
+    cL.style.width  = cW + 'px';
+    cL.style.height = cH + 'px';
+    cL.width        = cW * DPR;
+    cL.height       = cH * DPR;
+    if (lPage >= 1 && lPage <= BR.total) {
+      await drawPageOnCanvas(lPage, cL, finalScale);
+    } else {
+      // blank left page
+      const ctx = cL.getContext('2d');
+      ctx.fillStyle = '#faf8f2';
+      ctx.fillRect(0,0,cL.width,cL.height);
     }
-    const rightSide = document.createElement('div');
-    rightSide.className = 'book-page-side';
-    const cvs = await renderPageToCanvas(1);
-    rightSide.appendChild(cvs);
-    spread.appendChild(rightSide);
-  } else {
-    const leftPageNum  = spreadIndex * 2;       // e.g. spread 1 => page 2
-    const rightPageNum = spreadIndex * 2 + 1;   // e.g. spread 1 => page 3
- 
-    const leftSide = document.createElement('div');
-    leftSide.className = 'book-page-side';
-    if (leftPageNum <= totalPages) {
-      leftSide.appendChild(await renderPageToCanvas(leftPageNum));
-    }
- 
-    if (!isMobile) spread.appendChild(leftSide);
- 
-    if (!isMobile) spread.appendChild(makeSVGSpine());
- 
-    const rightSide = document.createElement('div');
-    rightSide.className = 'book-page-side';
-    if (rightPageNum <= totalPages) {
-      rightSide.appendChild(await renderPageToCanvas(rightPageNum));
-    }
-    spread.appendChild(rightSide);
   }
  
-  stage.appendChild(spread);
+  /* ── right canvas ── */
+  const cR = document.getElementById('brCanvasR');
+  cR.style.width  = cW + 'px';
+  cR.style.height = cH + 'px';
+  cR.width        = cW * DPR;
+  cR.height       = cH * DPR;
+ 
+  if (rPage >= 1 && rPage <= BR.total) {
+    await drawPageOnCanvas(rPage, cR, finalScale);
+  } else {
+    const ctx = cR.getContext('2d');
+    ctx.fillStyle = '#faf8f2';
+    ctx.fillRect(0,0,cR.width,cR.height);
+  }
+ 
+  /* ── size the flip canvas to cover the whole spread ── */
+  const spreadWpx = isCover ? cW : cW*2 + 8;
+  const fc = document.getElementById('br-flip-canvas');
+  fc.width  = spreadWpx * DPR;
+  fc.height = cH * DPR;
+  fc.style.width  = spreadWpx + 'px';
+  fc.style.height = cH + 'px';
+  fc.style.left   = '0px';
+  fc.style.top    = '0px';
+ 
   updateControls();
 }
  
-function makeSVGSpine() {
-  const spine = document.createElement('div');
-  spine.className = 'book-spine';
-  return spine;
+async function drawPageOnCanvas(pageNum, canvas, scale) {
+  const page = await BR.pdf.getPage(pageNum);
+  const vp   = page.getViewport({scale});
+  canvas.width  = Math.round(vp.width);
+  canvas.height = Math.round(vp.height);
+  // CSS size already set by caller
+  await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
 }
  
-/* Render a single PDF page into a <canvas> at correct scale */
-async function renderPageToCanvas(pageNum) {
-  const page     = await pdfDoc.getPage(pageNum);
-  const viewport = page.getViewport({ scale: 1 });
-  const scale    = Math.min(PAGE_W / viewport.width, PAGE_H / viewport.height);
-  const scaled   = page.getViewport({ scale });
- 
-  const canvas = document.createElement('canvas');
-  canvas.width  = scaled.width;
-  canvas.height = scaled.height;
-  canvas.style.width  = '100%';
-  canvas.style.height = '100%';
- 
-  await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
-  return canvas;
-}
- 
-/* -- Flip to next / prev spread with animation -- */
-async function flipPage(dir) {
-  if (isAnimating) return;
-  const nextSpread = spreadIndex + dir;
-  if (nextSpread < 0 || nextSpread > maxSpread()) return;
- 
-  isAnimating = true;
- 
-  // Pre-render the incoming pages
-  const isMobile = window.innerWidth <= 700;
- 
-  // Determine which page canvas we need for the flip face
-  let flipPageNum, revealPageNum;
-  if (dir === 1) {
-    // Going forward: right page flips over to become left of next spread
-    flipPageNum   = spreadIndex === 0 ? 1 : spreadIndex * 2 + 1; // current right
-    revealPageNum = nextSpread * 2;                                // next left (under)
-  } else {
-    // Going backward: left page of current spread flips back
-    flipPageNum   = spreadIndex * 2;                               // current left
-    revealPageNum = nextSpread * 2 + 1;                            // prev right (under)
-  }
- 
-  // Render canvases
-  const flipFrontCanvas   = flipPageNum   > 0 && flipPageNum   <= totalPages ? await renderPageToCanvas(flipPageNum)   : null;
-  const flipBackCanvas    = revealPageNum > 0 && revealPageNum <= totalPages ? await renderPageToCanvas(revealPageNum) : null;
- 
-  // Build the flip element
-  const flipEl = document.createElement('div');
-  flipEl.className = dir === 1 ? 'flip-page flip-right' : 'flip-page flip-left';
- 
-  const front = document.createElement('div');
-  front.className = 'flip-front';
-  if (flipFrontCanvas) front.appendChild(flipFrontCanvas);
- 
-  const back = document.createElement('div');
-  back.className = 'flip-back';
-  if (flipBackCanvas) back.appendChild(flipBackCanvas);
- 
-  flipEl.appendChild(front);
-  flipEl.appendChild(back);
- 
-  const stage = document.getElementById('bookStage');
-  const spread = document.getElementById('currentSpread');
-  stage.appendChild(flipEl);
- 
-  // Trigger animation
-  requestAnimationFrame(() => {
-    flipEl.classList.add(dir === 1 ? 'animating-forward' : 'animating-backward');
-  });
- 
-  // After animation completes, render the full new spread
-  flipEl.addEventListener('animationend', async () => {
-    flipEl.remove();
-    spreadIndex = nextSpread;
-    await renderSpread();
-    isAnimating = false;
-  }, { once: true });
-}
- 
-function maxSpread() {
-  // spread 0 = cover, then pairs
-  return Math.ceil((totalPages - 1) / 2);
-}
- 
+/* ── Update controls ── */
 function updateControls() {
-  const ms = maxSpread();
-  document.getElementById('btnPrev').disabled = spreadIndex <= 0;
-  document.getElementById('btnNext').disabled = spreadIndex >= ms;
+  const isCover   = BR.leftPage === 1;
+  const displayed = isCover ? 1 : BR.leftPage;
+  const inp       = document.getElementById('brPageInput');
+  inp.value       = displayed;
+  inp.max         = BR.total;
  
-  // Page label
-  let label = '';
-  if (spreadIndex === 0) {
-    label = `1 / ${totalPages}`;
-  } else {
-    const l = spreadIndex * 2;
-    const r = Math.min(l + 1, totalPages);
-    label = `${l}–${r} / ${totalPages}`;
-  }
-  document.getElementById('bookPageLabel').textContent = label;
-  document.getElementById('bookProgress').textContent  = label;
+  document.getElementById('brPrev').disabled = (BR.leftPage <= 1);
+  document.getElementById('brNext').disabled = (BR.leftPage >= BR.total - (BR.total%2===0?1:0));
+ 
+  const pct = ((BR.leftPage-1) / Math.max(BR.total-1,1)) * 100;
+  document.getElementById('brProgressFill').style.width = pct + '%';
+  document.getElementById('brZoomVal').textContent = Math.round(BR.zoom*100) + '%';
+ 
+  /* disable zoom btns at limits */
+  document.getElementById('brZoomOut').disabled = (BR.zoom <= 0.5);
+  document.getElementById('brZoomIn').disabled  = (BR.zoom >= 4.0);
 }
  
-/* Keyboard navigation for book reader */
-document.addEventListener('keydown', e => {
-  const bo = document.getElementById('book-overlay');
-  if (!bo.classList.contains('open')) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  flipPage(1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    flipPage(-1);
-  if (e.key === 'Escape')                                closeBook();
+/* ════════════════════════════════════════════
+   PAGE FLIP ANIMATION
+   We draw the flip entirely on the flip-canvas
+   using a simple arc-based curl polygon.
+════════════════════════════════════════════ */
+async function brGo(dir) {
+  if (BR.animating || !BR.pdf) return;
+ 
+  const next = BR.leftPage + dir * 2;
+  if (next < 1 || next > BR.total) return;
+ 
+  BR.animating = true;
+ 
+  const isCoverNow  = (BR.leftPage === 1);
+  const isCoverNext = (next === 1);
+ 
+  // Determine which page number is "turning"
+  // Forward: right page of current spread flips to become left of next
+  // Backward: left page of current spread flips back
+  let turningPage; // the page that animates
+  let revealPage;  // the page revealed on the back of the turning page
+ 
+  if (dir === 1) {
+    turningPage = isCoverNow ? 1 : BR.leftPage + 1;  // right page now
+    revealPage  = next;                               // left page next
+  } else {
+    turningPage = BR.leftPage;                        // left page now
+    revealPage  = isCoverNext ? 1 : next + 1;         // right page next
+  }
+ 
+  const scale    = brCurrentScale();
+  const DPR      = Math.min(window.devicePixelRatio||1, 2);
+  const cW       = Math.round(BR.pageW * scale);
+  const cH       = Math.round(BR.pageH * scale);
+  const isCover  = isCoverNow;
+ 
+  // Pre-render both sides of the turning page into offscreen canvases
+  const offFront = document.createElement('canvas');
+  const offBack  = document.createElement('canvas');
+  offFront.width  = offBack.width  = cW * DPR;
+  offFront.height = offBack.height = cH * DPR;
+  offFront.style.width = offBack.style.width   = cW + 'px';
+  offFront.style.height= offBack.style.height  = cH + 'px';
+ 
+  if (turningPage >= 1 && turningPage <= BR.total) {
+    await drawPageOnCanvas(turningPage, offFront, scale * DPR);
+  } else {
+    const c=offFront.getContext('2d'); c.fillStyle='#faf8f2'; c.fillRect(0,0,offFront.width,offFront.height);
+  }
+  if (revealPage >= 1 && revealPage <= BR.total) {
+    await drawPageOnCanvas(revealPage, offBack, scale * DPR);
+  } else {
+    const c=offBack.getContext('2d'); c.fillStyle='#faf8f2'; c.fillRect(0,0,offBack.width,offBack.height);
+  }
+ 
+  const fc     = document.getElementById('br-flip-canvas');
+  const ctx    = fc.getContext('2d');
+  fc.style.display = 'block';
+ 
+  const STEPS  = 28;
+  const TOTAL_MS = 480;
+  const startT = performance.now();
+ 
+  // x position of the pivot (left edge of right page, or right edge of left page)
+  const pivotX = isCover ? 0 : cW + 8; // px from left of spread
+ 
+  function easeInOut(t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t; }
+ 
+  function frame(now) {
+    const elapsed = now - startT;
+    const raw     = Math.min(elapsed / TOTAL_MS, 1);
+    const t       = easeInOut(raw);         // 0 → 1
+ 
+    ctx.clearRect(0, 0, fc.width, fc.height);
+ 
+    // Progress: t=0 → page is flat on spread; t=1 → page has fully turned
+    // We simulate the fold by drawing the page as a skewed quadrilateral
+    // whose right edge moves from rightX to leftX (forward flip)
+ 
+    const pageCSS_W = cW;
+    const pageCSS_H = cH;
+ 
+    if (dir === 1) {
+      // FORWARD: right page pivots left around pivotX
+      // At t=0: page fills [pivotX, pivotX+cW]
+      // At t=1: page has moved to [pivotX-cW, pivotX], mirrored
+      const rightEdge  = pivotX + pageCSS_W * (1-t);  // moves left
+      const leftEdge   = pivotX - pageCSS_W * t;       // comes from pivot
+      const skewTop    = pageCSS_W * t * 0.05;          // slight perspective skew
+ 
+      // Shadow on the right side of the spread
+      const shadowGrad = ctx.createLinearGradient(rightEdge-30, 0, rightEdge+10, 0);
+      shadowGrad.addColorStop(0,'rgba(0,0,0,0)');
+      shadowGrad.addColorStop(1,'rgba(0,0,0,0.25)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect((rightEdge-30)*DPR, 0, 40*DPR, pageCSS_H*DPR);
+ 
+      if (t < 0.5) {
+        // First half: drawing the FRONT (current page) folding
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(pivotX*DPR,              skewTop*DPR);
+        ctx.lineTo(rightEdge*DPR,           0);
+        ctx.lineTo(rightEdge*DPR,           pageCSS_H*DPR);
+        ctx.lineTo(pivotX*DPR,             (pageCSS_H-skewTop)*DPR);
+        ctx.closePath();
+        ctx.clip();
+        // Draw front (scale canvas back to fit the clipped quad)
+        const scaleX = (rightEdge - pivotX) / pageCSS_W;
+        ctx.drawImage(offFront,
+          pivotX*DPR, skewTop*DPR,
+          (rightEdge-pivotX)*DPR, (pageCSS_H-skewTop*2)*DPR);
+        // Fold highlight gradient
+        const hl = ctx.createLinearGradient(pivotX*DPR,0, rightEdge*DPR,0);
+        hl.addColorStop(0,'rgba(255,255,255,0.18)');
+        hl.addColorStop(1,'rgba(0,0,0,0.12)');
+        ctx.fillStyle = hl;
+        ctx.fillRect(pivotX*DPR, 0, (rightEdge-pivotX)*DPR, pageCSS_H*DPR);
+        ctx.restore();
+      } else {
+        // Second half: drawing the BACK (reveal page) unfolding from pivot to left
+        const t2 = (t-0.5)*2; // 0→1
+        const leftEdge2 = pivotX - pageCSS_W*t2;
+        const skewTop2  = pageCSS_W*(1-t2)*0.05;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(leftEdge2*DPR,   skewTop2*DPR);
+        ctx.lineTo(pivotX*DPR,      0);
+        ctx.lineTo(pivotX*DPR,      pageCSS_H*DPR);
+        ctx.lineTo(leftEdge2*DPR,  (pageCSS_H-skewTop2)*DPR);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(offBack,
+          leftEdge2*DPR, skewTop2*DPR,
+          (pivotX-leftEdge2)*DPR, (pageCSS_H-skewTop2*2)*DPR);
+        const hl = ctx.createLinearGradient(leftEdge2*DPR,0, pivotX*DPR,0);
+        hl.addColorStop(0,'rgba(0,0,0,0.1)');
+        hl.addColorStop(1,'rgba(255,255,255,0.14)');
+        ctx.fillStyle = hl;
+        ctx.fillRect(leftEdge2*DPR, 0, (pivotX-leftEdge2)*DPR, pageCSS_H*DPR);
+        ctx.restore();
+      }
+    } else {
+      // BACKWARD: left page pivots right around pivotX
+      const leftEdge   = pivotX - pageCSS_W*(1-t); // moves right
+      const rightEdge  = pivotX + pageCSS_W*t;
+      const skewTop    = pageCSS_W * t * 0.05;
+ 
+      if (t < 0.5) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(leftEdge*DPR,   0);
+        ctx.lineTo(pivotX*DPR,     skewTop*DPR);
+        ctx.lineTo(pivotX*DPR,    (pageCSS_H-skewTop)*DPR);
+        ctx.lineTo(leftEdge*DPR,   pageCSS_H*DPR);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(offFront,
+          leftEdge*DPR, 0,
+          (pivotX-leftEdge)*DPR, pageCSS_H*DPR);
+        const hl = ctx.createLinearGradient(leftEdge*DPR,0, pivotX*DPR,0);
+        hl.addColorStop(0,'rgba(0,0,0,0.1)');
+        hl.addColorStop(1,'rgba(255,255,255,0.16)');
+        ctx.fillStyle=hl;
+        ctx.fillRect(leftEdge*DPR,0,(pivotX-leftEdge)*DPR,pageCSS_H*DPR);
+        ctx.restore();
+      } else {
+        const t2=(t-.5)*2;
+        const rightEdge2 = pivotX + pageCSS_W*t2;
+        const skew2      = pageCSS_W*(1-t2)*.05;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(pivotX*DPR,       skew2*DPR);
+        ctx.lineTo(rightEdge2*DPR,   0);
+        ctx.lineTo(rightEdge2*DPR,   pageCSS_H*DPR);
+        ctx.lineTo(pivotX*DPR,      (pageCSS_H-skew2)*DPR);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(offBack,
+          pivotX*DPR, skew2*DPR,
+          (rightEdge2-pivotX)*DPR, (pageCSS_H-skew2*2)*DPR);
+        const hl=ctx.createLinearGradient(pivotX*DPR,0,rightEdge2*DPR,0);
+        hl.addColorStop(0,'rgba(255,255,255,0.16)');
+        hl.addColorStop(1,'rgba(0,0,0,0.08)');
+        ctx.fillStyle=hl;
+        ctx.fillRect(pivotX*DPR,skew2*DPR,(rightEdge2-pivotX)*DPR,(pageCSS_H-skew2*2)*DPR);
+        ctx.restore();
+      }
+    }
+ 
+    if (raw < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      // Animation done — update state and re-render
+      ctx.clearRect(0,0,fc.width,fc.height);
+      fc.style.display='none';
+      BR.leftPage = next;
+      BR.animating = false;
+      brRender();
+    }
+  }
+ 
+  requestAnimationFrame(frame);
+}
+ 
+/* ── Zoom ── */
+function brZoom(dir) {
+  const steps=[0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.35,1.5,1.75,2.0,2.5,3.0,4.0];
+  let cur=steps.findIndex(s=>Math.abs(s-BR.zoom)<0.01);
+  if(cur===-1) cur=steps.indexOf(1.0);
+  const next=Math.max(0,Math.min(steps.length-1,cur+dir));
+  BR.zoom=steps[next];
+  brCalcFit();
+  brRender();
+}
+ 
+function brZoomFit() {
+  BR.zoom=1.0;
+  brCalcFit();
+  brRender();
+}
+ 
+/* ── Page input ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('brPageInput');
+  inp.addEventListener('change',()=>{
+    let v=parseInt(inp.value,10);
+    if(isNaN(v)||v<1) v=1;
+    if(v>BR.total) v=BR.total;
+    // Snap to nearest valid leftPage
+    if(v===1){ BR.leftPage=1; }
+    else {
+      // leftPage must be even (2,4,6…)
+      BR.leftPage = v%2===0 ? v : v-1;
+      if(BR.leftPage<2) BR.leftPage=2;
+    }
+    brRender();
+  });
 });
  
-/* Touch swipe for book reader */
-(function() {
-  let sx = 0;
-  const stage = document.getElementById('bookStage');
-  stage.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
-  stage.addEventListener('touchend',   e => {
-    const dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) > 50) flipPage(dx < 0 ? 1 : -1);
+/* ── Progress bar click ── */
+function brProgressClick(e) {
+  if(!BR.pdf) return;
+  const bar=document.getElementById('brProgressBar');
+  const rect=bar.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  const target=Math.max(1,Math.min(BR.total,Math.round(pct*(BR.total-1))+1));
+  if(target===1){ BR.leftPage=1; }
+  else { BR.leftPage=target%2===0?target:target-1; if(BR.leftPage<2)BR.leftPage=2; }
+  brRender();
+}
+ 
+/* ── Keyboard ── */
+document.addEventListener('keydown',e=>{
+  const bo=document.getElementById('book-overlay');
+  if(!bo.classList.contains('open')) return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') brGo(1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   brGo(-1);
+  if(e.key==='Escape') closeBook();
+});
+ 
+/* ── Touch swipe ── */
+(()=>{
+  let sx=0;
+  const stage=document.getElementById('brStage');
+  stage.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+  stage.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>50) brGo(dx<0?1:-1);
   });
 })();
+ 
+/* ── Re-fit on resize ── */
+window.addEventListener('resize',()=>{
+  if(BR.pdf && document.getElementById('book-overlay').classList.contains('open')){
+    brCalcFit(); brRender();
+  }
+});
 </script>
 </body>
 </html>
- 
