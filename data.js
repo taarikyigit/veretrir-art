@@ -1,33 +1,33 @@
-/* ═══════════════════════════════════════════════════════
-   data.js  —  Edit this file to update all site content.
+/* =========================================================
+   data.js  --  Edit this file to update all site content.
    This is the ONLY file you need to touch for content.
-   ═══════════════════════════════════════════════════════ */
+   ========================================================= */
  
 const SITE = {
  
-  /* ── ARTWORKS ─────────────────────────────────────────
+  /* -- ARTWORKS -------------------------------------------
      image:       path relative to site root
      extraImages: array of additional photo paths
      model:       .gltf path or null
-  ──────────────────────────────────────────────────────── */
+  -------------------------------------------------------- */
   artworks: [
     {
       id: 'untitled-1',
       title: 'Untitled I',
-      titleTR: 'İsimsiz I',
+      titleTR: 'Isimsiz I',
       year: '2024',
       medium: 'Mixed Media',
       mediumTR: 'Karma Teknik',
       image: null,
       extraImages: [],
       model: 'images/3d/test.gltf',
-      desc: 'Add a description of this artwork — the process, the intent, the materials, the context.',
-      descTR: 'Bu eserle ilgili açıklama ekleyin — süreç, niyet, malzeme, bağlam.',
+      desc: 'Add a description of this artwork -- the process, the intent, the materials, the context.',
+      descTR: 'Bu eserle ilgili aciklama ekleyin -- surec, niyet, malzeme, bagiam.',
     },
     {
       id: 'untitled-2',
       title: 'Untitled II',
-      titleTR: 'İsimsiz II',
+      titleTR: 'Isimsiz II',
       year: '2024',
       medium: 'Digital',
       mediumTR: 'Dijital',
@@ -35,42 +35,42 @@ const SITE = {
       extraImages: [],
       model: null,
       desc: 'Add a description of this artwork.',
-      descTR: 'Bu eserle ilgili açıklama ekleyin.',
+      descTR: 'Bu eserle ilgili aciklama ekleyin.',
     },
     {
       id: 'untitled-3',
       title: 'Untitled III',
-      titleTR: 'İsimsiz III',
+      titleTR: 'Isimsiz III',
       year: '2023',
       medium: 'Print',
-      mediumTR: 'Baskı',
+      mediumTR: 'Baski',
       image: null,
       extraImages: [],
       model: null,
       desc: 'Add a description of this artwork.',
-      descTR: 'Bu eserle ilgili açıklama ekleyin.',
+      descTR: 'Bu eserle ilgili aciklama ekleyin.',
     },
     {
       id: 'untitled-4',
       title: 'Untitled IV',
-      titleTR: 'İsimsiz IV',
+      titleTR: 'Isimsiz IV',
       year: '2023',
       medium: 'Oil on Canvas',
-      mediumTR: 'Tuval Üzerine Yağlıboya',
+      mediumTR: 'Tuval Uzerine Yagliboyal',
       image: null,
       extraImages: [],
       model: null,
       desc: 'Add a description of this artwork.',
-      descTR: 'Bu eserle ilgili açıklama ekleyin.',
+      descTR: 'Bu eserle ilgili aciklama ekleyin.',
     },
   ],
  
-  /* ── POEMS ─────────────────────────────────────────── */
+  /* -- POEMS --------------------------------------------- */
   poems: [
     {
       id: 'poem-1',
       title: 'Poem Title One',
-      titleTR: 'Şiir Başlık Bir',
+      titleTR: 'Siir Baslik Bir',
       year: '2024',
       body: `Add your full poem text here.
 Each line break is preserved exactly.
@@ -78,70 +78,87 @@ This is where your verses live.
  
 A second stanza can go here,
 separated by a blank line.`,
-      bodyTR: `Şiir metninizi buraya ekleyin.
-Her satır sonu korunur.
+      bodyTR: `Siir metninizi buraya ekleyin.
+Her satir sonu korunur.
 Dizeleriniz burada yer alacak.
  
-İkinci kıta buraya gelebilir,
-boş bir satırla ayrılmış şekilde.`,
+Ikinci kita buraya gelebilir,
+bos bir satirla ayrilmis sekilde.`,
     },
     {
       id: 'poem-2',
       title: 'Poem Title Two',
-      titleTR: 'Şiir Başlık İki',
+      titleTR: 'Siir Baslik Iki',
       year: '2024',
       body: `Second poem goes here.\nAdd as many lines as you like.`,
-      bodyTR: `İkinci şiir buraya gelir.\nİstediğiniz kadar satır ekleyebilirsiniz.`,
+      bodyTR: `Ikinci siir buraya gelir.\nIstediginiz kadar satir ekleyebilirsiniz.`,
     },
     {
       id: 'poem-3',
       title: 'Poem Title Three',
-      titleTR: 'Şiir Başlık Üç',
+      titleTR: 'Siir Baslik Uc',
       year: '2023',
       body: `Third poem goes here.`,
-      bodyTR: `Üçüncü şiir buraya gelir.`,
+      bodyTR: `Ucuncu siir buraya gelir.`,
     },
   ],
  
-  /* ── ARTICLES ──────────────────────────────────────── */
+  /* -- ARTICLES ------------------------------------------- */
   articles: [
     {
       id: 'article-1',
       title: 'Article Title One',
-      titleTR: 'Makale Başlık Bir',
+      titleTR: 'Makale Baslik Bir',
       year: '2024',
       type: 'Essay',
       typeTR: 'Deneme',
-      body: `Add your full article text here. This is the body of the essay — you can write as much as you need. Replace this placeholder with your actual writing.
+      body: `Add your full article text here. This is the body of the essay -- you can write as much as you need. Replace this placeholder with your actual writing.
  
 A second paragraph of the article continues here. The reading view is clean and distraction-free.`,
-      bodyTR: `Makale metninizi buraya ekleyin. Bu denemenin gövdesidir. Bu yer tutucuyu gerçek yazınızla değiştirin.
+      bodyTR: `Makale metninizi buraya ekleyin. Bu denemenin govdesidir. Bu yer tutucuyu gercek yazinizla degistirin.
  
-Makalenin ikinci paragrafı burada devam eder. Okuma görünümü temiz ve dikkat dağıtıcı öğelerden arındırılmıştır.`,
+Makalenin ikinci paragrafi burada devam eder.`,
     },
     {
       id: 'article-2',
       title: 'Article Title Two',
-      titleTR: 'Makale Başlık İki',
+      titleTR: 'Makale Baslik Iki',
       year: '2023',
       type: 'Criticism',
-      typeTR: 'Eleştiri',
+      typeTR: 'Elesitiri',
       body: `Second article body goes here.`,
-      bodyTR: `İkinci makale metni buraya gelir.`,
+      bodyTR: `Ikinci makale metni buraya gelir.`,
     },
     {
       id: 'article-3',
       title: 'Article Title Three',
-      titleTR: 'Makale Başlık Üç',
+      titleTR: 'Makale Baslik Uc',
       year: '2023',
       type: 'Essay',
       typeTR: 'Deneme',
       body: `Third article body goes here.`,
-      bodyTR: `Üçüncü makale metni buraya gelir.`,
+      bodyTR: `Ucuncu makale metni buraya gelir.`,
     },
   ],
  
-  /* ── HERO SLIDES ──────────────────────────────────── */
+  /* -- BOOKS ---------------------------------------------
+     pdf:   path relative to site root, e.g. "books/mybook.pdf"
+     cover: optional cover image path, or null
+  ------------------------------------------------------- */
+  books: [
+    {
+      id: 'stain',
+      title: 'Stain',
+      titleTR: 'Leke',
+      year: '2026',
+      pdf: 'books/stainturkish.pdf',
+      cover: null,
+      desc: 'A collection of poems.',
+      descTR: 'Siirler derlemesi.',
+    },
+  ],
+ 
+  /* -- HERO SLIDES --------------------------------------- */
   heroSlides: [
     null,
     null,
@@ -149,20 +166,20 @@ Makalenin ikinci paragrafı burada devam eder. Okuma görünümü temiz ve dikka
     null,
   ],
  
-  /* ── ONGOING / PLANNED PROJECTS ───────────────────── */
+  /* -- ONGOING / PLANNED PROJECTS ----------------------- */
   projects: [
     {
       title: 'Project Title One',
-      titleTR: 'Proje Başlık Bir',
+      titleTR: 'Proje Baslik Bir',
       desc: 'A short description of this ongoing project.',
-      descTR: 'Bu devam eden projenin kısa açıklaması.',
+      descTR: 'Bu devam eden projenin kisa aciklamasi.',
       status: 'ongoing',
     },
     {
       title: 'Project Title Two',
-      titleTR: 'Proje Başlık İki',
+      titleTR: 'Proje Baslik Iki',
       desc: 'A short description of this planned project.',
-      descTR: 'Bu planlanan projenin kısa açıklaması.',
+      descTR: 'Bu planlanan projenin kisa aciklamasi.',
       status: 'planned',
     },
   ],
