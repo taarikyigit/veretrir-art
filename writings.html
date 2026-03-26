@@ -3,11 +3,183 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Writings — tarık yiğit</title>
+<title>Writings — tarik yigit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
+/* ---- writings grid ---- */
 .writings-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
-@media(max-width:640px) { .writings-grid { grid-template-columns:1fr; gap:32px; } }
+@media(max-width:640px){ .writings-grid{ grid-template-columns:1fr; gap:32px; } }
+ 
+/* ---- book list items ---- */
+.book-item {
+  display: flex; align-items: center; gap: 20px;
+  padding: 18px 0; border-bottom: 1px solid #e8e4de;
+  cursor: pointer; transition: padding-left .2s; text-decoration: none;
+}
+.book-item:hover { padding-left: 8px; }
+.book-cover-thumb {
+  width: 52px; height: 70px; flex-shrink: 0;
+  background: #e0dcd6; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: #bbb;
+}
+.book-cover-thumb img { width:100%; height:100%; object-fit:cover; }
+.book-info-title {
+  font-size: 15px; font-style: italic; color: var(--ink);
+  margin-bottom: 3px; transition: color .2s;
+}
+.book-item:hover .book-info-title { color: var(--red); }
+.book-info-meta { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #bbb; font-family: var(--mono); }
+ 
+/* ====================================================
+   BOOK READER OVERLAY
+   ==================================================== */
+#book-overlay {
+  position: fixed; inset: 0; z-index: 700;
+  background: #1a1710;
+  display: flex; flex-direction: column;
+  transform: translateY(100%);
+  transition: transform .45s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; visibility: hidden;
+}
+#book-overlay.open {
+  transform: translateY(0);
+  pointer-events: all; visibility: visible;
+}
+ 
+/* top bar */
+.book-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 52px; flex-shrink: 0;
+  border-bottom: 1px solid #2e2b22;
+  background: #111;
+}
+.book-topbar-title { font-size: 14px; font-style: italic; color: #aaa; }
+.book-topbar-right { display: flex; align-items: center; gap: 16px; }
+.book-page-label { font-size: 11px; color: #555; font-family: var(--mono); letter-spacing: .1em; }
+.book-close-btn {
+  background: none; border: 1px solid #333; color: #888;
+  font-family: var(--font); font-size: 12px; letter-spacing: .06em;
+  padding: 7px 18px; cursor: pointer; transition: border-color .2s, color .2s;
+}
+.book-close-btn:hover { border-color: #fff; color: #fff; }
+ 
+/* stage */
+.book-stage {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+  perspective: 2400px;
+}
+ 
+/* the two-page spread */
+.book-spread {
+  display: flex; align-items: stretch;
+  position: relative;
+  box-shadow: 0 20px 80px rgba(0,0,0,.7);
+}
+ 
+/* each side (left / right) */
+.book-page-side {
+  width: var(--page-w);
+  height: var(--page-h);
+  overflow: hidden;
+  position: relative;
+  background: #faf8f2;
+}
+.book-page-side canvas { display: block; width: 100%; height: 100%; }
+ 
+/* spine shadow */
+.book-spine {
+  width: 6px; flex-shrink: 0;
+  background: linear-gradient(to right, #c8c0a8, #ede8de, #c8c0a8);
+  box-shadow: inset -2px 0 4px rgba(0,0,0,.15), inset 2px 0 4px rgba(0,0,0,.15);
+}
+ 
+/* ---- FLIP ANIMATION ---- */
+/* The turning page sits on top of the spread */
+.flip-page {
+  position: absolute;
+  top: 0;
+  width: var(--page-w);
+  height: var(--page-h);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 10;
+}
+.flip-page.flip-right { left: calc(var(--page-w) + 6px); transform-origin: left center; }
+.flip-page.flip-left  { left: 0;                          transform-origin: right center; }
+ 
+.flip-front, .flip-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  overflow: hidden; background: #faf8f2;
+}
+.flip-back { transform: rotateY(180deg); }
+.flip-front canvas, .flip-back canvas { display: block; width: 100%; height: 100%; }
+ 
+/* forward flip: right page folds to the left */
+@keyframes flipForward {
+  0%   { transform: rotateY(0deg);    }
+  100% { transform: rotateY(-180deg); }
+}
+/* backward flip: flipped page folds back to the right */
+@keyframes flipBackward {
+  0%   { transform: rotateY(-180deg); }
+  100% { transform: rotateY(0deg);    }
+}
+ 
+.flip-page.animating-forward  { animation: flipForward  .55s cubic-bezier(.4,0,.2,1) forwards; }
+.flip-page.animating-backward { animation: flipBackward .55s cubic-bezier(.4,0,.2,1) forwards; }
+ 
+/* curl shadow during flip */
+.flip-page.animating-forward .flip-front::after,
+.flip-page.animating-backward .flip-back::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to left, rgba(0,0,0,.18) 0%, transparent 40%);
+  pointer-events: none;
+}
+ 
+/* bottom bar */
+.book-bottombar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px; padding: 16px; flex-shrink: 0;
+  border-top: 1px solid #2e2b22; background: #111;
+}
+.book-nav-btn {
+  background: none; border: 1px solid #333; color: #888;
+  font-family: var(--mono); font-size: 18px; width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: border-color .2s, color .2s;
+}
+.book-nav-btn:hover:not(:disabled) { border-color: #ccc; color: #ccc; }
+.book-nav-btn:disabled { opacity: .25; cursor: default; }
+.book-progress {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: #555;
+  min-width: 80px; text-align: center;
+}
+ 
+/* loading spinner inside stage */
+.book-loading {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #555; font-style: italic; font-size: 14px; gap: 16px;
+}
+.book-spinner {
+  width: 28px; height: 28px;
+  border: 2px solid #333;
+  border-top-color: #888;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+ 
+/* mobile: single page */
+@media (max-width: 700px) {
+  .book-page-side:first-child,
+  .book-spine { display: none; }
+}
 </style>
 </head>
 <body>
@@ -15,19 +187,20 @@
  
 <header>
   <div class="header-left">
-    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="index.html" class="header-name">tarik yigit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
     <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"    data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"  data-tr="İletişim">Contact</a>
+    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazilar">Writings</a>
+    <a href="about.html"    data-en="About"    data-tr="Hakkinda">About</a>
+    <a href="contact.html"  data-en="Contact"  data-tr="Iletisim">Contact</a>
   </nav>
   <div class="header-right">
     <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
@@ -38,27 +211,36 @@
  
 <div class="page-wrap">
   <div class="sec">
-    <!-- sec-title switches with lang -->
-    <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
+    <div class="sec-title" data-en="Writings" data-tr="Yazilar">Writings</div>
  
     <div class="tabs">
-      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tümü">All</button>
-      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Şiirler">Poems</button>
+      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tumu">All</button>
+      <button class="tab-btn"    id="tab-books"    onclick="swTab('books')"    data-en="Books"    data-tr="Kitaplar">Books</button>
+      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Siirler">Poems</button>
       <button class="tab-btn"    id="tab-articles" onclick="swTab('articles')" data-en="Articles" data-tr="Makaleler">Articles</button>
     </div>
  
     <!-- ALL tab -->
     <div class="tab-panel on" id="panel-all">
+      <div style="margin-bottom:36px;">
+        <div class="col-title" data-en="Books" data-tr="Kitaplar">Books</div>
+        <div id="all-books"></div>
+      </div>
       <div class="writings-grid">
         <div>
-          <div class="col-title" id="col-poems-lbl" data-en="Poems" data-tr="Şiirler">Poems</div>
+          <div class="col-title" data-en="Poems" data-tr="Siirler">Poems</div>
           <div id="all-poems"></div>
         </div>
         <div>
-          <div class="col-title" id="col-articles-lbl" data-en="Articles" data-tr="Makaleler">Articles</div>
+          <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
           <div id="all-articles"></div>
         </div>
       </div>
+    </div>
+ 
+    <!-- BOOKS tab -->
+    <div class="tab-panel" id="panel-books">
+      <div id="only-books"></div>
     </div>
  
     <!-- POEMS tab -->
@@ -73,9 +255,9 @@
   </div>
 </div>
  
-<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
+<footer><span>tarik yigit</span><span>veretrir.art</span></footer>
  
-<!-- READING OVERLAY -->
+<!-- READING OVERLAY (poems / articles) -->
 <div id="reading-overlay">
   <div class="reading-topbar">
     <span class="reading-badge" id="reading-badge"></span>
@@ -88,14 +270,51 @@
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
  
+<!-- BOOK READER OVERLAY -->
+<div id="book-overlay">
+  <div class="book-topbar">
+    <span class="book-topbar-title" id="bookTitle"></span>
+    <div class="book-topbar-right">
+      <span class="book-page-label" id="bookPageLabel"></span>
+      <button class="book-close-btn" onclick="closeBook()" data-en="Close" data-tr="Kapat">Close</button>
+    </div>
+  </div>
+ 
+  <div class="book-stage" id="bookStage">
+    <div class="book-loading" id="bookLoading">
+      <div class="book-spinner"></div>
+      <span data-en="Loading book..." data-tr="Kitap yukleniyor...">Loading book...</span>
+    </div>
+    <!-- spread injected by JS -->
+  </div>
+ 
+  <div class="book-bottombar">
+    <button class="book-nav-btn" id="btnPrev" onclick="flipPage(-1)" title="Previous">&#8592;</button>
+    <span class="book-progress" id="bookProgress"></span>
+    <button class="book-nav-btn" id="btnNext" onclick="flipPage(1)"  title="Next">&#8594;</button>
+  </div>
+</div>
+ 
+<!-- PDF.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+// Point pdf.js worker to CDN
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+</script>
+ 
 <script src="data.js"></script>
 <script src="common.js"></script>
+ 
 <script>
-/* Build a clickable writing item element */
-function makeItem(type, idx, title, meta) {
+/* ===================================================
+   WRITINGS PAGE LOGIC
+   =================================================== */
+ 
+/* -- List item builders -- */
+function makeWritingItem(type, idx, title, meta) {
   const a = document.createElement('a');
-  a.href = '#';
-  a.className = 'writing-item';
+  a.href = '#'; a.className = 'writing-item';
   a.innerHTML = `<div class="wi-title">${title}</div><div class="wi-meta">${meta}</div>`;
   a.addEventListener('click', e => {
     e.preventDefault();
@@ -105,57 +324,306 @@ function makeItem(type, idx, title, meta) {
   return a;
 }
  
-/* Render all lists using current language */
+function makeBookItem(idx) {
+  const book = SITE.books[idx];
+  const l    = currentLang;
+  const title = l === 'tr' ? book.titleTR : book.title;
+  const a = document.createElement('div');
+  a.className = 'book-item';
+  a.innerHTML = `
+    <div class="book-cover-thumb">
+      ${book.cover
+        ? `<img src="${book.cover}" alt="${title}">`
+        : `<span>PDF</span>`}
+    </div>
+    <div>
+      <div class="book-info-title">${title}</div>
+      <div class="book-info-meta">${book.year}</div>
+    </div>`;
+  a.addEventListener('click', () => openBook(idx));
+  return a;
+}
+ 
 function buildLists() {
   const l = currentLang;
  
-  const targets = {
-    poems:    ['all-poems', 'only-poems'],
-    articles: ['all-articles', 'only-articles'],
-  };
+  /* Books */
+  ['all-books','only-books'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    SITE.books.forEach((_, i) => el.appendChild(makeBookItem(i)));
+  });
  
   /* Poems */
-  targets.poems.forEach(id => {
+  ['all-poems','only-poems'].forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     SITE.poems.forEach((p, i) => {
-      el.appendChild(makeItem('poem', i,
-        l === 'tr' ? p.titleTR : p.title,
-        p.year
-      ));
+      el.appendChild(makeWritingItem('poem', i,
+        l === 'tr' ? p.titleTR : p.title, p.year));
     });
   });
  
   /* Articles */
-  targets.articles.forEach(id => {
+  ['all-articles','only-articles'].forEach(id => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     SITE.articles.forEach((a, i) => {
       const type = l === 'tr' ? a.typeTR : a.type;
-      el.appendChild(makeItem('article', i,
-        l === 'tr' ? a.titleTR : a.title,
-        `${a.year} · ${type}`
-      ));
+      el.appendChild(makeWritingItem('article', i,
+        l === 'tr' ? a.titleTR : a.title, `${a.year} · ${type}`));
     });
   });
 }
  
-/* Tab switcher */
 function swTab(t) {
-  ['all','poems','articles'].forEach(id => {
-    document.getElementById('tab-' + id).classList.toggle('on', id === t);
+  ['all','books','poems','articles'].forEach(id => {
+    document.getElementById('tab-'   + id).classList.toggle('on', id === t);
     document.getElementById('panel-' + id).classList.toggle('on', id === t);
   });
 }
  
-/* Hook into lang changes — done after DOM ready so setLang exists */
 document.addEventListener('DOMContentLoaded', () => {
-  buildLists(); // initial render
- 
-  /* Wrap the lang buttons so every switch also rebuilds lists */
+  buildLists();
   document.getElementById('b-en').addEventListener('click', () => buildLists());
   document.getElementById('b-tr').addEventListener('click', () => buildLists());
 });
+ 
+/* ===================================================
+   BOOK READER
+   =================================================== */
+let pdfDoc      = null;
+let totalPages  = 0;
+// currentSpread = index of the LEFT page in the two-page view (0-based).
+// Spread 0 => cover alone | Spread 1 => pages 2-3 | Spread 2 => pages 4-5 ...
+// We use a simple model: spreadIndex * 2 gives the left page number (1-based).
+// Cover (page 1) is shown alone as spread 0.
+let spreadIndex = 0;
+let isAnimating = false;
+ 
+// Page dimensions for CSS variables
+const PAGE_W = 420;
+const PAGE_H = 580;
+ 
+function setPageDimVars() {
+  document.documentElement.style.setProperty('--page-w', PAGE_W + 'px');
+  document.documentElement.style.setProperty('--page-h', PAGE_H + 'px');
+}
+setPageDimVars();
+ 
+/* -- Open a book -- */
+async function openBook(idx) {
+  const book = SITE.books[idx];
+  const l    = currentLang;
+ 
+  document.getElementById('bookTitle').textContent = l === 'tr' ? book.titleTR : book.title;
+  document.getElementById('bookLoading').style.display = 'flex';
+  document.getElementById('book-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+ 
+  // Clear any previous spread
+  const stage = document.getElementById('bookStage');
+  stage.querySelectorAll('.book-spread').forEach(n => n.remove());
+ 
+  try {
+    pdfDoc = await pdfjsLib.getDocument(book.pdf).promise;
+    totalPages  = pdfDoc.numPages;
+    spreadIndex = 0;
+    document.getElementById('bookLoading').style.display = 'none';
+    await renderSpread();
+  } catch(e) {
+    document.getElementById('bookLoading').innerHTML =
+      `<span style="color:#a55;">Could not load PDF: ${e.message}</span>`;
+    console.error('PDF load error:', e);
+  }
+}
+ 
+function closeBook() {
+  document.getElementById('book-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  pdfDoc = null;
+  document.getElementById('bookStage').querySelectorAll('.book-spread').forEach(n => n.remove());
+}
+ 
+/* -- Render the current spread (no animation) -- */
+async function renderSpread() {
+  if (!pdfDoc) return;
+ 
+  const stage = document.getElementById('bookStage');
+  stage.querySelectorAll('.book-spread').forEach(n => n.remove());
+ 
+  const spread = document.createElement('div');
+  spread.className = 'book-spread';
+  spread.id = 'currentSpread';
+ 
+  const isMobile = window.innerWidth <= 700;
+ 
+  if (spreadIndex === 0) {
+    // Cover: single page centred
+    if (!isMobile) {
+      // empty left side
+      const leftBlank = document.createElement('div');
+      leftBlank.className = 'book-page-side';
+      leftBlank.style.background = '#1a1710';
+      spread.appendChild(leftBlank);
+      spread.appendChild(makeSVGSpine());
+    }
+    const rightSide = document.createElement('div');
+    rightSide.className = 'book-page-side';
+    const cvs = await renderPageToCanvas(1);
+    rightSide.appendChild(cvs);
+    spread.appendChild(rightSide);
+  } else {
+    const leftPageNum  = spreadIndex * 2;       // e.g. spread 1 => page 2
+    const rightPageNum = spreadIndex * 2 + 1;   // e.g. spread 1 => page 3
+ 
+    const leftSide = document.createElement('div');
+    leftSide.className = 'book-page-side';
+    if (leftPageNum <= totalPages) {
+      leftSide.appendChild(await renderPageToCanvas(leftPageNum));
+    }
+ 
+    if (!isMobile) spread.appendChild(leftSide);
+ 
+    if (!isMobile) spread.appendChild(makeSVGSpine());
+ 
+    const rightSide = document.createElement('div');
+    rightSide.className = 'book-page-side';
+    if (rightPageNum <= totalPages) {
+      rightSide.appendChild(await renderPageToCanvas(rightPageNum));
+    }
+    spread.appendChild(rightSide);
+  }
+ 
+  stage.appendChild(spread);
+  updateControls();
+}
+ 
+function makeSVGSpine() {
+  const spine = document.createElement('div');
+  spine.className = 'book-spine';
+  return spine;
+}
+ 
+/* Render a single PDF page into a <canvas> at correct scale */
+async function renderPageToCanvas(pageNum) {
+  const page     = await pdfDoc.getPage(pageNum);
+  const viewport = page.getViewport({ scale: 1 });
+  const scale    = Math.min(PAGE_W / viewport.width, PAGE_H / viewport.height);
+  const scaled   = page.getViewport({ scale });
+ 
+  const canvas = document.createElement('canvas');
+  canvas.width  = scaled.width;
+  canvas.height = scaled.height;
+  canvas.style.width  = '100%';
+  canvas.style.height = '100%';
+ 
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise;
+  return canvas;
+}
+ 
+/* -- Flip to next / prev spread with animation -- */
+async function flipPage(dir) {
+  if (isAnimating) return;
+  const nextSpread = spreadIndex + dir;
+  if (nextSpread < 0 || nextSpread > maxSpread()) return;
+ 
+  isAnimating = true;
+ 
+  // Pre-render the incoming pages
+  const isMobile = window.innerWidth <= 700;
+ 
+  // Determine which page canvas we need for the flip face
+  let flipPageNum, revealPageNum;
+  if (dir === 1) {
+    // Going forward: right page flips over to become left of next spread
+    flipPageNum   = spreadIndex === 0 ? 1 : spreadIndex * 2 + 1; // current right
+    revealPageNum = nextSpread * 2;                                // next left (under)
+  } else {
+    // Going backward: left page of current spread flips back
+    flipPageNum   = spreadIndex * 2;                               // current left
+    revealPageNum = nextSpread * 2 + 1;                            // prev right (under)
+  }
+ 
+  // Render canvases
+  const flipFrontCanvas   = flipPageNum   > 0 && flipPageNum   <= totalPages ? await renderPageToCanvas(flipPageNum)   : null;
+  const flipBackCanvas    = revealPageNum > 0 && revealPageNum <= totalPages ? await renderPageToCanvas(revealPageNum) : null;
+ 
+  // Build the flip element
+  const flipEl = document.createElement('div');
+  flipEl.className = dir === 1 ? 'flip-page flip-right' : 'flip-page flip-left';
+ 
+  const front = document.createElement('div');
+  front.className = 'flip-front';
+  if (flipFrontCanvas) front.appendChild(flipFrontCanvas);
+ 
+  const back = document.createElement('div');
+  back.className = 'flip-back';
+  if (flipBackCanvas) back.appendChild(flipBackCanvas);
+ 
+  flipEl.appendChild(front);
+  flipEl.appendChild(back);
+ 
+  const stage = document.getElementById('bookStage');
+  const spread = document.getElementById('currentSpread');
+  stage.appendChild(flipEl);
+ 
+  // Trigger animation
+  requestAnimationFrame(() => {
+    flipEl.classList.add(dir === 1 ? 'animating-forward' : 'animating-backward');
+  });
+ 
+  // After animation completes, render the full new spread
+  flipEl.addEventListener('animationend', async () => {
+    flipEl.remove();
+    spreadIndex = nextSpread;
+    await renderSpread();
+    isAnimating = false;
+  }, { once: true });
+}
+ 
+function maxSpread() {
+  // spread 0 = cover, then pairs
+  return Math.ceil((totalPages - 1) / 2);
+}
+ 
+function updateControls() {
+  const ms = maxSpread();
+  document.getElementById('btnPrev').disabled = spreadIndex <= 0;
+  document.getElementById('btnNext').disabled = spreadIndex >= ms;
+ 
+  // Page label
+  let label = '';
+  if (spreadIndex === 0) {
+    label = `1 / ${totalPages}`;
+  } else {
+    const l = spreadIndex * 2;
+    const r = Math.min(l + 1, totalPages);
+    label = `${l}–${r} / ${totalPages}`;
+  }
+  document.getElementById('bookPageLabel').textContent = label;
+  document.getElementById('bookProgress').textContent  = label;
+}
+ 
+/* Keyboard navigation for book reader */
+document.addEventListener('keydown', e => {
+  const bo = document.getElementById('book-overlay');
+  if (!bo.classList.contains('open')) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  flipPage(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')    flipPage(-1);
+  if (e.key === 'Escape')                                closeBook();
+});
+ 
+/* Touch swipe for book reader */
+(function() {
+  let sx = 0;
+  const stage = document.getElementById('bookStage');
+  stage.addEventListener('touchstart', e => sx = e.touches[0].clientX, { passive: true });
+  stage.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) flipPage(dx < 0 ? 1 : -1);
+  });
+})();
 </script>
 </body>
 </html>
