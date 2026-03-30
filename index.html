@@ -122,6 +122,15 @@
 .hs-slide-ph {
   position: absolute; inset: 0;
   background: linear-gradient(135deg, #1a1a18, #232320, #181816);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hs-slide-ph::after {
+  content: "⊞";
+  font-size: 48px;
+  color: rgba(255,255,255,0.2);
+  font-family: var(--mono);
 }
  
 /* ── Slide counter strip (right side) ── */
@@ -427,6 +436,13 @@
    UTILITIES
 ═══════════════════════════════════════════════════ */
  
+/** Get the main image path from an artwork's images array */
+function getArtworkMainImage(aw) {
+  if (!aw.images || !aw.images.length) return null;
+  const main = aw.images.find(i => i.isMain);
+  return (main || aw.images[0]).path;
+}
+ 
 /** Fisher-Yates shuffle — returns a new shuffled array */
 function shuffle(arr) {
   const a = [...arr];
@@ -444,6 +460,7 @@ function pickRandom(arr, n) {
  
 /** Get first n lines of a string */
 function firstLines(str, n) {
+  if (!str) return '';
   return str.split('\n').filter(l => l.trim() !== '').slice(0, n).join('\n');
 }
  
@@ -472,15 +489,19 @@ function firstLines(str, n) {
     const slide = document.createElement('div');
     slide.className = 'hs-slide' + (i === 0 ? ' active' : '');
  
+    // FIXED: Get correct language content
     const l     = currentLang;
-    const title = l === 'tr' ? aw.titleTR : aw.title;
-    const meta  = `${aw.year}${aw.medium ? ' · ' + (l === 'tr' ? aw.mediumTR : aw.medium) : ''}`;
+    const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+    const meta  = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
  
+    // FIXED: Get image from images array, not aw.image
+    const mainImage = getArtworkMainImage(aw);
+    
     // Background image
     const imgDiv = document.createElement('div');
     imgDiv.className = 'hs-slide-img';
-    if (aw.image) {
-      imgDiv.style.backgroundImage = `url('${aw.image}')`;
+    if (mainImage) {
+      imgDiv.style.backgroundImage = `url('${mainImage}')`;
     } else {
       imgDiv.classList.add('hs-slide-ph');
     }
@@ -506,7 +527,9 @@ function firstLines(str, n) {
  
     // Click opens artwork detail overlay
     const awIdx = SITE.artworks.indexOf(aw);
-    slide.addEventListener('click', () => {
+    slide.addEventListener('click', (e) => {
+      // Prevent if clicking on buttons
+      if (e.target.closest('.hs-arrow')) return;
       if (awIdx >= 0) openArtwork(awIdx);
     });
  
@@ -526,9 +549,9 @@ function firstLines(str, n) {
     const slides = track.querySelectorAll('.hs-slide');
     const dots   = counter.querySelectorAll('.hs-counter-dot');
  
-    slides[cur].classList.remove('active');
+    if (slides[cur]) slides[cur].classList.remove('active');
     cur = (n + TOTAL) % TOTAL;
-    slides[cur].classList.add('active');
+    if (slides[cur]) slides[cur].classList.add('active');
  
     track.style.transform = `translateX(-${cur * 100}vw)`;
     dots.forEach((d, i) => d.classList.toggle('on', i === cur));
@@ -544,23 +567,36 @@ function firstLines(str, n) {
     timer = setInterval(() => move(1), INTERVAL);
   }
  
-  prevBtn.addEventListener('click', () => move(-1));
-  nextBtn.addEventListener('click', () => move(1));
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    move(-1);
+  });
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    move(1);
+  });
  
   // Touch / swipe
-  let dx = 0;
-  track.addEventListener('touchstart', e => dx = e.touches[0].clientX, { passive: true });
-  track.addEventListener('touchend',   e => {
-    const d = e.changedTouches[0].clientX - dx;
-    if (Math.abs(d) > 50) move(d < 0 ? 1 : -1);
+  let touchStartX = 0;
+  track.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(deltaX) > 50) move(deltaX < 0 ? 1 : -1);
   });
+  
   // Mouse drag
-  let mdx = 0, dragging = false;
-  track.addEventListener('mousedown', e => { mdx = e.clientX; dragging = true; });
-  track.addEventListener('mouseup',   e => {
-    if (!dragging) return; dragging = false;
-    const d = e.clientX - mdx;
-    if (Math.abs(d) > 60) move(d < 0 ? 1 : -1);
+  let mouseDownX = 0, dragging = false;
+  track.addEventListener('mousedown', e => {
+    mouseDownX = e.clientX;
+    dragging = true;
+  });
+  track.addEventListener('mouseup', e => {
+    if (!dragging) return;
+    dragging = false;
+    const deltaX = e.clientX - mouseDownX;
+    if (Math.abs(deltaX) > 60) move(deltaX < 0 ? 1 : -1);
   });
  
   /* Progress bar animation */
@@ -583,66 +619,117 @@ function firstLines(str, n) {
   }
  
   // Kick off
-  startProgress();
+  if (TOTAL > 0) {
+    startProgress();
+    timer = setInterval(() => move(1), INTERVAL);
+  }
 })();
  
 /* ═══════════════════════════════════════════════════
    RANDOM POEM BLOCK
 ═══════════════════════════════════════════════════ */
-(function initPoem() {
+function refreshPoem() {
   if (!SITE.poems || !SITE.poems.length) return;
  
   const poem  = SITE.poems[Math.floor(Math.random() * SITE.poems.length)];
   const pIdx  = SITE.poems.indexOf(poem);
   const l     = currentLang;
  
-  const title   = l === 'tr' ? poem.titleTR : poem.title;
-  const body    = l === 'tr' ? poem.bodyTR  : poem.body;
+  // FIXED: Show Turkish when language is TR, English when EN
+  const title   = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
+  const body    = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
   const excerpt = firstLines(body, 4);
  
   document.getElementById('poemTitle').textContent   = title;
-  document.getElementById('poemYear').textContent    = poem.year;
+  document.getElementById('poemYear').textContent    = poem.year || '';
   document.getElementById('poemExcerpt').textContent = excerpt;
  
   const btn = document.getElementById('poemBtn');
-  btn.addEventListener('click', () => openPoem(pIdx));
-})();
+  // Remove old listener and add new one
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  newBtn.addEventListener('click', () => openPoem(pIdx));
+}
  
 /* ═══════════════════════════════════════════════════
    BOTTOM PREVIEW STRIP
 ═══════════════════════════════════════════════════ */
-(function initPreviews() {
+function refreshPreviews() {
   const l = currentLang;
  
   const artEl = document.getElementById('homeArtworks');
-  SITE.artworks.slice(0, 4).forEach(a => {
-    const div = document.createElement('a');
-    div.href = 'artworks.html';
-    div.className = 'home-link-item';
-    div.innerHTML = `
-      <div class="hli-title">${l === 'tr' ? a.titleTR : a.title}</div>
-      <div class="hli-meta">${a.year}${a.medium ? ' · ' + (l === 'tr' ? a.mediumTR : a.medium) : ''}</div>`;
-    artEl.appendChild(div);
-  });
+  if (artEl) {
+    artEl.innerHTML = '';
+    SITE.artworks.slice(0, 4).forEach(a => {
+      const div = document.createElement('a');
+      div.href = 'artworks.html';
+      div.className = 'home-link-item';
+      // FIXED: Show Turkish when language is TR, English when EN
+      const title = l === 'tr' ? (a.titleTR || a.title) : a.title;
+      const medium = l === 'tr' ? (a.mediumTR || a.medium) : a.medium;
+      div.innerHTML = `
+        <div class="hli-title">${_esc(title)}</div>
+        <div class="hli-meta">${a.year || ''}${medium ? ' · ' + _esc(medium) : ''}</div>`;
+      artEl.appendChild(div);
+    });
+  }
  
   const wrEl = document.getElementById('homeWritings');
-  const writings = [
-    ...SITE.poems.slice(0, 2).map(p => ({ ...p, _type: 'poem' })),
-    ...SITE.articles.slice(0, 2).map(a => ({ ...a, _type: 'article' })),
-  ];
-  writings.forEach(w => {
-    const div = document.createElement('a');
-    div.href = 'writings.html';
-    div.className = 'home-link-item';
-    const meta = w.type
-      ? `${w.year} · ${l === 'tr' ? w.typeTR : w.type}`
-      : w.year;
-    div.innerHTML = `
-      <div class="hli-title">${l === 'tr' ? w.titleTR : w.title}</div>
-      <div class="hli-meta">${meta}</div>`;
-    wrEl.appendChild(div);
-  });
-})();
+  if (wrEl) {
+    wrEl.innerHTML = '';
+    const writings = [
+      ...SITE.poems.slice(0, 2).map(p => ({ ...p, _type: 'poem' })),
+      ...SITE.articles.slice(0, 2).map(a => ({ ...a, _type: 'article' })),
+    ];
+    writings.forEach(w => {
+      const div = document.createElement('a');
+      div.href = 'writings.html';
+      div.className = 'home-link-item';
+      // FIXED: Show Turkish when language is TR, English when EN
+      const title = l === 'tr' ? (w.titleTR || w.title) : w.title;
+      const type = w.type ? (l === 'tr' ? (w.typeTR || w.type) : w.type) : '';
+      const meta = type ? `${w.year || ''} · ${_esc(type)}` : (w.year || '');
+      div.innerHTML = `
+        <div class="hli-title">${_esc(title)}</div>
+        <div class="hli-meta">${meta}</div>`;
+      wrEl.appendChild(div);
+    });
+  }
+}
+ 
+/* ═══════════════════════════════════════════════════
+   LANGUAGE CHANGE HANDLER
+═══════════════════════════════════════════════════ */
+// Store original setLang function
+const originalSetLang = window.setLang;
+ 
+// Override setLang to refresh dynamic content
+window.setLang = function(l) {
+  originalSetLang(l);
+  refreshPreviews();
+  refreshPoem();
+  
+  // Also refresh hero slides to update text
+  const track = document.getElementById('hsTrack');
+  if (track) {
+    const slides = track.querySelectorAll('.hs-slide');
+    slides.forEach((slide, idx) => {
+      const titleEl = slide.querySelector('.hs-slide-title');
+      const metaEl = slide.querySelector('.hs-slide-meta');
+      if (titleEl && metaEl && SITE.artworks[idx]) {
+        const aw = SITE.artworks[idx];
+        const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+        const meta = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
+        titleEl.textContent = title;
+        metaEl.textContent = meta;
+      }
+    });
+  }
+};
+ 
+// Initialize everything
+refreshPreviews();
+refreshPoem();
 </script>
 </body>
 </html>
