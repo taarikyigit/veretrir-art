@@ -35,6 +35,7 @@
 .aw-ov-meta{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);font-family:var(--mono);}
 
 .aw-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:rgba(255,255,255,.7);font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;pointer-events:none;}
+.type-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-family:var(--mono);font-size:8px;letter-spacing:.12em;padding:3px 7px;border-radius:2px;}
 
 .no-results{grid-column:1/-1;padding:48px;text-align:center;font-style:italic;color:var(--dim);font-size:15px;}
 
@@ -89,9 +90,12 @@
 
     <div class="tab-panel on" id="panel-works">
       <div class="filter-bar">
-        <span class="filter-label" data-en="Filter:" data-tr="Filtrele:">Filter:</span>
-        <select class="filter-select" id="filterYear"   onchange="applyFilters()"></select>
-        <select class="filter-select" id="filterMedium" onchange="applyFilters()"></select>
+        <span class="filter-label" data-en="Filter by type:" data-tr="Türe göre filtrele:">Filter by type:</span>
+        <select class="filter-select" id="filterType" onchange="applyFilters()">
+          <option value="">All Works</option>
+          <option value="3d">3 Dimensional (Sculpture / Installation)</option>
+          <option value="2d">2 Dimensional (Painting / Print / Drawing)</option>
+        </select>
         <button class="filter-clear" onclick="clearFilters()" data-en="Clear" data-tr="Temizle">Clear</button>
         <span class="filter-count" id="filterCount"></span>
       </div>
@@ -142,90 +146,93 @@ function _mainImg(aw) {
   const m = aw.images.find(i=>i.isMain); return (m||aw.images[0]).path;
 }
 
+function _getDisplayImage(aw) {
+  return aw.displayImage || _mainImg(aw);
+}
+
 function buildFilters() {
   const l = currentLang;
-  const years   = [...new Set(SITE.artworks.map(a=>a.year).filter(Boolean))].sort().reverse();
-  const mediums = [...new Set(SITE.artworks.map(a=>a.medium).filter(Boolean))].sort();
-  const yEl=document.getElementById('filterYear'), mEl=document.getElementById('filterMedium');
-  yEl.innerHTML=`<option value="">${l==='tr'?'Tüm yıllar':'All years'}</option>`;
-  mEl.innerHTML=`<option value="">${l==='tr'?'Tüm teknikler':'All media'}</option>`;
-  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o);});
-  mediums.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;mEl.appendChild(o);});
+  const typeEl = document.getElementById('filterType');
+  // Type options are static, no need to rebuild
 }
 
 function applyFilters() {
-  const year=document.getElementById('filterYear').value;
-  const medium=document.getElementById('filterMedium').value;
-  const thumbs=document.querySelectorAll('.artwork-thumb');
-  let vis=0;
-  thumbs.forEach(th=>{
-    const show=(!year||th.dataset.year===year)&&(!medium||th.dataset.medium===medium);
-    th.classList.toggle('hidden',!show); if(show) vis++;
+  const type = document.getElementById('filterType').value;
+  const thumbs = document.querySelectorAll('.artwork-thumb');
+  let vis = 0;
+  thumbs.forEach(th => {
+    const show = (!type || th.dataset.type === type);
+    th.classList.toggle('hidden', !show); 
+    if(show) vis++;
   });
-  const grid=document.getElementById('artworkGrid');
-  let nr=grid.querySelector('.no-results');
-  if(vis===0){
+  const grid = document.getElementById('artworkGrid');
+  let nr = grid.querySelector('.no-results');
+  if(vis === 0){
     if(!nr){nr=document.createElement('div');nr.className='no-results';grid.appendChild(nr);}
-    nr.textContent=currentLang==='tr'?'Eser bulunamadı.':'No works match the selected filters.';
+    nr.textContent = currentLang === 'tr' ? 'Eser bulunamadı.' : 'No works match the selected filter.';
   } else { if(nr) nr.remove(); }
-  document.getElementById('filterCount').textContent=vis+' / '+SITE.artworks.length+(currentLang==='tr'?' eser':' works');
+  document.getElementById('filterCount').textContent = vis + ' / ' + SITE.artworks.length + (currentLang === 'tr' ? ' eser' : ' works');
 }
 
 function clearFilters() {
-  document.getElementById('filterYear').value='';
-  document.getElementById('filterMedium').value='';
+  document.getElementById('filterType').value = '';
   applyFilters();
 }
 
 function buildPage() {
-  const l=currentLang;
-  const grid=document.getElementById('artworkGrid');
-  grid.innerHTML='';
-  SITE.artworks.forEach((aw,idx)=>{
+  const l = currentLang;
+  const grid = document.getElementById('artworkGrid');
+  grid.innerHTML = '';
+  SITE.artworks.forEach((aw, idx) => {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-    const div=document.createElement('div');
-    div.className='artwork-thumb';
-    div.dataset.year=aw.year||'';
-    div.dataset.medium=aw.medium||'';
-    div.addEventListener('click',()=>openArtwork(idx));
-    const src=_mainImg(aw);
-    div.innerHTML=(src?`<img src="${src}" alt="${title}">`:`<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">${l==='tr'?'görsel':'image'}</span></div>`)
-      +`<div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year||''}${aw.medium?' · '+(l==='tr'?(aw.mediumTR||aw.medium):aw.medium):''}</div></div>`;
-    const hasMats=aw.materials&&aw.materials.length;
-    const has3d=hasMats&&aw.materials.some(m=>m.type==='3d');
-    if(has3d) div.innerHTML+=`<span class="aw-badge">3D</span>`;
+    const div = document.createElement('div');
+    div.className = 'artwork-thumb';
+    div.dataset.type = aw.workType || '3d';
+    div.addEventListener('click', () => openArtwork(idx));
+    
+    const displaySrc = _getDisplayImage(aw);
+    const typeLabel = (aw.workType === '2d') ? (l === 'tr' ? '2B' : '2D') : (l === 'tr' ? '3B' : '3D');
+    
+    div.innerHTML = (displaySrc ? `<img src="${displaySrc}" alt="${title}">` : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">${l === 'tr' ? 'görsel' : 'image'}</span></div>`)
+      + `<div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}</div></div>`
+      + `<span class="type-badge">${typeLabel}</span>`;
+    
+    const hasMats = aw.materials && aw.materials.length;
+    const has3d = hasMats && aw.materials.some(m => m.type === '3d');
+    if(has3d) div.innerHTML += `<span class="aw-badge">3D</span>`;
     grid.appendChild(div);
   });
 
-  buildFilters(); applyFilters();
+  buildFilters(); 
+  applyFilters();
 
-  const pl=document.getElementById('projectsList');
-  pl.innerHTML='';
-  SITE.projects.forEach((p,idx)=>{
+  const pl = document.getElementById('projectsList');
+  pl.innerHTML = '';
+  SITE.projects.forEach((p, idx) => {
     const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
     const desc = l === 'tr' ? (p.descTR || p.desc) : p.desc;
-    const status = p.status === 'ongoing' ? (l==='tr'?'Devam Ediyor':'Ongoing') : (l==='tr'?'Planlandı':'Planned');
-    const src=_mainImg(p);
-    const div=document.createElement('div');
-    div.className='project-card';
-    div.addEventListener('click',()=>openProject(idx));
-    div.innerHTML=`
-      <div class="project-thumb">${src?`<img src="${src}" alt="${name}">`:`<div class="project-thumb-ph">${l==='tr'?'görsel':'img'}</div>`}</div>
+    const status = p.status === 'ongoing' ? (l === 'tr' ? 'Devam Ediyor' : 'Ongoing') : (l === 'tr' ? 'Planlandı' : 'Planned');
+    const displaySrc = _getDisplayImage(p);
+    const div = document.createElement('div');
+    div.className = 'project-card';
+    div.addEventListener('click', () => openProject(idx));
+    div.innerHTML = `
+      <div class="project-thumb">${displaySrc ? `<img src="${displaySrc}" alt="${name}">` : `<div class="project-thumb-ph">${l === 'tr' ? 'görsel' : 'img'}</div>`}</div>
       <div>
         <div class="project-name">${name}</div>
-        <div class="project-desc">${desc||''}</div>
+        <div class="project-desc">${desc || ''}</div>
       </div>
-      <span class="p-tag ${p.status==='ongoing'?'tag-on':'tag-pl'}">${status}</span>`;
+      <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${status}</span>`;
     pl.appendChild(div);
   });
 }
 
-const _base=window.setLang;
-window.setLang=function(l){_base(l);buildPage();};
-document.addEventListener('DOMContentLoaded',()=>{
+const _base = window.setLang;
+window.setLang = function(l){_base(l);buildPage();};
+document.addEventListener('DOMContentLoaded', () => {
   buildPage();
-  document.getElementById('b-en').addEventListener('click',()=>buildPage());
-  document.getElementById('b-tr').addEventListener('click',()=>buildPage());
+  document.getElementById('b-en').addEventListener('click', () => buildPage());
+  document.getElementById('b-tr').addEventListener('click', () => buildPage());
 });
 </script>
 </body>
