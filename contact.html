@@ -46,26 +46,17 @@
   <div class="sec">
     <div class="sec-title contact-center" data-en="Contact" data-tr="İletişim">Contact</div>
     <div class="contact-center">
-      <a href="mailto:hello@veretrir.art" class="contact-email" data-no-transition>hello@veretrir.art</a>
+      <a href="/cdn-cgi/l/email-protection#0e666b6262614e786b7c6b7a7c677c206f7c7a" class="contact-email" data-no-transition><span class="__cf_email__" data-cfemail="b2dad7dededdf2c4d7c0d7c6c0dbc09cd3c0c6">[email&#160;protected]</span></a>
       <p class="contact-note" id="contactNote"></p>
     </div>
   </div>
 </div>
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
-<script src="data.js"></script><script src="common.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="data.js"></script><script src="common.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   function renderNote() {
     const l   = currentLang;
     const txt = (SITE.texts || {});
     const note = l === 'tr' ? (txt.contactNoteTR || txt.contactNote || '') : (txt.contactNote || 'Collaborations, exhibitions, publications.');
-    const el = document.getElementById('contactNote');
-    if (el) el.textContent = note;
-  }
-  renderNote();
-  document.getElementById('b-en').addEventListener('click', renderNote);
-  document.getElementById('b-tr').addEventListener('click', renderNote);
-});
-</script>
-</body>
-</html>
+    const el = document.getElementById('conta
