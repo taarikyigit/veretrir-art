@@ -398,15 +398,6 @@
   <span>veretrir.art</span>
 </footer>
  
-<!-- LIGHTBOX GALLERY OVERLAY -->
-<div id="lightbox-overlay" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <button class="lightbox-prev" onclick="event.stopPropagation(); prevLightboxImage()">‹</button>
-  <img id="lightbox-img" src="" alt="">
-  <button class="lightbox-next" onclick="event.stopPropagation(); nextLightboxImage()">›</button>
-  <div class="lightbox-caption" id="lightbox-caption"></div>
-</div>
- 
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
@@ -441,52 +432,6 @@
 <script src="common.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════
-   LIGHTBOX GALLERY
-═══════════════════════════════════════════════════ */
-let currentGalleryImages = [];
-let currentImageIndex = 0;
-
-function openLightbox(images, index, caption = '') {
-  currentGalleryImages = images;
-  currentImageIndex = index;
-  const overlay = document.getElementById('lightbox-overlay');
-  const img = document.getElementById('lightbox-img');
-  const captionEl = document.getElementById('lightbox-caption');
-  img.src = images[index];
-  captionEl.textContent = caption;
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-  const overlay = document.getElementById('lightbox-overlay');
-  overlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function nextLightboxImage() {
-  if (currentGalleryImages.length === 0) return;
-  currentImageIndex = (currentImageIndex + 1) % currentGalleryImages.length;
-  const img = document.getElementById('lightbox-img');
-  img.src = currentGalleryImages[currentImageIndex];
-}
-
-function prevLightboxImage() {
-  if (currentGalleryImages.length === 0) return;
-  currentImageIndex = (currentImageIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-  const img = document.getElementById('lightbox-img');
-  img.src = currentGalleryImages[currentImageIndex];
-}
-
-document.addEventListener('keydown', (e) => {
-  const overlay = document.getElementById('lightbox-overlay');
-  if (!overlay.classList.contains('open')) return;
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowRight') nextLightboxImage();
-  if (e.key === 'ArrowLeft') prevLightboxImage();
-});
-
-/* ═══════════════════════════════════════════════════
    UTILITIES
 ═══════════════════════════════════════════════════ */
  
@@ -498,11 +443,6 @@ function getArtworkMainImage(aw) {
  
 function getArtworkDisplayImage(aw) {
   return aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
-}
- 
-function getAllArtworkImages(aw) {
-  if (!aw.images || !aw.images.length) return [];
-  return aw.images.map(img => img.path);
 }
  
 function shuffle(arr) {
@@ -524,7 +464,7 @@ function firstLines(str, n) {
 }
  
 /* ═══════════════════════════════════════════════════
-   HERO — random selection from featured artworks (max 3)
+   HERO — random selection from featured artworks
 ═══════════════════════════════════════════════════ */
 (function initHero() {
   const track     = document.getElementById('hsTrack');
@@ -536,14 +476,11 @@ function firstLines(str, n) {
   // Get all artworks marked as featured
   const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
   
-  // Pick up to 3 random artworks from featured works
-  // If no featured works, use first 3 artworks as fallback
-  let selectedWorks = [];
-  if (featuredWorks.length > 0) {
-    selectedWorks = pickRandom(featuredWorks, Math.min(3, featuredWorks.length));
-  } else {
-    selectedWorks = SITE.artworks.slice(0, 3);
-  }
+  // If no featured works, use all artworks as fallback
+  const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+  
+  // Pick 3 random artworks from the pool
+  const selectedWorks = pickRandom(pool, 3);
 
   const TOTAL    = selectedWorks.length;
   const INTERVAL = 5500;
@@ -558,7 +495,8 @@ function firstLines(str, n) {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const meta  = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
 
-    const heroImage = getArtworkDisplayImage(aw) || getArtworkMainImage(aw);
+    // Hero ALWAYS uses the marked Main Image (isMain:true), not displayImage
+    const heroImage = getArtworkMainImage(aw) || getArtworkDisplayImage(aw);
     
     const imgDiv = document.createElement('div');
     imgDiv.className = 'hs-slide-img';
@@ -733,12 +671,13 @@ window.setLang = function(l) {
   refreshPreviews();
   refreshPoem();
   
+  // Refresh hero slides to update text
   const track = document.getElementById('hsTrack');
   if (track) {
     const slides = track.querySelectorAll('.hs-slide');
     const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
-    const pool = featuredWorks.length > 0 ? featuredWorks : SITE.artworks;
-    const selectedWorks = pickRandom(pool, Math.min(3, pool.length));
+    const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+    const selectedWorks = pickRandom(pool, 3);
     
     slides.forEach((slide, idx) => {
       const titleEl = slide.querySelector('.hs-slide-title');
