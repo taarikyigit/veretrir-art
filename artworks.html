@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="style.css"/>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
-/* ── filter bar ── */
 .filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line);}
 .filter-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);font-family:var(--mono);white-space:nowrap;}
 .filter-select{background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink);padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;}
@@ -16,7 +15,6 @@
 .filter-clear:hover{border-color:var(--ink);color:var(--ink);}
 .filter-count{font-size:10px;color:var(--dim);font-family:var(--mono);margin-left:auto;}
 
-/* ── artwork grid ── */
 .artwork-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 .artwork-thumb{position:relative;aspect-ratio:1;background:#e8e4de;overflow:hidden;cursor:pointer;}
 .artwork-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
@@ -40,7 +38,6 @@
 
 .no-results{grid-column:1/-1;padding:48px;text-align:center;font-style:italic;color:var(--dim);font-size:15px;}
 
-/* ── projects list ── */
 .project-card{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start;padding:20px 0;border-bottom:1px solid #e8e4de;cursor:pointer;transition:padding-left .2s;}
 .project-card:first-child{border-top:1px solid #e8e4de;}
 .project-card:hover{padding-left:8px;}
@@ -86,11 +83,10 @@
   <div class="sec">
     <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
     <div class="tabs">
-      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works"                data-tr="Eserler">Works</button>
+      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works" data-tr="Eserler">Works</button>
       <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
     </div>
 
-    <!-- WORKS -->
     <div class="tab-panel on" id="panel-works">
       <div class="filter-bar">
         <span class="filter-label" data-en="Filter:" data-tr="Filtrele:">Filter:</span>
@@ -102,7 +98,6 @@
       <div class="artwork-grid" id="artworkGrid"></div>
     </div>
 
-    <!-- PROJECTS -->
     <div class="tab-panel" id="panel-projects">
       <div id="projectsList"></div>
     </div>
@@ -111,7 +106,6 @@
 
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
 
-<!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
     <span class="reading-badge" id="reading-badge"></span>
@@ -124,7 +118,6 @@
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
 
-<!-- 3D VIEWER -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
@@ -189,7 +182,6 @@ function buildPage() {
   const grid=document.getElementById('artworkGrid');
   grid.innerHTML='';
   SITE.artworks.forEach((aw,idx)=>{
-    // FIXED: When language is Turkish (tr), show Turkish title, otherwise English
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const div=document.createElement('div');
     div.className='artwork-thumb';
@@ -207,11 +199,9 @@ function buildPage() {
 
   buildFilters(); applyFilters();
 
-  /* Projects */
   const pl=document.getElementById('projectsList');
   pl.innerHTML='';
   SITE.projects.forEach((p,idx)=>{
-    // FIXED: When language is Turkish (tr), show Turkish title/desc, otherwise English
     const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
     const desc = l === 'tr' ? (p.descTR || p.desc) : p.desc;
     const status = p.status === 'ongoing' ? (l==='tr'?'Devam Ediyor':'Ongoing') : (l==='tr'?'Planlandı':'Planned');
