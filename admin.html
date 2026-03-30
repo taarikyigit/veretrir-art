@@ -277,6 +277,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
         <div class="fg"><label class="fl">🇬🇧 Contact Note</label><input class="fi" id="txt-contactNote"/></div>
         <div class="fg"><label class="fl">🇹🇷 İletişim Notu</label><input class="fi" id="txt-contactNoteTR"/></div>
       </div>
+      <div class="sdiv"></div>
+      <div class="fg">
+        <label class="fl">⭐ Featured Artworks (Hero Slider)</label>
+        <div class="fnote">Enter artwork IDs separated by commas. Find IDs in the Artworks list. Example: artwork-1774889675037, ar-1774892121936, ar-1774892777816</div>
+        <input class="fi" id="txt-featuredArtworks" placeholder="artwork-id-1, artwork-id-2, artwork-id-3">
+      </div>
       <button class="btn-save" onclick="saveTexts()">Save Texts</button>
     </div>
 
@@ -323,7 +329,7 @@ function doLogout(){ sessionStorage.removeItem('adm'); location.reload(); }
 /* ═══════════════════════════════════════════════
    DATA
 ═══════════════════════════════════════════════ */
-let D; // live working copy
+let D;
 
 function loadD() {
   try {
@@ -333,11 +339,9 @@ function loadD() {
     } else {
       D=JSON.parse(JSON.stringify(SITE_BASE));
     }
-    // ensure all required keys from SITE_BASE exist
     Object.keys(SITE_BASE).forEach(k=>{ 
       if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); 
     });
-    // ensure new schema fields on old data for artworks and projects
     ['artworks','projects'].forEach(col=>{
       if (!D[col]) D[col] = [];
       (D[col]||[]).forEach(item=>{
@@ -346,11 +350,9 @@ function loadD() {
         if(item.status === undefined && col === 'projects') item.status = 'ongoing';
       });
     });
-    // ensure poems, articles, books arrays exist
     ['poems','articles','books'].forEach(col=>{
       if(!D[col]) D[col] = [];
     });
-    // ensure texts object exists
     if(!D.texts) D.texts = SITE_BASE.texts ? JSON.parse(JSON.stringify(SITE_BASE.texts)) : {};
   } catch(e){ 
     console.error('Error loading data:', e);
@@ -370,27 +372,18 @@ function clearStorage() {
   toast('Reset to data.js','ok');
 }
 
-/* ═══════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════ */
 function go(name) {
-  // Close any open form first
   if (window.currentFormType && window.currentFormType !== name) {
     closeForm();
   }
-  
   document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));
-  
-  // Find the clicked sidebar item and add 'on' class
   const clickedItem = Array.from(document.querySelectorAll('.sb-item')).find(
     el => el.getAttribute('data-panel') === name
   );
   if (clickedItem) clickedItem.classList.add('on');
-  
   const panel = document.getElementById('panel-'+name);
   if (panel) panel.classList.add('on');
-  
   renderPanel(name);
 }
 
@@ -408,9 +401,6 @@ function renderAll() {
   ['artworks','projects','poems','articles','books'].forEach(renderList);
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER LISTS
-═══════════════════════════════════════════════ */
 function _mainImgAdmin(item) {
   if(!item.images||!item.images.length) return null;
   const m=item.images.find(i=>i.isMain); 
@@ -453,29 +443,21 @@ function renderList(type) {
   });
 }
 
-/* ═══════════════════════════════════════════════
-   FORM STATE
-═══════════════════════════════════════════════ */
-let currentFormType = null; // form type (artworks, projects, poems, articles, books)
-let currentFormIndex = -1;   // form index (-1=new)
-let currentFormData = {};   // form data (mutable working copy)
+let currentFormType = null;
+let currentFormIndex = -1;
+let currentFormData = {};
 
 function openForm(type, idx) {
-  // Close any existing form first
   if (currentFormType) {
     closeForm();
   }
-  
   currentFormType = type;
   currentFormIndex = idx;
-  
-  // Get the item data or create default
   if (idx >= 0 && D[type] && D[type][idx]) {
     currentFormData = JSON.parse(JSON.stringify(D[type][idx]));
   } else {
     currentFormData = defaultItem(type);
   }
-  
   renderForm();
 }
 
@@ -496,7 +478,6 @@ function defaultItem(type) {
     desc: '',
     descTR: ''
   };
-  
   if (type === 'artworks' || type === 'projects') {
     return {
       ...base,
@@ -508,35 +489,17 @@ function defaultItem(type) {
     };
   }
   if (type === 'poems') {
-    return {
-      ...base,
-      body: '',
-      bodyTR: ''
-    };
+    return { ...base, body: '', bodyTR: '' };
   }
   if (type === 'articles') {
-    return {
-      ...base,
-      type: 'Essay',
-      typeTR: 'Deneme',
-      body: '',
-      bodyTR: ''
-    };
+    return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '' };
   }
   if (type === 'books') {
-    return {
-      ...base,
-      pdf: '',
-      cover: null,
-      allowDownload: true
-    };
+    return { ...base, pdf: '', cover: null, allowDownload: true };
   }
   return base;
 }
 
-/* ═══════════════════════════════════════════════
-   RENDER FORM
-═══════════════════════════════════════════════ */
 function renderForm() {
   const wrap = document.getElementById('form-' + currentFormType);
   if (!wrap) return;
@@ -549,13 +512,11 @@ function buildFormHTML() {
   const label = currentFormIndex >= 0 ? `Edit: ${esc(currentFormData.title || currentFormData.id || '—')}` : `New ${capitalize(currentFormType.slice(0,-1))}`;
   let h = `<div class="form-drawer"><div class="form-drawer-title">${label}</div>`;
 
-  // ── Bilingual title + year ──
   h += `<div class="f2col">
     <div class="fg"><label class="fl">🇬🇧 Title</label><input class="fi" id="ff-title" value="${ea(currentFormData.title || '')}"></div>
     <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(currentFormData.titleTR || '')}"></div>
   </div>`;
 
-  // Year field
   h += `<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(currentFormData.year || '')}"></div>`;
 
   if (isWork) {
@@ -571,14 +532,12 @@ function buildFormHTML() {
       </select></div>`;
     }
 
-    // ── Bilingual description ──
     h += `<div class="sdiv"></div>
     <div class="f2col">
       <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
     </div>`;
 
-    // ── Image gallery ──
     h += `<div class="sdiv"></div>
     <div class="img-gallery-wrap">
       <div class="img-gallery-title">Image Gallery — click image to set as main, or remove</div>
@@ -590,7 +549,6 @@ function buildFormHTML() {
       <div class="img-upload-hint">Upload the file to your server first, then paste the path above. Supports .jpg .png .gif .webp</div>
     </div>`;
 
-    // ── Materials blocks ──
     h += `<div class="sdiv"></div>
     <div class="fg"><label class="fl">Extra Material Blocks</label></div>
     <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
@@ -646,7 +604,6 @@ function buildFormHTML() {
   return h;
 }
 
-/* ── Image stack ── */
 function buildImgStack() {
   const imgs = currentFormData.images || [];
   let h = '';
@@ -695,7 +652,6 @@ function removeImg(i) {
   rebuildImgStack();
 }
 
-/* ── Material blocks ── */
 function buildMatBlocks() {
   const mats = currentFormData.materials || [];
   if(!mats.length) return '<p style="color:var(--faint);font-size:11px;margin-bottom:8px;">No material blocks yet. Add one below.</p>';
@@ -704,14 +660,7 @@ function buildMatBlocks() {
 
 function buildMatBlock(m,i) {
   let inner = '';
-  const typeLabel = {
-    text: 'Text', 
-    'image-gallery': 'Image Gallery', 
-    gif: 'GIF', 
-    '3d': '3D Model', 
-    pdf: 'PDF', 
-    video: 'Video'
-  }[m.type] || m.type;
+  const typeLabel = { text: 'Text', 'image-gallery': 'Image Gallery', gif: 'GIF', '3d': '3D Model', pdf: 'PDF', video: 'Video' }[m.type] || m.type;
   
   if(m.type === 'text') {
     inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
@@ -820,19 +769,9 @@ function matRemoveImg(mi, ii) {
   }
 }
 
-/* ═══════════════════════════════════════════════
-   SAVE FORM
-═══════════════════════════════════════════════ */
 function saveForm() {
-  // Pull simple text fields back from DOM
-  const getVal = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-  };
-  const getText = (id) => {
-    const el = document.getElementById(id);
-    return el ? el.value : '';
-  };
+  const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const getText = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
 
   currentFormData.title = getVal('ff-title');
   currentFormData.titleTR = getVal('ff-titleTR');
@@ -847,7 +786,6 @@ function saveForm() {
       const statusEl = document.getElementById('ff-status');
       if (statusEl) currentFormData.status = statusEl.value;
     }
-    // images and materials are already kept live in currentFormData
   }
   else if (currentFormType === 'poems') {
     currentFormData.body = getText('ff-body');
@@ -868,7 +806,6 @@ function saveForm() {
     currentFormData.descTR = getText('ff-descTR');
   }
 
-  // Ensure the array exists
   if (!D[currentFormType]) D[currentFormType] = [];
   
   if (currentFormIndex >= 0) {
@@ -891,12 +828,9 @@ function delItem(type,idx) {
   toast('Deleted','ok');
 }
 
-/* ═══════════════════════════════════════════════
-   SITE TEXTS
-═══════════════════════════════════════════════ */
 function loadTexts() {
   const t = D.texts || {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','featuredArtworks'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) el.value = t[k] || '';
@@ -905,7 +839,7 @@ function loadTexts() {
 
 function saveTexts() {
   if(!D.texts) D.texts = {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','featuredArtworks'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) D.texts[k] = el.value;
@@ -914,9 +848,6 @@ function saveTexts() {
   toast('Texts saved!','ok');
 }
 
-/* ═══════════════════════════════════════════════
-   EXPORT
-═══════════════════════════════════════════════ */
 function buildDataJS() {
   return `/* =============================================================
    data.js  —  Generated by admin panel on ${new Date().toLocaleString()}
@@ -944,9 +875,6 @@ function exportData() {
   toast('data.js downloaded!','ok');
 }
 
-/* ═══════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════ */
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function ea(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function eh(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -960,13 +888,9 @@ function toast(msg,type) {
   t._t = setTimeout(()=>t.className='',2500);
 }
 
-/* ═══════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════ */
 function boot() {
   loadD();
   renderList('artworks');
-  // Set initial active sidebar
   document.querySelectorAll('.sb-item').forEach(el => {
     if (el.getAttribute('data-panel') === 'artworks') {
       el.classList.add('on');
@@ -974,12 +898,10 @@ function boot() {
       el.classList.remove('on');
     }
   });
-  // Ensure panels are correctly shown
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   document.getElementById('panel-artworks').classList.add('on');
 }
 
-// Auto-login if session exists
 if(sessionStorage.getItem('adm')==='1'){
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('on');
