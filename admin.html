@@ -5,946 +5,827 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Admin — tarık yiğit</title>
 <style>
-/* ═══════════════════ RESET + VARS ═══════════════════ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#f5f2ed;--ink:#111;--mid:#777;--dim:#aaa;--line:#ddd;
-  --red:#c0392b;--green:#27ae60;--blue:#2471a3;
-  --sidebar:#111;--sidebar-hover:#1e1e1e;--sidebar-active:#27ae60;
-  --card:#fff;--font:'Georgia',serif;--mono:'Courier New',monospace;
+  --bg:#141414;--surface:#1c1c1c;--raised:#242424;--border:#2e2e2e;
+  --text:#e0e0e0;--dim:#888;--faint:#444;
+  --accent:#27ae60;--red:#e74c3c;--blue:#3498db;--orange:#e67e22;
+  --font:'Georgia',serif;--mono:'Courier New',monospace;
 }
-body{background:#1a1a1a;color:#eee;font-family:var(--mono);font-size:13px;line-height:1.6;}
- 
-/* ═══════════════════ LOGIN ═══════════════════ */
-#login-screen{
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;background:#111;
-}
-.login-box{
-  background:#1a1a1a;border:1px solid #2a2a2a;
-  padding:48px;width:360px;
-}
-.login-title{font-size:18px;font-family:var(--font);font-style:italic;color:#ccc;margin-bottom:8px;}
-.login-sub{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:32px;}
-.login-field{margin-bottom:16px;}
-.login-label{display:block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#555;margin-bottom:6px;}
-.login-input{
-  width:100%;background:#111;border:1px solid #2a2a2a;color:#ccc;
-  font-family:var(--mono);font-size:13px;padding:10px 12px;outline:none;
-  transition:border-color .2s;
-}
-.login-input:focus{border-color:#555;}
-.login-btn{
-  width:100%;margin-top:8px;background:var(--green);color:#fff;border:none;
-  font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-  padding:12px;cursor:pointer;transition:background .2s;
-}
-.login-btn:hover{background:#219a52;}
-.login-err{color:#e74c3c;font-size:11px;margin-top:10px;display:none;}
- 
-/* ═══════════════════ APP SHELL ═══════════════════ */
-#app{display:none;min-height:100vh;display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 1fr;}
-#app.visible{display:grid;}
- 
-/* ── top bar ── */
-.app-topbar{
-  grid-column:1/-1;
-  background:#0d0d0d;border-bottom:1px solid #222;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:52px;
-}
-.app-logo{font-family:var(--font);font-style:italic;font-size:14px;color:#aaa;}
-.app-topbar-right{display:flex;gap:10px;align-items:center;}
-.btn-view-site{
-  background:none;border:1px solid #333;color:#777;
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
-  padding:6px 14px;cursor:pointer;text-decoration:none;
-  transition:border-color .2s,color .2s;
-}
-.btn-view-site:hover{border-color:#ccc;color:#ccc;}
-.btn-logout{
-  background:none;border:1px solid #333;color:#777;
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
-  padding:6px 14px;cursor:pointer;transition:border-color .2s,color .2s;
-}
-.btn-logout:hover{border-color:#e74c3c;color:#e74c3c;}
- 
-/* ── sidebar ── */
-.sidebar{
-  background:var(--sidebar);border-right:1px solid #222;
-  overflow-y:auto;
-}
-.sb-section{
-  font-size:9px;letter-spacing:.3em;text-transform:uppercase;
-  color:#444;padding:20px 18px 6px;
-}
-.sb-link{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 18px;color:#666;cursor:pointer;
-  transition:background .15s,color .15s;
-  border-left:2px solid transparent;
-  font-size:12px;
-  user-select:none;
-}
-.sb-link:hover{background:var(--sidebar-hover);color:#ccc;}
-.sb-link.on{background:var(--sidebar-hover);color:#fff;border-left-color:var(--sidebar-active);}
-.sb-icon{width:14px;height:14px;flex-shrink:0;opacity:.6;}
- 
-/* ── main content ── */
-.admin-main{
-  overflow-y:auto;background:#181818;
-}
-.admin-panel{display:none;padding:36px 40px 80px;max-width:900px;}
-.admin-panel.on{display:block;}
- 
-.panel-title{font-size:22px;font-family:var(--font);font-style:italic;color:#ddd;margin-bottom:6px;}
-.panel-desc{font-size:12px;color:#555;margin-bottom:32px;}
- 
-/* ── cards / list items ── */
-.item-card{
-  background:#111;border:1px solid #222;
-  padding:18px 20px;margin-bottom:10px;
-  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
-}
-.item-title{font-size:14px;font-family:var(--font);font-style:italic;color:#ccc;margin-bottom:3px;}
-.item-meta{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555;}
-.item-actions{display:flex;gap:6px;}
-.btn-edit,.btn-del{
-  background:none;border:1px solid #2a2a2a;color:#666;
-  font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 10px;cursor:pointer;transition:all .2s;
-}
-.btn-edit:hover{border-color:#aaa;color:#aaa;}
-.btn-del:hover{border-color:#e74c3c;color:#e74c3c;}
- 
-/* ── image preview in card ── */
-.item-img-thumb{width:48px;height:48px;object-fit:cover;border:1px solid #222;margin-right:4px;vertical-align:middle;}
- 
-/* ── forms ── */
-.form-section{margin-bottom:28px;}
-.form-section-title{
-  font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:#555;
-  margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #222;
-}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
-.form-group{margin-bottom:14px;}
-.form-label{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#555;margin-bottom:5px;}
-.form-input,.form-select{
-  width:100%;background:#111;border:1px solid #222;color:#ccc;
-  font-family:var(--mono);font-size:13px;padding:9px 11px;outline:none;
-  transition:border-color .2s;
-}
-.form-input:focus,.form-select:focus{border-color:#666;}
-.form-textarea{
-  width:100%;background:#111;border:1px solid #222;color:#ccc;
-  font-family:var(--mono);font-size:13px;padding:9px 11px;outline:none;
-  resize:vertical;min-height:100px;line-height:1.7;transition:border-color .2s;
-}
-.form-textarea:focus{border-color:#666;}
-.form-note{font-size:10px;color:#444;margin-top:4px;font-style:italic;}
- 
-/* ── upload zone ── */
-.upload-zone{
-  border:2px dashed #2a2a2a;padding:32px;text-align:center;
-  cursor:pointer;transition:border-color .2s,background .2s;
-  margin-bottom:12px;
-}
-.upload-zone:hover,.upload-zone.drag{border-color:#555;background:#151515;}
-.upload-zone input{display:none;}
-.upload-icon{font-size:24px;margin-bottom:8px;opacity:.4;}
-.upload-text{font-size:12px;color:#555;}
-.upload-text strong{color:#888;}
- 
-.upload-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-.upload-prev-item{
-  position:relative;width:72px;height:72px;
-  background:#111;border:1px solid #222;overflow:hidden;
-}
-.upload-prev-item img{width:100%;height:100%;object-fit:cover;}
-.upload-prev-item .prev-label{
-  position:absolute;bottom:0;left:0;right:0;
-  background:rgba(0,0,0,.7);color:#aaa;
-  font-size:7px;padding:2px 4px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.upload-prev-item .prev-remove{
-  position:absolute;top:2px;right:2px;
-  background:rgba(0,0,0,.8);color:#e74c3c;
-  border:none;width:16px;height:16px;font-size:10px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-}
- 
-/* ── buttons ── */
-.btn-primary{
-  background:var(--green);color:#fff;border:none;
-  font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
-  padding:11px 24px;cursor:pointer;transition:background .2s;
-}
-.btn-primary:hover{background:#219a52;}
-.btn-secondary{
-  background:none;border:1px solid #333;color:#777;
-  font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
-  padding:11px 18px;cursor:pointer;transition:all .2s;margin-left:8px;
-}
-.btn-secondary:hover{border-color:#aaa;color:#aaa;}
-.btn-add-new{
-  background:none;border:1px dashed #333;color:#555;
-  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  padding:12px 20px;cursor:pointer;width:100%;margin-bottom:20px;
-  transition:border-color .2s,color .2s;
-}
-.btn-add-new:hover{border-color:#aaa;color:#aaa;}
-.btn-export{
-  background:var(--blue);color:#fff;border:none;
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-  padding:8px 18px;cursor:pointer;transition:background .2s;
-}
-.btn-export:hover{background:#1a5276;}
- 
-/* ── inline form (edit mode) ── */
-.inline-form{
-  background:#0d0d0d;border:1px solid #2a2a2a;
-  padding:24px;margin-bottom:10px;
-}
-.inline-form-title{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#666;margin-bottom:20px;}
- 
-/* ── toast ── */
-#toast{
-  position:fixed;bottom:28px;right:28px;z-index:9999;
-  font-family:var(--mono);font-size:12px;padding:12px 22px;
-  opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;
-  pointer-events:none;
-}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.65;overflow-x:hidden;}
+button,input,select,textarea{font-family:var(--mono);font-size:13px;}
+
+/* ═══ LOGIN ═══ */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0d0d0d;}
+.lbox{background:var(--surface);border:1px solid var(--border);padding:52px 44px;width:360px;}
+.ltitle{font-family:var(--font);font-style:italic;font-size:20px;color:#ccc;margin-bottom:4px;}
+.lsub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:36px;}
+.lf{margin-bottom:14px;}
+.ll{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
+.li{width:100%;background:#0d0d0d;border:1px solid var(--border);color:#ccc;padding:10px 12px;outline:none;transition:border-color .2s;}
+.li:focus{border-color:var(--dim);}
+.lbtn{width:100%;margin-top:8px;background:var(--accent);color:#fff;border:none;padding:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
+.lbtn:hover{background:#219a52;}
+.lerr{color:var(--red);font-size:11px;margin-top:10px;display:none;}
+
+/* ═══ APP SHELL ═══ */
+#app{display:none;height:100vh;grid-template-columns:200px 1fr;grid-template-rows:48px 1fr;overflow:hidden;}
+#app.on{display:grid;}
+
+/* ─ topbar ─ */
+.topbar{grid-column:1/-1;background:#0d0d0d;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:10px;flex-shrink:0;}
+.topbar-left{font-family:var(--font);font-style:italic;font-size:13px;color:var(--dim);}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.t-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;cursor:pointer;font-size:11px;letter-spacing:.06em;transition:border-color .2s,color .2s;text-decoration:none;display:inline-block;}
+.t-btn:hover{border-color:#aaa;color:#aaa;}
+.t-btn.green{border-color:var(--accent);color:var(--accent);}
+.t-btn.green:hover{background:var(--accent);color:#fff;}
+.t-btn.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* ─ sidebar ─ */
+.sidebar{background:#0d0d0d;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
+.sb-sec{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);padding:18px 16px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--dim);cursor:pointer;transition:background .12s,color .12s;border-left:2px solid transparent;font-size:12px;user-select:none;}
+.sb-item:hover{background:var(--surface);color:var(--text);}
+.sb-item.on{background:var(--surface);color:#fff;border-left-color:var(--accent);}
+.sb-icon{width:13px;height:13px;flex-shrink:0;stroke:currentColor;}
+
+/* ─ main ─ */
+.main{overflow-y:auto;background:var(--bg);}
+.panel{display:none;padding:32px 36px 80px;}
+.panel.on{display:block;}
+.ptitle{font-family:var(--font);font-style:italic;font-size:22px;color:var(--text);margin-bottom:4px;}
+.pdesc{font-size:12px;color:var(--faint);margin-bottom:28px;}
+
+/* ─ list ─ */
+.item-list{margin-top:4px;}
+.item-row{background:var(--surface);border:1px solid var(--border);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:default;}
+.item-thumb{width:52px;height:52px;object-fit:cover;background:var(--raised);flex-shrink:0;border:1px solid var(--border);}
+.item-thumb-ph{width:52px;height:52px;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:18px;flex-shrink:0;}
+.item-info{}
+.item-title{font-size:14px;font-family:var(--font);font-style:italic;color:var(--text);margin-bottom:2px;}
+.item-meta{font-size:10px;color:var(--faint);letter-spacing:.1em;}
+.item-acts{display:flex;gap:6px;flex-shrink:0;}
+.btn-e,.btn-d{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
+.btn-e:hover{border-color:#aaa;color:#aaa;}
+.btn-d:hover{border-color:var(--red);color:var(--red);}
+.add-btn{width:100%;background:none;border:1px dashed var(--border);color:var(--faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
+.add-btn:hover{border-color:var(--dim);color:var(--dim);}
+
+/* ─ form drawer ─ */
+.form-drawer{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);padding:28px;margin-bottom:16px;}
+.form-drawer-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;}
+
+.fg{margin-bottom:14px;}
+.fl{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
+.fi{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--dim);}
+.ft{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;resize:vertical;min-height:90px;line-height:1.7;transition:border-color .2s;}
+.ft:focus{border-color:var(--dim);}
+.ft.poem{min-height:180px;font-style:italic;line-height:2;}
+.fsel{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;cursor:pointer;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fnote{font-size:10px;color:var(--faint);margin-top:4px;font-style:italic;}
+.f2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+/* ─ image gallery manager ─ */
+.img-gallery-wrap{border:1px solid var(--border);padding:16px;background:var(--raised);}
+.img-gallery-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+.img-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.img-slot{position:relative;width:88px;height:88px;border:1px solid var(--border);overflow:hidden;flex-shrink:0;}
+.img-slot img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-slot.is-main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.img-slot-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;transition:opacity .15s;}
+.img-slot:hover .img-slot-overlay{opacity:1;}
+.img-slot-btn{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:9px;letter-spacing:.08em;padding:3px 7px;cursor:pointer;width:60px;text-align:center;transition:border-color .15s;}
+.img-slot-btn:hover{border-color:#fff;}
+.img-slot-main-badge{position:absolute;top:3px;left:3px;background:var(--accent);color:#fff;font-size:7px;letter-spacing:.1em;padding:1px 5px;pointer-events:none;}
+.img-add-btn{width:88px;height:88px;border:1px dashed var(--border);background:none;color:var(--faint);cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s,color .2s;}
+.img-add-btn:hover{border-color:var(--dim);color:var(--dim);}
+.img-path-input-wrap{display:flex;gap:6px;margin-bottom:6px;}
+.img-path-input-wrap input{flex:1;}
+.img-add-path-btn{background:var(--accent);border:none;color:#fff;padding:0 14px;cursor:pointer;font-size:11px;transition:background .2s;flex-shrink:0;}
+.img-add-path-btn:hover{background:#219a52;}
+.img-upload-hint{font-size:10px;color:var(--faint);font-style:italic;}
+
+/* ─ materials blocks ─ */
+.mat-list{margin-top:8px;}
+.mat-block{background:var(--raised);border:1px solid var(--border);padding:16px;margin-bottom:10px;position:relative;}
+.mat-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.mat-block-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);}
+.mat-block-acts{display:flex;gap:6px;}
+.mat-del-btn{background:none;border:1px solid var(--border);color:var(--faint);padding:3px 8px;cursor:pointer;font-size:11px;transition:all .15s;}
+.mat-del-btn:hover{border-color:var(--red);color:var(--red);}
+.mat-add-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.mat-type-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:6px 12px;cursor:pointer;font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
+.mat-type-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ─ form buttons ─ */
+.form-actions{display:flex;gap:8px;margin-top:20px;}
+.btn-save{background:var(--accent);color:#fff;border:none;padding:10px 24px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
+.btn-save:hover{background:#219a52;}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--dim);padding:10px 18px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
+.btn-cancel:hover{border-color:var(--dim);color:var(--text);}
+
+/* ─ export panel ─ */
+.export-pre{background:#0a0a0a;border:1px solid var(--border);color:var(--faint);font-size:11px;padding:16px;max-height:260px;overflow-y:auto;white-space:pre;margin-top:10px;line-height:1.6;}
+
+/* ─ status badge ─ */
+.sbadge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid;font-family:var(--mono);}
+.sbadge-on{color:var(--accent);border-color:var(--accent);}
+.sbadge-pl{color:var(--faint);border-color:var(--border);}
+
+/* ─ toast ─ */
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:11px 20px;font-size:12px;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
-#toast.ok{background:var(--green);color:#fff;}
+#toast.ok{background:var(--accent);color:#fff;}
 #toast.err{background:var(--red);color:#fff;}
- 
-/* ── tabs ── */
-.atabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid #222;}
-.atab{
-  background:none;border:none;font-family:var(--mono);font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase;color:#555;cursor:pointer;
-  padding:9px 18px 9px 0;margin-right:18px;
-  border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s;
-}
-.atab.on{color:#ccc;border-bottom-color:#ccc;}
-.atab:hover{color:#aaa;}
-.atab-panel{display:none;}
-.atab-panel.on{display:block;}
- 
-/* ── textarea poetry mode ── */
-.poetry-textarea{min-height:220px;line-height:2;font-style:italic;}
- 
-/* ── status badge ── */
-.sbadge{
-  font-size:9px;letter-spacing:.15em;text-transform:uppercase;
-  padding:2px 8px;border:1px solid;font-family:var(--mono);
-}
-.sbadge-on{color:var(--green);border-color:var(--green);}
-.sbadge-pl{color:#555;border-color:#555;}
- 
-/* ── section text area ── */
-.text-editor-wrap{margin-bottom:20px;}
-.text-editor-label{
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#555;
-  margin-bottom:6px;display:flex;align-items:center;gap:10px;
-}
-.text-editor-flag{font-size:14px;}
- 
-/* ── export box ── */
-.export-pre{
-  background:#0d0d0d;border:1px solid #222;color:#666;
-  font-family:var(--mono);font-size:11px;padding:16px;
-  max-height:280px;overflow-y:auto;white-space:pre;
-  margin-top:10px;
-}
- 
+
+/* ─ section divider ─ */
+.sdiv{height:1px;background:var(--border);margin:24px 0;}
+
 @media(max-width:700px){
-  #app{grid-template-columns:1fr;grid-template-rows:52px auto 1fr;}
-  .sidebar{grid-column:1;display:flex;flex-wrap:wrap;gap:0;height:auto;}
-  .sb-section{display:none;}
-  .sb-link{padding:8px 12px;font-size:11px;}
-  .admin-panel{padding:24px 18px 60px;}
-  .form-row{grid-template-columns:1fr;}
+  #app{grid-template-columns:1fr;grid-template-rows:48px auto 1fr;}
+  .sidebar{flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border);height:auto;}
+  .sb-sec{display:none;}.sb-item{padding:8px 10px;font-size:11px;border-left:none;border-bottom:2px solid transparent;}
+  .sb-item.on{border-bottom-color:var(--accent);border-left:none;}
+  .panel{padding:20px 16px 60px;}.frow,.f2col{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
- 
-<!-- ══════════════════ LOGIN ══════════════════ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-title">tarık yiğit</div>
-    <div class="login-sub">Admin Panel</div>
-    <div class="login-field">
-      <label class="login-label">Username</label>
-      <input class="login-input" id="loginUser" type="text" autocomplete="username"/>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lbox">
+    <div class="ltitle">tarık yiğit</div>
+    <div class="lsub">admin panel</div>
+    <div class="lf">
+      <label class="ll">Username</label>
+      <input class="li" id="lUser" type="text" autocomplete="username" placeholder="tarik"/>
     </div>
-    <div class="login-field">
-      <label class="login-label">Password</label>
-      <input class="login-input" id="loginPass" type="password" autocomplete="current-password"/>
+    <div class="lf">
+      <label class="ll">Password</label>
+      <input class="li" id="lPass" type="password" autocomplete="current-password"/>
     </div>
-    <button class="login-btn" onclick="doLogin()">Sign In</button>
-    <div class="login-err" id="loginErr">Incorrect username or password.</div>
+    <button class="lbtn" onclick="doLogin()">Sign In</button>
+    <div class="lerr" id="lErr">Incorrect credentials.</div>
   </div>
 </div>
- 
-<!-- ══════════════════ APP ══════════════════ -->
+
+<!-- APP -->
 <div id="app">
- 
-  <!-- top bar -->
-  <div class="app-topbar">
-    <span class="app-logo">tarık yiğit — admin</span>
-    <div class="app-topbar-right">
-      <button class="btn-export" onclick="exportData()">⬇ Export data.js</button>
-      <a href="index.html" class="btn-view-site" target="_blank" rel="noopener">View Site ↗</a>
-      <button class="btn-logout" onclick="doLogout()">Sign out</button>
+  <div class="topbar">
+    <span class="topbar-left">tarık yiğit — admin</span>
+    <div class="topbar-right">
+      <button class="t-btn green" onclick="exportData()">⬇ Export data.js</button>
+      <a class="t-btn" href="index.html" target="_blank" rel="noopener">View Site ↗</a>
+      <button class="t-btn danger" onclick="doLogout()">Sign out</button>
     </div>
   </div>
- 
-  <!-- sidebar -->
-  <nav class="sidebar">
-    <div class="sb-section">Content</div>
-    <div class="sb-link on" onclick="showPanel('artworks')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-sec">Works</div>
+    <div class="sb-item on" onclick="go('artworks')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
       Artworks
     </div>
-    <div class="sb-link" onclick="showPanel('poems')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
-      Poems
-    </div>
-    <div class="sb-link" onclick="showPanel('articles')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-      Articles
-    </div>
-    <div class="sb-link" onclick="showPanel('books')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Books
-    </div>
-    <div class="sb-link" onclick="showPanel('projects')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <div class="sb-item" onclick="go('projects')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Projects
     </div>
-    <div class="sb-section">Site</div>
-    <div class="sb-link" onclick="showPanel('texts')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <div class="sb-sec">Writings</div>
+    <div class="sb-item" onclick="go('poems')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
+      Poems
+    </div>
+    <div class="sb-item" onclick="go('articles')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      Articles
+    </div>
+    <div class="sb-item" onclick="go('books')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Books
+    </div>
+    <div class="sb-sec">Site</div>
+    <div class="sb-item" onclick="go('texts')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Site Texts
     </div>
-    <div class="sb-link" onclick="showPanel('export')">
-      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <div class="sb-item" onclick="go('export')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
     </div>
   </nav>
- 
-  <!-- main -->
-  <main class="admin-main">
- 
-    <!-- ════ ARTWORKS ════ -->
-    <div class="admin-panel on" id="panel-artworks">
-      <div class="panel-title">Artworks</div>
-      <div class="panel-desc">Manage your visual works. Click "Add" to create, click edit on any card to modify.</div>
-      <button class="btn-add-new" onclick="startAdd('artwork')">+ Add New Artwork</button>
-      <div id="form-artwork" style="display:none;"></div>
-      <div id="list-artworks"></div>
+
+  <main class="main" id="main">
+
+    <!-- ARTWORKS -->
+    <div class="panel on" id="panel-artworks">
+      <div class="ptitle">Artworks</div>
+      <div class="pdesc">Each artwork has a stacked image gallery, and optional material blocks (text, 3D, PDF, video, etc.).</div>
+      <button class="add-btn" onclick="openForm('artwork',-1)">+ Add New Artwork</button>
+      <div id="form-artwork"></div>
+      <div class="item-list" id="list-artworks"></div>
     </div>
- 
-    <!-- ════ POEMS ════ -->
-    <div class="admin-panel" id="panel-poems">
-      <div class="panel-title">Poems</div>
-      <div class="panel-desc">Add, edit, or delete poems. Line breaks in the text are preserved.</div>
-      <button class="btn-add-new" onclick="startAdd('poem')">+ Add New Poem</button>
-      <div id="form-poem" style="display:none;"></div>
-      <div id="list-poems"></div>
+
+    <!-- PROJECTS -->
+    <div class="panel" id="panel-projects">
+      <div class="ptitle">Ongoing &amp; Planned Projects</div>
+      <div class="pdesc">Projects work exactly like artworks — they can have image galleries and material blocks, and open to their own detail page.</div>
+      <button class="add-btn" onclick="openForm('project',-1)">+ Add New Project</button>
+      <div id="form-project"></div>
+      <div class="item-list" id="list-projects"></div>
     </div>
- 
-    <!-- ════ ARTICLES ════ -->
-    <div class="admin-panel" id="panel-articles">
-      <div class="panel-title">Articles</div>
-      <div class="panel-desc">Essays, criticism, and other written works.</div>
-      <button class="btn-add-new" onclick="startAdd('article')">+ Add New Article</button>
-      <div id="form-article" style="display:none;"></div>
-      <div id="list-articles"></div>
+
+    <!-- POEMS -->
+    <div class="panel" id="panel-poems">
+      <div class="ptitle">Poems</div>
+      <div class="pdesc">Line breaks are preserved exactly as typed.</div>
+      <button class="add-btn" onclick="openForm('poem',-1)">+ Add New Poem</button>
+      <div id="form-poem"></div>
+      <div class="item-list" id="list-poems"></div>
     </div>
- 
-    <!-- ════ BOOKS ════ -->
-    <div class="admin-panel" id="panel-books">
-      <div class="panel-title">Books</div>
-      <div class="panel-desc">PDF books displayed in the Writings section with the flip reader.</div>
-      <button class="btn-add-new" onclick="startAdd('book')">+ Add New Book</button>
-      <div id="form-book" style="display:none;"></div>
-      <div id="list-books"></div>
+
+    <!-- ARTICLES -->
+    <div class="panel" id="panel-articles">
+      <div class="ptitle">Articles</div>
+      <div class="pdesc">Separate paragraphs with a blank line.</div>
+      <button class="add-btn" onclick="openForm('article',-1)">+ Add New Article</button>
+      <div id="form-article"></div>
+      <div class="item-list" id="list-articles"></div>
     </div>
- 
-    <!-- ════ PROJECTS ════ -->
-    <div class="admin-panel" id="panel-projects">
-      <div class="panel-title">Ongoing &amp; Planned Projects</div>
-      <div class="panel-desc">Listed under the Artworks page.</div>
-      <button class="btn-add-new" onclick="startAdd('project')">+ Add New Project</button>
-      <div id="form-project" style="display:none;"></div>
-      <div id="list-projects"></div>
+
+    <!-- BOOKS -->
+    <div class="panel" id="panel-books">
+      <div class="ptitle">Books</div>
+      <div class="pdesc">PDF books with the page-flip reader.</div>
+      <button class="add-btn" onclick="openForm('book',-1)">+ Add New Book</button>
+      <div id="form-book"></div>
+      <div class="item-list" id="list-books"></div>
     </div>
- 
-    <!-- ════ SITE TEXTS ════ -->
-    <div class="admin-panel" id="panel-texts">
-      <div class="panel-title">Site Texts</div>
-      <div class="panel-desc">Edit the static text content across the website.</div>
- 
-      <div class="form-section">
-        <div class="form-section-title">About Page</div>
-        <div class="text-editor-wrap">
-          <div class="text-editor-label"><span class="text-editor-flag">🇬🇧</span> English</div>
-          <textarea class="form-textarea" id="txt-aboutEN" style="min-height:140px;"></textarea>
-        </div>
-        <div class="text-editor-wrap">
-          <div class="text-editor-label"><span class="text-editor-flag">🇹🇷</span> Turkish</div>
-          <textarea class="form-textarea" id="txt-aboutTR" style="min-height:140px;"></textarea>
-        </div>
+
+    <!-- TEXTS -->
+    <div class="panel" id="panel-texts">
+      <div class="ptitle">Site Texts</div>
+      <div class="pdesc">Edit static text content. Changes are live immediately in your browser; export data.js to make permanent.</div>
+      <div class="sdiv"></div>
+      <div class="fg"><label class="fl">🇬🇧 About Page (English)</label><textarea class="ft" id="txt-aboutEN" style="min-height:120px;"></textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Hakkında Sayfası (Türkçe)</label><textarea class="ft" id="txt-aboutTR" style="min-height:120px;"></textarea></div>
+      <div class="sdiv"></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">🇬🇧 Contact Note</label><input class="fi" id="txt-contactNote"/></div>
+        <div class="fg"><label class="fl">🇹🇷 İletişim Notu</label><input class="fi" id="txt-contactNoteTR"/></div>
       </div>
- 
-      <div class="form-section">
-        <div class="form-section-title">Contact Page Note</div>
-        <div class="text-editor-wrap">
-          <div class="text-editor-label"><span class="text-editor-flag">🇬🇧</span> English</div>
-          <input class="form-input" id="txt-contactNote"/>
-        </div>
-        <div class="text-editor-wrap" style="margin-top:10px;">
-          <div class="text-editor-label"><span class="text-editor-flag">🇹🇷</span> Turkish</div>
-          <input class="form-input" id="txt-contactNoteTR"/>
-        </div>
-      </div>
- 
-      <button class="btn-primary" onclick="saveTexts()">Save Texts</button>
+      <button class="btn-save" onclick="saveTexts()">Save Texts</button>
     </div>
- 
-    <!-- ════ EXPORT ════ -->
-    <div class="admin-panel" id="panel-export">
-      <div class="panel-title">Export data.js</div>
-      <div class="panel-desc">
-        Download your updated data.js and replace the one on your server.<br>
-        Changes you make in this panel are saved instantly in your browser (localStorage).<br>
-        Exporting makes them permanent across all devices.
+
+    <!-- EXPORT -->
+    <div class="panel" id="panel-export">
+      <div class="ptitle">Export data.js</div>
+      <div class="pdesc">All changes are saved in your browser's localStorage instantly. Download data.js and upload it to your server to make them permanent for all visitors.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <button class="btn-save" onclick="exportData()">⬇ Download data.js</button>
+        <button class="btn-cancel" onclick="clearStorage()" style="border-color:var(--red);color:var(--red);">⚠ Reset to data.js</button>
       </div>
-      <button class="btn-primary" onclick="exportData()" style="margin-bottom:16px;">⬇ Download data.js</button>
-      <button class="btn-secondary" onclick="refreshExportPreview()" style="margin-left:0;margin-bottom:16px;">Preview</button>
-      <div class="export-pre" id="export-preview"></div>
+      <div class="pdesc" style="margin-bottom:8px;">Preview (first 3000 chars):</div>
+      <div class="export-pre" id="export-pre"></div>
     </div>
- 
+
   </main>
 </div>
- 
+
 <div id="toast"></div>
- 
-<!-- ══════════════════ data.js ══════════════════ -->
+
 <script src="data.js"></script>
- 
 <script>
-/* ═══════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    AUTH
-═══════════════════════════════════════════ */
-const CREDS = { user: 'tarik', pass: 'mandalinac31' };
- 
+═══════════════════════════════════════════════ */
+const AUTH = { user:'tarik', pass:'mandalinac31' };
 function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  if (u === CREDS.user && p === CREDS.pass) {
-    sessionStorage.setItem('admin_auth', '1');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').classList.add('visible');
-    init();
+  const u=document.getElementById('lUser').value.trim();
+  const p=document.getElementById('lPass').value;
+  if(u===AUTH.user&&p===AUTH.pass){
+    sessionStorage.setItem('adm','1');
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').classList.add('on');
+    boot();
   } else {
-    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('lErr').style.display='block';
   }
 }
- 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none')
-    doLogin();
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('login').style.display!=='none') doLogin();
 });
- 
-function doLogout() {
-  sessionStorage.removeItem('admin_auth');
-  location.reload();
-}
- 
-// Auto-login if session exists
-if (sessionStorage.getItem('admin_auth') === '1') {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-}
- 
-/* ═══════════════════════════════════════════
-   DATA STATE
-   Loaded from localStorage, merging SITE_BASE
-═══════════════════════════════════════════ */
-let D;
- 
+function doLogout(){ sessionStorage.removeItem('adm'); location.reload(); }
+
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+let D; // live working copy
+
 function loadD() {
   try {
-    const s = localStorage.getItem('veretrir_data');
-    if (s) {
-      D = JSON.parse(s);
-      // merge missing keys
-      Object.keys(SITE_BASE).forEach(k => { if (D[k] === undefined) D[k] = SITE_BASE[k]; });
-    } else {
-      D = JSON.parse(JSON.stringify(SITE_BASE));
-    }
-  } catch(e) {
-    D = JSON.parse(JSON.stringify(SITE_BASE));
-  }
+    const s=localStorage.getItem('veretrir_data');
+    D=s?JSON.parse(s):JSON.parse(JSON.stringify(SITE_BASE));
+    // ensure all required keys
+    Object.keys(SITE_BASE).forEach(k=>{ if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); });
+    // ensure new schema fields on old data
+    ['artworks','projects'].forEach(col=>{
+      (D[col]||[]).forEach(item=>{
+        if(!item.images)    item.images=[];
+        if(!item.materials) item.materials=[];
+      });
+    });
+  } catch(e){ D=JSON.parse(JSON.stringify(SITE_BASE)); }
 }
- 
+
 function saveD() {
-  localStorage.setItem('veretrir_data', JSON.stringify(D));
+  localStorage.setItem('veretrir_data',JSON.stringify(D));
 }
- 
-/* ═══════════════════════════════════════════
-   PANEL SWITCHING
-═══════════════════════════════════════════ */
-function showPanel(name) {
-  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('on'));
-  document.getElementById('panel-' + name).classList.add('on');
+
+function clearStorage() {
+  if(!confirm('This resets all admin changes back to the last uploaded data.js. Continue?')) return;
+  localStorage.removeItem('veretrir_data');
+  loadD(); renderAll(); toast('Reset to data.js','ok');
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function go(name) {
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));
   event.currentTarget.classList.add('on');
+  document.getElementById('panel-'+name).classList.add('on');
+  // Close any open form when switching panels
   renderPanel(name);
 }
- 
+
 function renderPanel(name) {
-  if (name === 'artworks')  renderList('artworks');
-  if (name === 'poems')     renderList('poems');
-  if (name === 'articles')  renderList('articles');
-  if (name === 'books')     renderList('books');
-  if (name === 'projects')  renderList('projects');
-  if (name === 'texts')     loadTexts();
-  if (name === 'export')    refreshExportPreview();
+  if(name==='artworks') renderList('artworks');
+  else if(name==='projects') renderList('projects');
+  else if(name==='poems') renderList('poems');
+  else if(name==='articles') renderList('articles');
+  else if(name==='books') renderList('books');
+  else if(name==='texts') loadTexts();
+  else if(name==='export') buildExportPreview();
 }
- 
-/* ═══════════════════════════════════════════
+
+function renderAll() {
+  ['artworks','projects','poems','articles','books'].forEach(renderList);
+}
+
+/* ═══════════════════════════════════════════════
    RENDER LISTS
-═══════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
+function _mainImgAdmin(item) {
+  if(!item.images||!item.images.length) return null;
+  const m=item.images.find(i=>i.isMain); return (m||item.images[0]).path;
+}
+
 function renderList(type) {
-  const el = document.getElementById('list-' + type);
-  if (!el) return;
-  el.innerHTML = '';
-  const items = D[type] || [];
-  if (!items.length) {
-    el.innerHTML = '<p style="color:#444;font-style:italic;padding:16px 0;">No items yet.</p>';
-    return;
-  }
-  items.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'item-card';
-    card.innerHTML = `
-      <div>
-        ${item.image ? `<img class="item-img-thumb" src="${item.image}" alt="">` : ''}
-        <span class="item-title">${item.title || item.id || '—'}</span>
-        ${item.titleTR ? `<span style="color:#444;font-size:11px;"> / ${item.titleTR}</span>` : ''}
-        <br>
-        <span class="item-meta">
-          ${item.year || ''}
-          ${item.medium ? ' · ' + item.medium : ''}
-          ${item.type   ? ' · ' + item.type   : ''}
-          ${item.status ? ' · ' : ''}
-          ${item.status === 'ongoing' ? '<span class="sbadge sbadge-on">ongoing</span>' : ''}
-          ${item.status === 'planned' ? '<span class="sbadge sbadge-pl">planned</span>' : ''}
-          ${item.model  ? ' · <span style="color:#2471a3">3D</span>' : ''}
-        </span>
+  const el=document.getElementById('list-'+type); if(!el) return;
+  el.innerHTML='';
+  const items=D[type]||[];
+  if(!items.length){ el.innerHTML='<p style="color:var(--faint);padding:12px 0;font-style:italic;">No items yet.</p>'; return; }
+  items.forEach((item,i)=>{
+    const row=document.createElement('div');
+    row.className='item-row';
+    const src=_mainImgAdmin(item);
+    const thumbHTML=src
+      ?`<img class="item-thumb" src="${src}" alt="">`
+      :`<div class="item-thumb-ph">⊞</div>`;
+    let meta=(item.year||'')+(item.medium?' · '+item.medium:'')+(item.type?' · '+item.type:'');
+    if(item.status) meta+=' &nbsp;<span class="sbadge '+(item.status==='ongoing'?'sbadge-on':'sbadge-pl')+'">'+(item.status==='ongoing'?'ongoing':'planned')+'</span>';
+    if(item.images&&item.images.length) meta+=` · ${item.images.length} img`;
+    if(item.materials&&item.materials.length) meta+=` · ${item.materials.length} block${item.materials.length>1?'s':''}`;
+    row.innerHTML=`
+      ${thumbHTML}
+      <div class="item-info">
+        <div class="item-title">${esc(item.title||item.id||'—')}</div>
+        <div class="item-meta">${meta}</div>
       </div>
-      <div class="item-actions">
-        <button class="btn-edit" onclick="startEdit('${type}', ${i})">Edit</button>
-        <button class="btn-del"  onclick="deleteItem('${type}', ${i})">Delete</button>
+      <div class="item-acts">
+        <button class="btn-e" onclick="openForm('${type}',${i})">Edit</button>
+        <button class="btn-d" onclick="delItem('${type}',${i})">Delete</button>
       </div>`;
-    el.appendChild(card);
+    el.appendChild(row);
   });
 }
- 
-/* ═══════════════════════════════════════════
-   FORMS
-═══════════════════════════════════════════ */
-let _editType = null, _editIdx = -1;
- 
-function startAdd(type) {
-  _editType = type; _editIdx = -1;
-  showForm(type, {});
+
+/* ═══════════════════════════════════════════════
+   FORM STATE
+   We keep form data in a JS object, render to DOM
+═══════════════════════════════════════════════ */
+let FT=null; // form type
+let FI=-1;   // form index (-1=new)
+let FD={};   // form data (mutable working copy)
+
+function openForm(type, idx) {
+  FT=type; FI=idx;
+  FD = idx>=0
+    ? JSON.parse(JSON.stringify((D[type]||[])[idx]))
+    : defaultItem(type);
+  renderForm();
 }
- 
-function startEdit(type, idx) {
-  _editType = type; _editIdx = idx;
-  const item = (D[type] || [])[idx] || {};
-  showForm(type, item);
+
+function closeForm() {
+  const el=document.getElementById('form-'+FT);
+  if(el) el.innerHTML='';
+  FT=null; FI=-1; FD={};
 }
- 
-function showForm(type, item) {
-  const wrap = document.getElementById('form-' + type);
-  wrap.style.display = 'block';
-  wrap.innerHTML = buildFormHTML(type, item);
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+function defaultItem(type) {
+  const base={id:type[0]+'-'+Date.now(),title:'',titleTR:'',year:'',desc:'',descTR:''};
+  if(type==='artwork'||type==='project') return {...base,medium:'',mediumTR:'',images:[],materials:[],...(type==='project'?{status:'ongoing'}:{})};
+  if(type==='poem')    return {...base,body:'',bodyTR:''};
+  if(type==='article') return {...base,type:'Essay',typeTR:'Deneme',body:'',bodyTR:''};
+  if(type==='book')    return {...base,pdf:'',cover:null,allowDownload:true};
+  return base;
 }
- 
-function hideForm(type) {
-  const wrap = document.getElementById('form-' + type);
-  if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
+
+/* ═══════════════════════════════════════════════
+   RENDER FORM
+═══════════════════════════════════════════════ */
+function renderForm() {
+  const wrap=document.getElementById('form-'+FT); if(!wrap) return;
+  wrap.innerHTML=buildFormHTML();
+  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
- 
-function buildFormHTML(type, item) {
-  const v = (k, def = '') => item[k] != null ? item[k] : def;
- 
-  const commonBilingual = (labelEN, labelTR, keyEN, keyTR, isTextarea) => {
-    const tag = isTextarea ? 'textarea' : 'input';
-    const cls = isTextarea ? 'form-textarea' : 'form-input';
-    const val = isTextarea ? '' : `value="${escAttr(v(keyEN))}"`;
-    const valTR = isTextarea ? '' : `value="${escAttr(v(keyTR))}"`;
-    return `
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">🇬🇧 ${labelEN}</label>
-          <${tag} class="${cls}" id="f-${keyEN}" ${val}>${isTextarea ? escHtml(v(keyEN)) : ''}</${tag}>
-        </div>
-        <div class="form-group">
-          <label class="form-label">🇹🇷 ${labelTR}</label>
-          <${tag} class="${cls}" id="f-${keyTR}" ${valTR}>${isTextarea ? escHtml(v(keyTR)) : ''}</${tag}>
-        </div>
-      </div>`;
-  };
- 
-  let body = `<div class="inline-form">
-    <div class="inline-form-title">${_editIdx >= 0 ? 'Edit' : 'New'} ${capitalize(type)}</div>`;
- 
-  if (type === 'artwork') {
-    body += commonBilingual('Title', 'Başlık', 'title', 'titleTR', false);
-    body += `
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Year</label>
-          <input class="form-input" id="f-year" value="${escAttr(v('year'))}">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🇬🇧 Medium</label>
-          <input class="form-input" id="f-medium" value="${escAttr(v('medium'))}">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🇹🇷 Medium (TR)</label>
-        <input class="form-input" id="f-mediumTR" value="${escAttr(v('mediumTR'))}">
-      </div>
- 
-      <div class="form-group">
-        <label class="form-label">Main Image</label>
-        <div class="upload-zone" onclick="document.getElementById('upload-main').click()"
-             ondragover="event.preventDefault();this.classList.add('drag')"
-             ondragleave="this.classList.remove('drag')"
-             ondrop="handleDrop(event,'upload-main')">
-          <input type="file" id="upload-main" accept="image/*" onchange="handleFileChange(this,'img-main-preview')">
-          <div class="upload-icon">🖼</div>
-          <div class="upload-text">
-            ${item.image ? `<img src="${item.image}" style="max-height:80px;max-width:160px;display:block;margin:0 auto 8px;">` : ''}
-            <strong>Click or drag</strong> to upload artwork image
-          </div>
-        </div>
-        <div id="img-main-preview" class="upload-previews"></div>
-        <input class="form-input" id="f-image" value="${escAttr(v('image'))}"
-               placeholder="Or type path: images/artwork/file.jpg" style="margin-top:8px;">
-        <div class="form-note">Path relative to site root</div>
-      </div>
- 
-      <div class="form-group">
-        <label class="form-label">3D Model Path (.glb / .gltf)</label>
-        <input class="form-input" id="f-model" value="${escAttr(v('model'))}"
-               placeholder="images/3d/model.glb">
-        <div class="form-note">Leave blank if no 3D model</div>
-      </div>`;
-    body += commonBilingual('Description (EN)', 'Açıklama (TR)', 'desc', 'descTR', true);
-  }
- 
-  else if (type === 'poem') {
-    body += commonBilingual('Title', 'Başlık', 'title', 'titleTR', false);
-    body += `
-      <div class="form-group">
-        <label class="form-label">Year</label>
-        <input class="form-input" id="f-year" value="${escAttr(v('year'))}" style="max-width:160px;">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">🇬🇧 Poem Text</label>
-          <textarea class="form-textarea poetry-textarea" id="f-body">${escHtml(v('body'))}</textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">🇹🇷 Şiir Metni</label>
-          <textarea class="form-textarea poetry-textarea" id="f-bodyTR">${escHtml(v('bodyTR'))}</textarea>
-        </div>
-      </div>`;
-  }
- 
-  else if (type === 'article') {
-    body += commonBilingual('Title', 'Başlık', 'title', 'titleTR', false);
-    body += `
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Year</label>
-          <input class="form-input" id="f-year" value="${escAttr(v('year'))}">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🇬🇧 Type (Essay, Criticism…)</label>
-          <input class="form-input" id="f-type" value="${escAttr(v('type'))}">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">🇹🇷 Tür (Deneme, Eleştiri…)</label>
-        <input class="form-input" id="f-typeTR" value="${escAttr(v('typeTR'))}" style="max-width:300px;">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">🇬🇧 Article Body</label>
-          <textarea class="form-textarea" id="f-body" style="min-height:180px;">${escHtml(v('body'))}</textarea>
-          <div class="form-note">Separate paragraphs with a blank line</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">🇹🇷 Makale Metni</label>
-          <textarea class="form-textarea" id="f-bodyTR" style="min-height:180px;">${escHtml(v('bodyTR'))}</textarea>
-        </div>
-      </div>`;
-  }
- 
-  else if (type === 'book') {
-    body += commonBilingual('Title', 'Başlık', 'title', 'titleTR', false);
-    body += `
-      <div class="form-group">
-        <label class="form-label">Year</label>
-        <input class="form-input" id="f-year" value="${escAttr(v('year'))}" style="max-width:160px;">
-      </div>
-      <div class="form-group">
-        <label class="form-label">PDF Path</label>
-        <input class="form-input" id="f-pdf" value="${escAttr(v('pdf'))}" placeholder="books/mybook.pdf">
-        <div class="form-note">Upload PDF to server, then enter path here</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Cover Image Path (optional)</label>
-        <input class="form-input" id="f-cover" value="${escAttr(v('cover'))}" placeholder="images/cover.jpg">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Allow Download?</label>
-        <select class="form-select" id="f-allowDownload" style="max-width:220px;">
-          <option value="true"  ${v('allowDownload') === true || v('allowDownload') === 'true' ? 'selected' : ''}>Yes — show download button</option>
-          <option value="false" ${v('allowDownload') === false || v('allowDownload') === 'false' ? 'selected' : ''}>No — read only</option>
-        </select>
-      </div>`;
-    body += commonBilingual('Description (EN)', 'Açıklama (TR)', 'desc', 'descTR', true);
-  }
- 
-  else if (type === 'project') {
-    body += commonBilingual('Title', 'Başlık', 'title', 'titleTR', false);
-    body += commonBilingual('Description (EN)', 'Açıklama (TR)', 'desc', 'descTR', true);
-    body += `
-      <div class="form-group">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="f-status" style="max-width:200px;">
-          <option value="ongoing" ${v('status') === 'ongoing' ? 'selected' : ''}>Ongoing</option>
-          <option value="planned" ${v('status') === 'planned' ? 'selected' : ''}>Planned</option>
-        </select>
-      </div>`;
-  }
- 
-  body += `
-    <div style="margin-top:20px;">
-      <button class="btn-primary" onclick="saveForm('${type}')">Save</button>
-      <button class="btn-secondary" onclick="hideForm('${type}')">Cancel</button>
-    </div>
+
+function buildFormHTML() {
+  const isWork=(FT==='artwork'||FT==='project');
+  const label=FI>=0?`Edit: ${esc(FD.title||FD.id)}`:`New ${capitalize(FT)}`;
+  let h=`<div class="form-drawer"><div class="form-drawer-title">${label}</div>`;
+
+  // ── Bilingual title + year + medium ──
+  h+=`<div class="f2col">
+    <div class="fg"><label class="fl">🇬🇧 Title</label><input class="fi" id="ff-title" value="${ea(FD.title)}"></div>
+    <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(FD.titleTR)}"></div>
   </div>`;
- 
-  return body;
-}
- 
-/* ── Save form ── */
-function saveForm(type) {
-  const g  = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  const gb = id => { const el = document.getElementById(id); return el ? el.value === 'true' : false; };
- 
-  let item = {};
-  const arr = D[type] || [];
-  const existingId = _editIdx >= 0 ? arr[_editIdx].id : null;
- 
-  if (type === 'artwork') {
-    item = {
-      id:        existingId || 'aw-' + Date.now(),
-      title:     g('f-title'), titleTR:  g('f-titleTR'),
-      year:      g('f-year'),  medium:   g('f-medium'), mediumTR: g('f-mediumTR'),
-      image:     g('f-image') || null,
-      extraImages: _editIdx >= 0 ? arr[_editIdx].extraImages : [],
-      model:     g('f-model') || null,
-      desc:      g('f-desc'),  descTR:   g('f-descTR'),
-    };
-    // If a file was dropped/selected, the path input was updated
-  }
-  else if (type === 'poem') {
-    item = {
-      id:     existingId || 'poem-' + Date.now(),
-      title:  g('f-title'),  titleTR: g('f-titleTR'),
-      year:   g('f-year'),
-      body:   g('f-body'),   bodyTR:  g('f-bodyTR'),
-    };
-  }
-  else if (type === 'article') {
-    item = {
-      id:     existingId || 'art-' + Date.now(),
-      title:  g('f-title'),  titleTR:  g('f-titleTR'),
-      year:   g('f-year'),   type:     g('f-type'), typeTR: g('f-typeTR'),
-      body:   g('f-body'),   bodyTR:   g('f-bodyTR'),
-    };
-  }
-  else if (type === 'book') {
-    item = {
-      id:            existingId || 'book-' + Date.now(),
-      title:         g('f-title'),  titleTR: g('f-titleTR'),
-      year:          g('f-year'),   pdf:     g('f-pdf'),
-      cover:         g('f-cover') || null,
-      allowDownload: gb('f-allowDownload'),
-      desc:          g('f-desc'),   descTR:  g('f-descTR'),
-    };
-  }
-  else if (type === 'project') {
-    item = {
-      id:     existingId || 'proj-' + Date.now(),
-      title:  g('f-title'),  titleTR: g('f-titleTR'),
-      desc:   g('f-desc'),   descTR:  g('f-descTR'),
-      status: g('f-status'),
-    };
-  }
- 
-  if (!D[type]) D[type] = [];
-  if (_editIdx >= 0) D[type][_editIdx] = item;
-  else D[type].push(item);
- 
-  saveD();
-  hideForm(type);
-  renderList(type);
-  toast('Saved!', 'ok');
-}
- 
-function deleteItem(type, idx) {
-  if (!confirm('Delete this item? This cannot be undone.')) return;
-  D[type].splice(idx, 1);
-  saveD();
-  renderList(type);
-  toast('Deleted.', 'ok');
-}
- 
-/* ── File upload helper ── */
-function handleFileChange(input, previewId) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    // For local preview only — actual path must be entered manually
-    // (static site can't write to server)
-    const prev = document.getElementById(previewId);
-    if (prev) {
-      prev.innerHTML = `
-        <div class="upload-prev-item">
-          <img src="${e.target.result}" alt="">
-          <span class="prev-label">${file.name}</span>
-        </div>
-        <p style="color:#555;font-size:11px;margin-top:8px;font-style:italic;">
-          ⚠ Upload this file to <strong>images/artwork/${file.name}</strong> on your server,<br>
-          then set the path field below to: <code>images/artwork/${file.name}</code>
-        </p>`;
+
+  if(isWork) {
+    h+=`<div class="frow">
+      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
+      <div class="fg"><label class="fl">🇬🇧 Medium</label><input class="fi" id="ff-medium" value="${ea(FD.medium)}"></div>
+    </div>
+    <div class="fg" style="max-width:340px"><label class="fl">🇹🇷 Teknik</label><input class="fi" id="ff-mediumTR" value="${ea(FD.mediumTR)}"></div>`;
+    if(FT==='project') {
+      h+=`<div class="fg" style="max-width:220px"><label class="fl">Status</label><select class="fsel" id="ff-status">
+        <option value="ongoing" ${FD.status==='ongoing'?'selected':''}>Ongoing</option>
+        <option value="planned" ${FD.status==='planned'?'selected':''}>Planned</option>
+      </select></div>`;
     }
-    // Auto-fill the path input
-    const pathInput = document.getElementById('f-image');
-    if (pathInput && !pathInput.value) {
-      pathInput.value = 'images/artwork/' + file.name;
-    }
-  };
-  reader.readAsDataURL(file);
+
+    // ── Bilingual description ──
+    h+=`<div class="sdiv"></div>
+    <div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(FD.desc)}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(FD.descTR)}</textarea></div>
+    </div>`;
+
+    // ── Image gallery ──
+    h+=`<div class="sdiv"></div>
+    <div class="img-gallery-wrap">
+      <div class="img-gallery-title">Image Gallery — click image to set as main, or remove</div>
+      <div class="img-stack" id="ff-img-stack">${buildImgStack()}</div>
+      <div class="img-path-input-wrap">
+        <input class="fi" id="ff-img-path" placeholder="images/artwork/filename.jpg">
+        <button class="img-add-path-btn" onclick="addImgByPath()">Add</button>
+      </div>
+      <div class="img-upload-hint">Upload the file to your server first, then paste the path above. Supports .jpg .png .gif .webp</div>
+    </div>`;
+
+    // ── Materials blocks ──
+    h+=`<div class="sdiv"></div>
+    <div class="fg"><label class="fl">Extra Material Blocks</label></div>
+    <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
+    <div class="mat-add-bar">
+      <button class="mat-type-btn" onclick="addMat('text')">+ Text</button>
+      <button class="mat-type-btn" onclick="addMat('image-gallery')">+ Image Gallery</button>
+      <button class="mat-type-btn" onclick="addMat('gif')">+ GIF</button>
+      <button class="mat-type-btn" onclick="addMat('3d')">+ 3D Model</button>
+      <button class="mat-type-btn" onclick="addMat('pdf')">+ PDF</button>
+      <button class="mat-type-btn" onclick="addMat('video')">+ Video</button>
+    </div>`;
+  }
+
+  else if(FT==='poem') {
+    h+=`<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
+    <div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(FD.body)}</textarea><div class="fnote">Line breaks preserved as typed</div></div>
+      <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(FD.bodyTR)}</textarea></div>
+    </div>`;
+  }
+
+  else if(FT==='article') {
+    h+=`<div class="frow">
+      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
+      <div class="fg"><label class="fl">🇬🇧 Type (Essay, Criticism…)</label><input class="fi" id="ff-type" value="${ea(FD.type)}"></div>
+    </div>
+    <div class="fg" style="max-width:280px"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(FD.typeTR)}"></div>
+    <div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Article Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(FD.body)}</textarea><div class="fnote">Blank line = new paragraph</div></div>
+      <div class="fg"><label class="fl">🇹🇷 Makale Metni</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(FD.bodyTR)}</textarea></div>
+    </div>`;
+  }
+
+  else if(FT==='book') {
+    h+=`<div class="frow">
+      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
+      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(FD.pdf)}" placeholder="books/mybook.pdf"></div>
+    </div>
+    <div class="fg"><label class="fl">Cover Image Path (optional)</label><input class="fi" id="ff-cover" value="${ea(FD.cover)}" placeholder="images/cover.jpg"></div>
+    <div class="fg" style="max-width:260px"><label class="fl">Allow Download?</label>
+      <select class="fsel" id="ff-allowDownload">
+        <option value="true" ${FD.allowDownload?'selected':''}>Yes — show download button</option>
+        <option value="false" ${!FD.allowDownload?'selected':''}>No — read only</option>
+      </select>
+    </div>
+    <div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(FD.desc)}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(FD.descTR)}</textarea></div>
+    </div>`;
+  }
+
+  h+=`<div class="form-actions">
+    <button class="btn-save" onclick="saveForm()">Save</button>
+    <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+  </div></div>`;
+  return h;
 }
- 
-function handleDrop(e, inputId) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (!file) return;
-  const inp = document.getElementById(inputId);
-  const dt  = new DataTransfer();
-  dt.items.add(file);
-  inp.files = dt.files;
-  inp.dispatchEvent(new Event('change'));
+
+/* ── Image stack ── */
+function buildImgStack() {
+  const imgs=FD.images||[];
+  let h='';
+  imgs.forEach((img,i)=>{
+    h+=`<div class="img-slot ${img.isMain?'is-main':''}">
+      <img src="${esc(img.path)}" alt="">
+      ${img.isMain?'<span class="img-slot-main-badge">MAIN</span>':''}
+      <div class="img-slot-overlay">
+        ${!img.isMain?`<button class="img-slot-btn" onclick="setMainImg(${i})">Set main</button>`:''}
+        <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="removeImg(${i})">Remove</button>
+      </div>
+    </div>`;
+  });
+  return h;
 }
- 
-/* ── Site texts ── */
+
+function rebuildImgStack() {
+  const el=document.getElementById('ff-img-stack');
+  if(el) el.innerHTML=buildImgStack();
+}
+
+function addImgByPath() {
+  const inp=document.getElementById('ff-img-path');
+  const path=(inp?inp.value.trim():'');
+  if(!path){ toast('Enter an image path first','err'); return; }
+  if(!FD.images) FD.images=[];
+  const isFirst=FD.images.length===0;
+  FD.images.push({path, isMain:isFirst, caption:''});
+  if(inp) inp.value='';
+  rebuildImgStack();
+  toast('Image added','ok');
+}
+
+function setMainImg(i) {
+  FD.images.forEach((img,j)=>img.isMain=(j===i));
+  rebuildImgStack();
+}
+
+function removeImg(i) {
+  FD.images.splice(i,1);
+  if(FD.images.length&&!FD.images.some(img=>img.isMain)) FD.images[0].isMain=true;
+  rebuildImgStack();
+}
+
+/* ── Material blocks ── */
+function buildMatBlocks() {
+  const mats=FD.materials||[];
+  if(!mats.length) return '<p style="color:var(--faint);font-size:11px;margin-bottom:8px;">No material blocks yet. Add one below.</p>';
+  return mats.map((m,i)=>buildMatBlock(m,i)).join('');
+}
+
+function buildMatBlock(m,i) {
+  let inner='';
+  const typeLabel={text:'Text',  'image-gallery':'Image Gallery', gif:'GIF', '3d':'3D Model', pdf:'PDF', video:'Video'}[m.type]||m.type;
+  if(m.type==='text') {
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi mat-label" data-mi="${i}" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    <div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" data-mi="${i}" oninput="matSet(${i},'content',this.value)">${eh(m.content)}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" oninput="matSet(${i},'contentTR',this.value)">${eh(m.contentTR)}</textarea></div>
+    </div>`;
+  } else if(m.type==='image-gallery'||m.type==='gif') {
+    const imgs=(m.images||[]);
+    const imgSlots=imgs.map((img,j)=>`<div class="img-slot">
+      <img src="${esc(img.path)}" alt="">
+      <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="matRemoveImg(${i},${j})">Remove</button></div>
+    </div>`).join('');
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    <div class="img-gallery-wrap">
+      <div class="img-stack" id="mat-img-stack-${i}">${imgSlots}</div>
+      <div class="img-path-input-wrap">
+        <input class="fi" id="mat-img-path-${i}" placeholder="images/artwork/file.jpg">
+        <button class="img-add-path-btn" onclick="matAddImg(${i})">Add</button>
+      </div>
+      ${m.type==='gif'?'<div class="fnote">GIFs will auto-loop when displayed.</div>':''}
+    </div>`;
+  } else if(m.type==='3d') {
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">3D Model Path (.glb / .gltf)</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="images/3d/model.glb"></div>`;
+  } else if(m.type==='pdf') {
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">PDF Path</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="files/document.pdf"></div>`;
+  } else if(m.type==='video') {
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
+  }
+  return `<div class="mat-block">
+    <div class="mat-block-header">
+      <span class="mat-block-label">${typeLabel}: ${esc(m.label||'')}</span>
+      <div class="mat-block-acts">
+        ${i>0?`<button class="mat-del-btn" onclick="moveMat(${i},-1)">↑</button>`:''}
+        ${i<(FD.materials.length-1)?`<button class="mat-del-btn" onclick="moveMat(${i},1)">↓</button>`:''}
+        <button class="mat-del-btn" onclick="delMat(${i})">Remove</button>
+      </div>
+    </div>
+    ${inner}
+  </div>`;
+}
+
+function rebuildMatList() {
+  const el=document.getElementById('ff-mat-list');
+  if(el) el.innerHTML=buildMatBlocks();
+}
+
+function addMat(type) {
+  if(!FD.materials) FD.materials=[];
+  FD.materials.push({id:'m-'+Date.now(),type,label:capitalize(type),content:'',contentTR:'',images:[],path:''});
+  rebuildMatList();
+}
+
+function delMat(i) {
+  FD.materials.splice(i,1); rebuildMatList();
+}
+
+function moveMat(i,dir) {
+  const j=i+dir;
+  if(j<0||j>=FD.materials.length) return;
+  [FD.materials[i],FD.materials[j]]=[FD.materials[j],FD.materials[i]];
+  rebuildMatList();
+}
+
+function matSet(i,key,val) {
+  if(FD.materials[i]) FD.materials[i][key]=val;
+}
+
+function matAddImg(i) {
+  const inp=document.getElementById('mat-img-path-'+i);
+  const path=inp?inp.value.trim():'';
+  if(!path){ toast('Enter path first','err'); return; }
+  if(!FD.materials[i].images) FD.materials[i].images=[];
+  FD.materials[i].images.push({path,caption:''});
+  if(inp) inp.value='';
+  rebuildMatList();
+  toast('Image added','ok');
+}
+
+function matRemoveImg(mi,ii) {
+  FD.materials[mi].images.splice(ii,1);
+  rebuildMatList();
+}
+
+/* ═══════════════════════════════════════════════
+   SAVE FORM
+═══════════════════════════════════════════════ */
+function saveForm() {
+  // Pull simple text fields back from DOM
+  const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  const gv=(id,def='')=>{ const el=document.getElementById(id); return el?el.value:def; };
+
+  FD.title   = g('ff-title');
+  FD.titleTR = g('ff-titleTR');
+  FD.year    = g('ff-year');
+
+  if(FT==='artwork'||FT==='project') {
+    FD.medium   = g('ff-medium');
+    FD.mediumTR = g('ff-mediumTR');
+    FD.desc     = gv('ff-desc');
+    FD.descTR   = gv('ff-descTR');
+    if(FT==='project') FD.status=gv('ff-status','ongoing');
+    // images + materials are already kept live in FD
+  }
+  else if(FT==='poem') {
+    FD.body   = gv('ff-body');
+    FD.bodyTR = gv('ff-bodyTR');
+  }
+  else if(FT==='article') {
+    FD.type   = g('ff-type');
+    FD.typeTR = g('ff-typeTR');
+    FD.body   = gv('ff-body');
+    FD.bodyTR = gv('ff-bodyTR');
+  }
+  else if(FT==='book') {
+    FD.pdf          = g('ff-pdf');
+    FD.cover        = g('ff-cover')||null;
+    FD.allowDownload= gv('ff-allowDownload')==='true';
+    FD.desc         = gv('ff-desc');
+    FD.descTR       = gv('ff-descTR');
+  }
+
+  if(!D[FT]) D[FT]=[];
+  if(FI>=0) D[FT][FI]=JSON.parse(JSON.stringify(FD));
+  else D[FT].push(JSON.parse(JSON.stringify(FD)));
+
+  saveD();
+  closeForm();
+  renderList(FT);
+  toast('Saved!','ok');
+}
+
+function delItem(type,idx) {
+  if(!confirm('Delete this item? Cannot be undone.')) return;
+  D[type].splice(idx,1);
+  saveD(); renderList(type); toast('Deleted','ok');
+}
+
+/* ═══════════════════════════════════════════════
+   SITE TEXTS
+═══════════════════════════════════════════════ */
 function loadTexts() {
-  const t = D.texts || {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
-  fields.forEach(k => {
-    const el = document.getElementById('txt-' + k);
-    if (el) el.value = t[k] || '';
+  const t=D.texts||{};
+  ['aboutEN','aboutTR','contactNote','contactNoteTR'].forEach(k=>{
+    const el=document.getElementById('txt-'+k); if(el) el.value=t[k]||'';
   });
 }
- 
+
 function saveTexts() {
-  if (!D.texts) D.texts = {};
-  ['aboutEN','aboutTR','contactNote','contactNoteTR'].forEach(k => {
-    const el = document.getElementById('txt-' + k);
-    if (el) D.texts[k] = el.value;
+  if(!D.texts) D.texts={};
+  ['aboutEN','aboutTR','contactNote','contactNoteTR'].forEach(k=>{
+    const el=document.getElementById('txt-'+k); if(el) D.texts[k]=el.value;
   });
-  saveD();
-  toast('Texts saved!', 'ok');
+  saveD(); toast('Texts saved!','ok');
 }
- 
-/* ═══════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════
    EXPORT
-═══════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 function buildDataJS() {
-  const d = JSON.stringify(D, null, 2);
-  return `/* =========================================================
-   data.js  --  Generated by admin panel on ${new Date().toLocaleString()}
+  return `/* =============================================================
+   data.js  —  Generated by admin panel on ${new Date().toLocaleString()}
    Upload this file to your server root to publish changes.
-   ========================================================= */
- 
-const SITE_BASE = ${d};
+   ============================================================= */
+
+const SITE_BASE = ${JSON.stringify(D,null,2)};
 `;
 }
- 
-function refreshExportPreview() {
-  const pre = document.getElementById('export-preview');
-  if (pre) pre.textContent = buildDataJS().slice(0, 3000) + (buildDataJS().length > 3000 ? '\n... (truncated)' : '');
+
+function buildExportPreview() {
+  const txt=buildDataJS();
+  const el=document.getElementById('export-pre');
+  if(el) el.textContent=txt.slice(0,3000)+(txt.length>3000?'\n… (truncated)':'');
 }
- 
+
 function exportData() {
-  const blob = new Blob([buildDataJS()], { type: 'text/javascript' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'data.js'; a.click();
+  const blob=new Blob([buildDataJS()],{type:'text/javascript'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='data.js'; a.click();
   URL.revokeObjectURL(url);
-  toast('data.js downloaded!', 'ok');
+  toast('data.js downloaded!','ok');
 }
- 
-/* ═══════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════
    HELPERS
-═══════════════════════════════════════════ */
-function escAttr(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+═══════════════════════════════════════════════ */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function ea(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function eh(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function toast(msg,type) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+(type||'ok');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='',2500);
 }
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
- 
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show ' + (type || 'ok');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = '', 2600);
-}
- 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-function init() {
+
+/* ═══════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════ */
+function boot() {
   loadD();
   renderList('artworks');
 }
- 
-if (sessionStorage.getItem('admin_auth') === '1') init();
+
+// Auto-login if session exists
+if(sessionStorage.getItem('adm')==='1'){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('on');
+  boot();
+}
 </script>
 </body>
 </html>
- 
