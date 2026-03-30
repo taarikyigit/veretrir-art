@@ -186,33 +186,33 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 
   <nav class="sidebar" id="sidebar">
     <div class="sb-sec">Works</div>
-    <div class="sb-item on" onclick="go('artworks')">
+    <div class="sb-item on" onclick="go(this,'artworks')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
       Artworks
     </div>
-    <div class="sb-item" onclick="go('projects')">
+    <div class="sb-item" onclick="go(this,'projects')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Projects
     </div>
     <div class="sb-sec">Writings</div>
-    <div class="sb-item" onclick="go('poems')">
+    <div class="sb-item" onclick="go(this,'poems')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
       Poems
     </div>
-    <div class="sb-item" onclick="go('articles')">
+    <div class="sb-item" onclick="go(this,'articles')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       Articles
     </div>
-    <div class="sb-item" onclick="go('books')">
+    <div class="sb-item" onclick="go(this,'books')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       Books
     </div>
     <div class="sb-sec">Site</div>
-    <div class="sb-item" onclick="go('texts')">
+    <div class="sb-item" onclick="go(this,'texts')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Site Texts
     </div>
-    <div class="sb-item" onclick="go('export')">
+    <div class="sb-item" onclick="go(this,'export')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
     </div>
@@ -224,8 +224,8 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel on" id="panel-artworks">
       <div class="ptitle">Artworks</div>
       <div class="pdesc">Each artwork has a stacked image gallery, and optional material blocks (text, 3D, PDF, video, etc.).</div>
-      <button class="add-btn" onclick="openForm('artwork',-1)">+ Add New Artwork</button>
-      <div id="form-artwork"></div>
+      <button class="add-btn" onclick="openForm('artworks',-1)">+ Add New Artwork</button>
+      <div id="form-artworks"></div>
       <div class="item-list" id="list-artworks"></div>
     </div>
 
@@ -233,8 +233,8 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel" id="panel-projects">
       <div class="ptitle">Ongoing &amp; Planned Projects</div>
       <div class="pdesc">Projects work exactly like artworks — they can have image galleries and material blocks, and open to their own detail page.</div>
-      <button class="add-btn" onclick="openForm('project',-1)">+ Add New Project</button>
-      <div id="form-project"></div>
+      <button class="add-btn" onclick="openForm('projects',-1)">+ Add New Project</button>
+      <div id="form-projects"></div>
       <div class="item-list" id="list-projects"></div>
     </div>
 
@@ -242,8 +242,8 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel" id="panel-poems">
       <div class="ptitle">Poems</div>
       <div class="pdesc">Line breaks are preserved exactly as typed.</div>
-      <button class="add-btn" onclick="openForm('poem',-1)">+ Add New Poem</button>
-      <div id="form-poem"></div>
+      <button class="add-btn" onclick="openForm('poems',-1)">+ Add New Poem</button>
+      <div id="form-poems"></div>
       <div class="item-list" id="list-poems"></div>
     </div>
 
@@ -251,8 +251,8 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel" id="panel-articles">
       <div class="ptitle">Articles</div>
       <div class="pdesc">Separate paragraphs with a blank line.</div>
-      <button class="add-btn" onclick="openForm('article',-1)">+ Add New Article</button>
-      <div id="form-article"></div>
+      <button class="add-btn" onclick="openForm('articles',-1)">+ Add New Article</button>
+      <div id="form-articles"></div>
       <div class="item-list" id="list-articles"></div>
     </div>
 
@@ -260,8 +260,8 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel" id="panel-books">
       <div class="ptitle">Books</div>
       <div class="pdesc">PDF books with the page-flip reader.</div>
-      <button class="add-btn" onclick="openForm('book',-1)">+ Add New Book</button>
-      <div id="form-book"></div>
+      <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
+      <div id="form-books"></div>
       <div class="item-list" id="list-books"></div>
     </div>
 
@@ -323,15 +323,13 @@ function doLogout(){ sessionStorage.removeItem('adm'); location.reload(); }
 /* ═══════════════════════════════════════════════
    DATA
 ═══════════════════════════════════════════════ */
-let D; // live working copy
+let D;
 
 function loadD() {
   try {
     const s=localStorage.getItem('veretrir_data');
     D=s?JSON.parse(s):JSON.parse(JSON.stringify(SITE_BASE));
-    // ensure all required keys
     Object.keys(SITE_BASE).forEach(k=>{ if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); });
-    // ensure new schema fields on old data
     ['artworks','projects'].forEach(col=>{
       (D[col]||[]).forEach(item=>{
         if(!item.images)    item.images=[];
@@ -353,13 +351,13 @@ function clearStorage() {
 
 /* ═══════════════════════════════════════════════
    NAVIGATION
+   FIX: pass the element explicitly instead of relying on event.currentTarget
 ═══════════════════════════════════════════════ */
-function go(name) {
-  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));
-  event.currentTarget.classList.add('on');
+function go(el, name) {
+  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
   document.getElementById('panel-'+name).classList.add('on');
-  // Close any open form when switching panels
   renderPanel(name);
 }
 
@@ -417,11 +415,10 @@ function renderList(type) {
 
 /* ═══════════════════════════════════════════════
    FORM STATE
-   We keep form data in a JS object, render to DOM
 ═══════════════════════════════════════════════ */
-let FT=null; // form type
-let FI=-1;   // form index (-1=new)
-let FD={};   // form data (mutable working copy)
+let FT=null;
+let FI=-1;
+let FD={};
 
 function openForm(type, idx) {
   FT=type; FI=idx;
@@ -432,17 +429,21 @@ function openForm(type, idx) {
 }
 
 function closeForm() {
+  if(!FT) return;
   const el=document.getElementById('form-'+FT);
   if(el) el.innerHTML='';
   FT=null; FI=-1; FD={};
 }
 
+/* FIX: use plural type keys that match D keys.
+   isWork check now uses 'artworks' / 'projects' */
 function defaultItem(type) {
-  const base={id:type[0]+'-'+Date.now(),title:'',titleTR:'',year:'',desc:'',descTR:''};
-  if(type==='artwork'||type==='project') return {...base,medium:'',mediumTR:'',images:[],materials:[],...(type==='project'?{status:'ongoing'}:{})};
-  if(type==='poem')    return {...base,body:'',bodyTR:''};
-  if(type==='article') return {...base,type:'Essay',typeTR:'Deneme',body:'',bodyTR:''};
-  if(type==='book')    return {...base,pdf:'',cover:null,allowDownload:true};
+  const base={id:type.replace(/s$/,'')+'-'+Date.now(),title:'',titleTR:'',year:'',desc:'',descTR:''};
+  if(type==='artworks') return {...base,medium:'',mediumTR:'',images:[],materials:[]};
+  if(type==='projects') return {...base,medium:'',mediumTR:'',images:[],materials:[],status:'ongoing'};
+  if(type==='poems')    return {...base,body:'',bodyTR:''};
+  if(type==='articles') return {...base,type:'Essay',typeTR:'Deneme',body:'',bodyTR:''};
+  if(type==='books')    return {...base,pdf:'',cover:null,allowDownload:true};
   return base;
 }
 
@@ -456,11 +457,11 @@ function renderForm() {
 }
 
 function buildFormHTML() {
-  const isWork=(FT==='artwork'||FT==='project');
-  const label=FI>=0?`Edit: ${esc(FD.title||FD.id)}`:`New ${capitalize(FT)}`;
+  const isWork=(FT==='artworks'||FT==='projects');
+  const singularLabel = FT==='artworks'?'Artwork': FT==='projects'?'Project': FT==='poems'?'Poem': FT==='articles'?'Article':'Book';
+  const label=FI>=0?`Edit: ${esc(FD.title||FD.id)}`:`New ${singularLabel}`;
   let h=`<div class="form-drawer"><div class="form-drawer-title">${label}</div>`;
 
-  // ── Bilingual title + year + medium ──
   h+=`<div class="f2col">
     <div class="fg"><label class="fl">🇬🇧 Title</label><input class="fi" id="ff-title" value="${ea(FD.title)}"></div>
     <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(FD.titleTR)}"></div>
@@ -472,24 +473,20 @@ function buildFormHTML() {
       <div class="fg"><label class="fl">🇬🇧 Medium</label><input class="fi" id="ff-medium" value="${ea(FD.medium)}"></div>
     </div>
     <div class="fg" style="max-width:340px"><label class="fl">🇹🇷 Teknik</label><input class="fi" id="ff-mediumTR" value="${ea(FD.mediumTR)}"></div>`;
-    if(FT==='project') {
+    if(FT==='projects') {
       h+=`<div class="fg" style="max-width:220px"><label class="fl">Status</label><select class="fsel" id="ff-status">
         <option value="ongoing" ${FD.status==='ongoing'?'selected':''}>Ongoing</option>
         <option value="planned" ${FD.status==='planned'?'selected':''}>Planned</option>
       </select></div>`;
     }
-
-    // ── Bilingual description ──
     h+=`<div class="sdiv"></div>
     <div class="f2col">
       <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(FD.desc)}</textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(FD.descTR)}</textarea></div>
     </div>`;
-
-    // ── Image gallery ──
     h+=`<div class="sdiv"></div>
     <div class="img-gallery-wrap">
-      <div class="img-gallery-title">Image Gallery — click image to set as main, or remove</div>
+      <div class="img-gallery-title">Image Gallery — hover image to set as main or remove</div>
       <div class="img-stack" id="ff-img-stack">${buildImgStack()}</div>
       <div class="img-path-input-wrap">
         <input class="fi" id="ff-img-path" placeholder="images/artwork/filename.jpg">
@@ -497,8 +494,6 @@ function buildFormHTML() {
       </div>
       <div class="img-upload-hint">Upload the file to your server first, then paste the path above. Supports .jpg .png .gif .webp</div>
     </div>`;
-
-    // ── Materials blocks ──
     h+=`<div class="sdiv"></div>
     <div class="fg"><label class="fl">Extra Material Blocks</label></div>
     <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
@@ -512,7 +507,7 @@ function buildFormHTML() {
     </div>`;
   }
 
-  else if(FT==='poem') {
+  else if(FT==='poems') {
     h+=`<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
     <div class="f2col">
       <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(FD.body)}</textarea><div class="fnote">Line breaks preserved as typed</div></div>
@@ -520,7 +515,7 @@ function buildFormHTML() {
     </div>`;
   }
 
-  else if(FT==='article') {
+  else if(FT==='articles') {
     h+=`<div class="frow">
       <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
       <div class="fg"><label class="fl">🇬🇧 Type (Essay, Criticism…)</label><input class="fi" id="ff-type" value="${ea(FD.type)}"></div>
@@ -532,7 +527,7 @@ function buildFormHTML() {
     </div>`;
   }
 
-  else if(FT==='book') {
+  else if(FT==='books') {
     h+=`<div class="frow">
       <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
       <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(FD.pdf)}" placeholder="books/mybook.pdf"></div>
@@ -611,11 +606,11 @@ function buildMatBlocks() {
 
 function buildMatBlock(m,i) {
   let inner='';
-  const typeLabel={text:'Text',  'image-gallery':'Image Gallery', gif:'GIF', '3d':'3D Model', pdf:'PDF', video:'Video'}[m.type]||m.type;
+  const typeLabel={text:'Text','image-gallery':'Image Gallery',gif:'GIF','3d':'3D Model',pdf:'PDF',video:'Video'}[m.type]||m.type;
   if(m.type==='text') {
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi mat-label" data-mi="${i}" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" data-mi="${i}" oninput="matSet(${i},'content',this.value)">${eh(m.content)}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" oninput="matSet(${i},'content',this.value)">${eh(m.content)}</textarea></div>
       <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" oninput="matSet(${i},'contentTR',this.value)">${eh(m.contentTR)}</textarea></div>
     </div>`;
   } else if(m.type==='image-gallery'||m.type==='gif') {
@@ -667,9 +662,7 @@ function addMat(type) {
   rebuildMatList();
 }
 
-function delMat(i) {
-  FD.materials.splice(i,1); rebuildMatList();
-}
+function delMat(i) { FD.materials.splice(i,1); rebuildMatList(); }
 
 function moveMat(i,dir) {
   const j=i+dir;
@@ -678,9 +671,7 @@ function moveMat(i,dir) {
   rebuildMatList();
 }
 
-function matSet(i,key,val) {
-  if(FD.materials[i]) FD.materials[i][key]=val;
-}
+function matSet(i,key,val) { if(FD.materials[i]) FD.materials[i][key]=val; }
 
 function matAddImg(i) {
   const inp=document.getElementById('mat-img-path-'+i);
@@ -700,9 +691,9 @@ function matRemoveImg(mi,ii) {
 
 /* ═══════════════════════════════════════════════
    SAVE FORM
+   FIX: all type checks now use plural keys
 ═══════════════════════════════════════════════ */
 function saveForm() {
-  // Pull simple text fields back from DOM
   const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
   const gv=(id,def='')=>{ const el=document.getElementById(id); return el?el.value:def; };
 
@@ -710,25 +701,24 @@ function saveForm() {
   FD.titleTR = g('ff-titleTR');
   FD.year    = g('ff-year');
 
-  if(FT==='artwork'||FT==='project') {
+  if(FT==='artworks'||FT==='projects') {
     FD.medium   = g('ff-medium');
     FD.mediumTR = g('ff-mediumTR');
     FD.desc     = gv('ff-desc');
     FD.descTR   = gv('ff-descTR');
-    if(FT==='project') FD.status=gv('ff-status','ongoing');
-    // images + materials are already kept live in FD
+    if(FT==='projects') FD.status=gv('ff-status','ongoing');
   }
-  else if(FT==='poem') {
+  else if(FT==='poems') {
     FD.body   = gv('ff-body');
     FD.bodyTR = gv('ff-bodyTR');
   }
-  else if(FT==='article') {
+  else if(FT==='articles') {
     FD.type   = g('ff-type');
     FD.typeTR = g('ff-typeTR');
     FD.body   = gv('ff-body');
     FD.bodyTR = gv('ff-bodyTR');
   }
-  else if(FT==='book') {
+  else if(FT==='books') {
     FD.pdf          = g('ff-pdf');
     FD.cover        = g('ff-cover')||null;
     FD.allowDownload= gv('ff-allowDownload')==='true';
@@ -741,8 +731,9 @@ function saveForm() {
   else D[FT].push(JSON.parse(JSON.stringify(FD)));
 
   saveD();
+  const savedType=FT;
   closeForm();
-  renderList(FT);
+  renderList(savedType);
   toast('Saved!','ok');
 }
 
@@ -820,7 +811,6 @@ function boot() {
   renderList('artworks');
 }
 
-// Auto-login if session exists
 if(sessionStorage.getItem('adm')==='1'){
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('on');
