@@ -15,7 +15,6 @@
 body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.65;overflow-x:hidden;}
 button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 
-/* ═══ LOGIN ═══ */
 #login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0d0d0d;}
 .lbox{background:var(--surface);border:1px solid var(--border);padding:52px 44px;width:360px;}
 .ltitle{font-family:var(--font);font-style:italic;font-size:20px;color:#ccc;margin-bottom:4px;}
@@ -28,11 +27,9 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .lbtn:hover{background:#219a52;}
 .lerr{color:var(--red);font-size:11px;margin-top:10px;display:none;}
 
-/* ═══ APP SHELL ═══ */
 #app{display:none;height:100vh;grid-template-columns:200px 1fr;grid-template-rows:48px 1fr;overflow:hidden;}
 #app.on{display:grid;}
 
-/* ─ topbar ─ */
 .topbar{grid-column:1/-1;background:#0d0d0d;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:10px;flex-shrink:0;}
 .topbar-left{font-family:var(--font);font-style:italic;font-size:13px;color:var(--dim);}
 .topbar-right{display:flex;gap:8px;align-items:center;}
@@ -42,7 +39,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .t-btn.green:hover{background:var(--accent);color:#fff;}
 .t-btn.danger:hover{border-color:var(--red);color:var(--red);}
 
-/* ─ sidebar ─ */
 .sidebar{background:#0d0d0d;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
 .sb-sec{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);padding:18px 16px 5px;}
 .sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--dim);cursor:pointer;transition:background .12s,color .12s;border-left:2px solid transparent;font-size:12px;user-select:none;}
@@ -50,14 +46,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .sb-item.on{background:var(--surface);color:#fff;border-left-color:var(--accent);}
 .sb-icon{width:13px;height:13px;flex-shrink:0;stroke:currentColor;}
 
-/* ─ main ─ */
 .main{overflow-y:auto;background:var(--bg);}
 .panel{display:none;padding:32px 36px 80px;}
 .panel.on{display:block;}
 .ptitle{font-family:var(--font);font-style:italic;font-size:22px;color:var(--text);margin-bottom:4px;}
 .pdesc{font-size:12px;color:var(--faint);margin-bottom:28px;}
 
-/* ─ list ─ */
 .item-list{margin-top:4px;}
 .item-row{background:var(--surface);border:1px solid var(--border);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:default;}
 .item-thumb{width:52px;height:52px;object-fit:cover;background:var(--raised);flex-shrink:0;border:1px solid var(--border);}
@@ -72,7 +66,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .add-btn{width:100%;background:none;border:1px dashed var(--border);color:var(--faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
 .add-btn:hover{border-color:var(--dim);color:var(--dim);}
 
-/* ─ form drawer ─ */
 .form-drawer{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);padding:28px;margin-bottom:16px;}
 .form-drawer-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;}
 
@@ -87,12 +80,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .fnote{font-size:10px;color:var(--faint);margin-top:4px;font-style:italic;}
 .f2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.f3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 
-/* ─ image gallery manager ─ */
 .img-gallery-wrap{border:1px solid var(--border);padding:16px;background:var(--raised);}
 .img-gallery-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
 .img-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.img-slot{position:relative;width:88px;height:88px;border:1px solid var(--border);overflow:hidden;flex-shrink:0;}
+.img-slot{position:relative;width:88px;height:88px;border:1px solid var(--border);overflow:hidden;flex-shrink:0;cursor:pointer;}
 .img-slot img{width:100%;height:100%;object-fit:cover;display:block;}
 .img-slot.is-main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
 .img-slot-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;transition:opacity .15s;}
@@ -100,15 +93,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .img-slot-btn{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:9px;letter-spacing:.08em;padding:3px 7px;cursor:pointer;width:60px;text-align:center;transition:border-color .15s;}
 .img-slot-btn:hover{border-color:#fff;}
 .img-slot-main-badge{position:absolute;top:3px;left:3px;background:var(--accent);color:#fff;font-size:7px;letter-spacing:.1em;padding:1px 5px;pointer-events:none;}
-.img-add-btn{width:88px;height:88px;border:1px dashed var(--border);background:none;color:var(--faint);cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s,color .2s;}
-.img-add-btn:hover{border-color:var(--dim);color:var(--dim);}
 .img-path-input-wrap{display:flex;gap:6px;margin-bottom:6px;}
 .img-path-input-wrap input{flex:1;}
 .img-add-path-btn{background:var(--accent);border:none;color:#fff;padding:0 14px;cursor:pointer;font-size:11px;transition:background .2s;flex-shrink:0;}
 .img-add-path-btn:hover{background:#219a52;}
 .img-upload-hint{font-size:10px;color:var(--faint);font-style:italic;}
 
-/* ─ materials blocks ─ */
 .mat-list{margin-top:8px;}
 .mat-block{background:var(--raised);border:1px solid var(--border);padding:16px;margin-bottom:10px;position:relative;}
 .mat-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
@@ -120,28 +110,26 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .mat-type-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:6px 12px;cursor:pointer;font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
 .mat-type-btn:hover{border-color:var(--accent);color:var(--accent);}
 
-/* ─ form buttons ─ */
 .form-actions{display:flex;gap:8px;margin-top:20px;}
 .btn-save{background:var(--accent);color:#fff;border:none;padding:10px 24px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
 .btn-save:hover{background:#219a52;}
 .btn-cancel{background:none;border:1px solid var(--border);color:var(--dim);padding:10px 18px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
 .btn-cancel:hover{border-color:var(--dim);color:var(--text);}
 
-/* ─ export panel ─ */
 .export-pre{background:#0a0a0a;border:1px solid var(--border);color:var(--faint);font-size:11px;padding:16px;max-height:260px;overflow-y:auto;white-space:pre;margin-top:10px;line-height:1.6;}
 
-/* ─ status badge ─ */
 .sbadge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid;font-family:var(--mono);}
 .sbadge-on{color:var(--accent);border-color:var(--accent);}
 .sbadge-pl{color:var(--faint);border-color:var(--border);}
+.featured-badge{background:var(--accent);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.type-badge-2d{background:var(--blue);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.type-badge-3d{background:var(--orange);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
 
-/* ─ toast ─ */
 #toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:11px 20px;font-size:12px;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
 #toast.ok{background:var(--accent);color:#fff;}
 #toast.err{background:var(--red);color:#fff;}
 
-/* ─ section divider ─ */
 .sdiv{height:1px;background:var(--border);margin:24px 0;}
 
 @media(max-width:700px){
@@ -149,13 +137,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   .sidebar{flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border);height:auto;}
   .sb-sec{display:none;}.sb-item{padding:8px 10px;font-size:11px;border-left:none;border-bottom:2px solid transparent;}
   .sb-item.on{border-bottom-color:var(--accent);border-left:none;}
-  .panel{padding:20px 16px 60px;}.frow,.f2col{grid-template-columns:1fr;}
+  .panel{padding:20px 16px 60px;}.frow,.f2col,.f3col{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login">
   <div class="lbox">
     <div class="ltitle">tarık yiğit</div>
@@ -173,7 +160,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
     <span class="topbar-left">tarık yiğit — admin</span>
@@ -219,26 +205,22 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   </nav>
 
   <main class="main" id="main">
-
-    <!-- ARTWORKS -->
     <div class="panel on" id="panel-artworks">
       <div class="ptitle">Artworks</div>
-      <div class="pdesc">Each artwork has a stacked image gallery, and optional material blocks (text, 3D, PDF, video, etc.).</div>
+      <div class="pdesc">Each artwork has a Display Image (for gallery thumbnails) and a Main Image (for detail page top). Check "Show in Hero Slider" to include in homepage randomizer.</div>
       <button class="add-btn" onclick="openForm('artworks',-1)">+ Add New Artwork</button>
       <div id="form-artworks"></div>
       <div class="item-list" id="list-artworks"></div>
     </div>
 
-    <!-- PROJECTS -->
     <div class="panel" id="panel-projects">
-      <div class="ptitle">Ongoing &amp; Planned Projects</div>
-      <div class="pdesc">Projects work exactly like artworks — they can have image galleries and material blocks, and open to their own detail page.</div>
+      <div class="ptitle">Projects</div>
+      <div class="pdesc">Ongoing and planned projects.</div>
       <button class="add-btn" onclick="openForm('projects',-1)">+ Add New Project</button>
       <div id="form-projects"></div>
       <div class="item-list" id="list-projects"></div>
     </div>
 
-    <!-- POEMS -->
     <div class="panel" id="panel-poems">
       <div class="ptitle">Poems</div>
       <div class="pdesc">Line breaks are preserved exactly as typed.</div>
@@ -247,7 +229,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <div class="item-list" id="list-poems"></div>
     </div>
 
-    <!-- ARTICLES -->
     <div class="panel" id="panel-articles">
       <div class="ptitle">Articles</div>
       <div class="pdesc">Separate paragraphs with a blank line.</div>
@@ -256,19 +237,17 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <div class="item-list" id="list-articles"></div>
     </div>
 
-    <!-- BOOKS -->
     <div class="panel" id="panel-books">
       <div class="ptitle">Books</div>
-      <div class="pdesc">PDF books with the page-flip reader.</div>
+      <div class="pdesc">PDF books with page-flip reader.</div>
       <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
       <div id="form-books"></div>
       <div class="item-list" id="list-books"></div>
     </div>
 
-    <!-- TEXTS -->
     <div class="panel" id="panel-texts">
       <div class="ptitle">Site Texts</div>
-      <div class="pdesc">Edit static text content. Changes are live immediately in your browser; export data.js to make permanent.</div>
+      <div class="pdesc">Edit static text content.</div>
       <div class="sdiv"></div>
       <div class="fg"><label class="fl">🇬🇧 About Page (English)</label><textarea class="ft" id="txt-aboutEN" style="min-height:120px;"></textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Hakkında Sayfası (Türkçe)</label><textarea class="ft" id="txt-aboutTR" style="min-height:120px;"></textarea></div>
@@ -277,27 +256,18 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
         <div class="fg"><label class="fl">🇬🇧 Contact Note</label><input class="fi" id="txt-contactNote"/></div>
         <div class="fg"><label class="fl">🇹🇷 İletişim Notu</label><input class="fi" id="txt-contactNoteTR"/></div>
       </div>
-      <div class="sdiv"></div>
-      <div class="fg">
-        <label class="fl">⭐ Featured Artworks (Hero Slider)</label>
-        <div class="fnote">Enter artwork IDs separated by commas. Find IDs in the Artworks list. Example: artwork-1774889675037, ar-1774892121936, ar-1774892777816</div>
-        <input class="fi" id="txt-featuredArtworks" placeholder="artwork-id-1, artwork-id-2, artwork-id-3">
-      </div>
       <button class="btn-save" onclick="saveTexts()">Save Texts</button>
     </div>
 
-    <!-- EXPORT -->
     <div class="panel" id="panel-export">
       <div class="ptitle">Export data.js</div>
-      <div class="pdesc">All changes are saved in your browser's localStorage instantly. Download data.js and upload it to your server to make them permanent for all visitors.</div>
+      <div class="pdesc">Download data.js and upload to your server.</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
         <button class="btn-save" onclick="exportData()">⬇ Download data.js</button>
         <button class="btn-cancel" onclick="clearStorage()" style="border-color:var(--red);color:var(--red);">⚠ Reset to data.js</button>
       </div>
-      <div class="pdesc" style="margin-bottom:8px;">Preview (first 3000 chars):</div>
       <div class="export-pre" id="export-pre"></div>
     </div>
-
   </main>
 </div>
 
@@ -305,9 +275,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 
 <script src="data.js"></script>
 <script>
-/* ═══════════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════════ */
 const AUTH = { user:'tarik', pass:'mandalinac31' };
 function doLogin() {
   const u=document.getElementById('lUser').value.trim();
@@ -326,9 +293,6 @@ document.addEventListener('keydown',e=>{
 });
 function doLogout(){ sessionStorage.removeItem('adm'); location.reload(); }
 
-/* ═══════════════════════════════════════════════
-   DATA
-═══════════════════════════════════════════════ */
 let D;
 
 function loadD() {
@@ -345,8 +309,11 @@ function loadD() {
     ['artworks','projects'].forEach(col=>{
       if (!D[col]) D[col] = [];
       (D[col]||[]).forEach(item=>{
-        if(!item.images)    item.images=[];
+        if(!item.images) item.images=[];
         if(!item.materials) item.materials=[];
+        if(item.displayImage === undefined) item.displayImage = null;
+        if(item.featured === undefined) item.featured = false;
+        if(item.workType === undefined) item.workType = '3d';
         if(item.status === undefined && col === 'projects') item.status = 'ongoing';
       });
     });
@@ -355,7 +322,6 @@ function loadD() {
     });
     if(!D.texts) D.texts = SITE_BASE.texts ? JSON.parse(JSON.stringify(SITE_BASE.texts)) : {};
   } catch(e){ 
-    console.error('Error loading data:', e);
     D=JSON.parse(JSON.stringify(SITE_BASE)); 
   }
 }
@@ -365,7 +331,7 @@ function saveD() {
 }
 
 function clearStorage() {
-  if(!confirm('This resets all admin changes back to the last uploaded data.js. Continue?')) return;
+  if(!confirm('Reset all admin changes?')) return;
   localStorage.removeItem('veretrir_data');
   loadD(); 
   renderAll(); 
@@ -373,14 +339,10 @@ function clearStorage() {
 }
 
 function go(name) {
-  if (window.currentFormType && window.currentFormType !== name) {
-    closeForm();
-  }
+  if (window.currentFormType && window.currentFormType !== name) closeForm();
   document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));
-  const clickedItem = Array.from(document.querySelectorAll('.sb-item')).find(
-    el => el.getAttribute('data-panel') === name
-  );
+  const clickedItem = Array.from(document.querySelectorAll('.sb-item')).find(el => el.getAttribute('data-panel') === name);
   if (clickedItem) clickedItem.classList.add('on');
   const panel = document.getElementById('panel-'+name);
   if (panel) panel.classList.add('on');
@@ -401,12 +363,6 @@ function renderAll() {
   ['artworks','projects','poems','articles','books'].forEach(renderList);
 }
 
-function _mainImgAdmin(item) {
-  if(!item.images||!item.images.length) return null;
-  const m=item.images.find(i=>i.isMain); 
-  return (m||item.images[0]).path;
-}
-
 function renderList(type) {
   const el=document.getElementById('list-'+type); 
   if(!el) return;
@@ -419,20 +375,18 @@ function renderList(type) {
   items.forEach((item,i)=>{
     const row=document.createElement('div');
     row.className='item-row';
-    const src=_mainImgAdmin(item);
-    const thumbHTML=src
-      ?`<img class="item-thumb" src="${src}" alt="">`
-      :`<div class="item-thumb-ph">⊞</div>`;
+    const thumbSrc = item.displayImage || (item.images && item.images[0] ? item.images[0].path : null);
+    const thumbHTML=thumbSrc ? `<img class="item-thumb" src="${thumbSrc}" alt="">` : `<div class="item-thumb-ph">⊞</div>`;
     let meta=(item.year||'')+(item.medium?' · '+item.medium:'');
     if(type==='projects' && item.status) {
       meta+=' &nbsp;<span class="sbadge '+(item.status==='ongoing'?'sbadge-on':'sbadge-pl')+'">'+(item.status==='ongoing'?'ongoing':'planned')+'</span>';
     }
-    if(item.images&&item.images.length) meta+=` · ${item.images.length} img`;
-    if(item.materials&&item.materials.length) meta+=` · ${item.materials.length} block${item.materials.length>1?'s':''}`;
+    const featuredBadge = item.featured ? '<span class="featured-badge">★ Hero</span>' : '';
+    const typeBadge = item.workType === '2d' ? '<span class="type-badge-2d">2D</span>' : (item.workType === '3d' ? '<span class="type-badge-3d">3D</span>' : '');
     row.innerHTML=`
       ${thumbHTML}
       <div class="item-info">
-        <div class="item-title">${esc(item.title||item.id||'—')} <span style="font-size:9px;color:var(--faint);font-family:monospace;">(${item.id})</span></div>
+        <div class="item-title">${esc(item.title||item.id||'—')} ${typeBadge} ${featuredBadge}</div>
         <div class="item-meta">${meta}</div>
       </div>
       <div class="item-acts">
@@ -448,9 +402,7 @@ let currentFormIndex = -1;
 let currentFormData = {};
 
 function openForm(type, idx) {
-  if (currentFormType) {
-    closeForm();
-  }
+  if (currentFormType) closeForm();
   currentFormType = type;
   currentFormIndex = idx;
   if (idx >= 0 && D[type] && D[type][idx]) {
@@ -470,33 +422,13 @@ function closeForm() {
 }
 
 function defaultItem(type) {
-  const base = {
-    id: type.slice(0,2) + '-' + Date.now(),
-    title: '',
-    titleTR: '',
-    year: '',
-    desc: '',
-    descTR: ''
-  };
+  const base = { id: type.slice(0,2) + '-' + Date.now(), title: '', titleTR: '', year: '', desc: '', descTR: '' };
   if (type === 'artworks' || type === 'projects') {
-    return {
-      ...base,
-      medium: '',
-      mediumTR: '',
-      images: [],
-      materials: [],
-      status: (type === 'projects') ? 'ongoing' : undefined
-    };
+    return { ...base, medium: '', mediumTR: '', images: [], materials: [], displayImage: null, featured: false, workType: '3d', status: (type === 'projects') ? 'ongoing' : undefined };
   }
-  if (type === 'poems') {
-    return { ...base, body: '', bodyTR: '' };
-  }
-  if (type === 'articles') {
-    return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '' };
-  }
-  if (type === 'books') {
-    return { ...base, pdf: '', cover: null, allowDownload: true };
-  }
+  if (type === 'poems') return { ...base, body: '', bodyTR: '' };
+  if (type === 'articles') return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '' };
+  if (type === 'books') return { ...base, pdf: '', cover: null, allowDownload: true };
   return base;
 }
 
@@ -517,14 +449,51 @@ function buildFormHTML() {
     <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(currentFormData.titleTR || '')}"></div>
   </div>`;
 
-  h += `<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(currentFormData.year || '')}"></div>`;
+  h += `<div class="frow">
+    <div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(currentFormData.year || '')}"></div>`;
+
+  if (isWork) {
+    h += `<div class="fg"><label class="fl">Work Type (for filtering)</label>
+      <select class="fsel" id="ff-workType">
+        <option value="3d" ${currentFormData.workType === '3d' ? 'selected' : ''}>3 Dimensional / Sculpture / Installation</option>
+        <option value="2d" ${currentFormData.workType === '2d' ? 'selected' : ''}>2 Dimensional / Painting / Print / Drawing</option>
+      </select>
+    </div>`;
+  }
+  h += `</div>`;
 
   if (isWork) {
     h += `<div class="frow">
-      <div class="fg"><label class="fl">🇬🇧 Medium</label><input class="fi" id="ff-medium" value="${ea(currentFormData.medium || '')}"></div>
-      <div class="fg"><label class="fl">🇹🇷 Teknik</label><input class="fi" id="ff-mediumTR" value="${ea(currentFormData.mediumTR || '')}"></div>
+      <div class="fg"><label class="fl">🇬🇧 Medium / Materials</label><input class="fi" id="ff-medium" value="${ea(currentFormData.medium || '')}"></div>
+      <div class="fg"><label class="fl">🇹🇷 Teknik / Malzemeler</label><input class="fi" id="ff-mediumTR" value="${ea(currentFormData.mediumTR || '')}"></div>
     </div>`;
     
+    h += `<div class="f3col">
+      <div class="fg">
+        <label class="fl">Display Image (Gallery Thumbnail)</label>
+        <input class="fi" id="ff-displayImage" value="${ea(currentFormData.displayImage || '')}" placeholder="images/artwork/thumb.jpg">
+        <div class="fnote">Shown in gallery grid and homepage preview</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Main Images (Detail Page)</label>
+        <div class="img-gallery-wrap" style="padding:12px;">
+          <div class="img-stack" id="ff-img-stack">${buildImgStack()}</div>
+          <div class="img-path-input-wrap">
+            <input class="fi" id="ff-img-path" placeholder="images/artwork/main-image.jpg">
+            <button class="img-add-path-btn" onclick="addImgByPath()">Add Image</button>
+          </div>
+          <div class="fnote">Mark one image as MAIN (appears at top). Click any image to view full size.</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl" style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:20px;">
+          <input type="checkbox" id="ff-featured" ${currentFormData.featured ? 'checked' : ''} style="width:18px;height:18px;"> 
+          ★ Include in Homepage Hero Slider
+        </label>
+        <div class="fnote">Featured artworks will appear randomly in the hero slider on homepage.</div>
+      </div>
+    </div>`;
+
     if (currentFormType === 'projects') {
       h += `<div class="fg" style="max-width:220px"><label class="fl">Status</label><select class="fsel" id="ff-status">
         <option value="ongoing" ${currentFormData.status === 'ongoing' ? 'selected' : ''}>Ongoing</option>
@@ -539,21 +508,10 @@ function buildFormHTML() {
     </div>`;
 
     h += `<div class="sdiv"></div>
-    <div class="img-gallery-wrap">
-      <div class="img-gallery-title">Image Gallery — click image to set as main, or remove</div>
-      <div class="img-stack" id="ff-img-stack">${buildImgStack()}</div>
-      <div class="img-path-input-wrap">
-        <input class="fi" id="ff-img-path" placeholder="images/artwork/filename.jpg">
-        <button class="img-add-path-btn" onclick="addImgByPath()">Add</button>
-      </div>
-      <div class="img-upload-hint">Upload the file to your server first, then paste the path above. Supports .jpg .png .gif .webp</div>
-    </div>`;
-
-    h += `<div class="sdiv"></div>
-    <div class="fg"><label class="fl">Extra Material Blocks</label></div>
+    <div class="fg"><label class="fl">Extra Material Blocks (optional)</label></div>
     <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
     <div class="mat-add-bar">
-      <button class="mat-type-btn" onclick="addMat('text')">+ Text</button>
+      <button class="mat-type-btn" onclick="addMat('text')">+ Text Block</button>
       <button class="mat-type-btn" onclick="addMat('image-gallery')">+ Image Gallery</button>
       <button class="mat-type-btn" onclick="addMat('gif')">+ GIF</button>
       <button class="mat-type-btn" onclick="addMat('3d')">+ 3D Model</button>
@@ -564,31 +522,31 @@ function buildFormHTML() {
 
   else if (currentFormType === 'poems') {
     h += `<div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea><div class="fnote">Line breaks preserved as typed</div></div>
+      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(currentFormData.bodyTR || '')}</textarea></div>
     </div>`;
   }
 
   else if (currentFormType === 'articles') {
     h += `<div class="frow">
-      <div class="fg"><label class="fl">🇬🇧 Type (Essay, Criticism…)</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div>
+      <div class="fg"><label class="fl">🇬🇧 Type</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div>
       <div class="fg"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(currentFormData.typeTR || '')}"></div>
     </div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Article Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea><div class="fnote">Blank line = new paragraph</div></div>
-      <div class="fg"><label class="fl">🇹🇷 Makale Metni</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Metin</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
     </div>`;
   }
 
   else if (currentFormType === 'books') {
     h += `<div class="frow">
-      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}" placeholder="books/mybook.pdf"></div>
-      <div class="fg"><label class="fl">Cover Image Path (optional)</label><input class="fi" id="ff-cover" value="${ea(currentFormData.cover || '')}" placeholder="images/cover.jpg"></div>
+      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}"></div>
+      <div class="fg"><label class="fl">Cover Image</label><input class="fi" id="ff-cover" value="${ea(currentFormData.cover || '')}"></div>
     </div>
-    <div class="fg" style="max-width:260px"><label class="fl">Allow Download?</label>
+    <div class="fg"><label class="fl">Allow Download?</label>
       <select class="fsel" id="ff-allowDownload">
-        <option value="true" ${currentFormData.allowDownload ? 'selected' : ''}>Yes — show download button</option>
-        <option value="false" ${!currentFormData.allowDownload ? 'selected' : ''}>No — read only</option>
+        <option value="true" ${currentFormData.allowDownload ? 'selected' : ''}>Yes</option>
+        <option value="false" ${!currentFormData.allowDownload ? 'selected' : ''}>No</option>
       </select>
     </div>
     <div class="f2col">
@@ -608,16 +566,25 @@ function buildImgStack() {
   const imgs = currentFormData.images || [];
   let h = '';
   imgs.forEach((img,i)=>{
-    h += `<div class="img-slot ${img.isMain ? 'is-main' : ''}">
+    h += `<div class="img-slot ${img.isMain ? 'is-main' : ''}" onclick="viewFullImage('${esc(img.path)}')">
       <img src="${esc(img.path)}" alt="">
       ${img.isMain ? '<span class="img-slot-main-badge">MAIN</span>' : ''}
       <div class="img-slot-overlay">
-        ${!img.isMain ? `<button class="img-slot-btn" onclick="setMainImg(${i})">Set main</button>` : ''}
-        <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="removeImg(${i})">Remove</button>
+        ${!img.isMain ? `<button class="img-slot-btn" onclick="event.stopPropagation();setMainImg(${i})">Set main</button>` : ''}
+        <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();removeImg(${i})">Remove</button>
       </div>
     </div>`;
   });
   return h;
+}
+
+function viewFullImage(src) {
+  const win = window.open();
+  win.document.write(`
+    <html><head><title>Image View</title>
+    <style>body{margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;}img{max-width:95vw;max-height:95vh;object-fit:contain;}</style>
+    </head><body><img src="${src}" onclick="window.close()"></body></html>
+  `);
 }
 
 function rebuildImgStack() {
@@ -671,16 +638,16 @@ function buildMatBlock(m,i) {
   } 
   else if (m.type === 'image-gallery' || m.type === 'gif') {
     const imgs = (m.images || []);
-    const imgSlots = imgs.map((img,j)=>`<div class="img-slot">
+    const imgSlots = imgs.map((img,j)=>`<div class="img-slot" onclick="viewFullImage('${esc(img.path)}')">
       <img src="${esc(img.path)}" alt="">
-      <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="matRemoveImg(${i},${j})">Remove</button></div>
+      <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();matRemoveImg(${i},${j})">Remove</button></div>
     </div>`).join('');
     inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
     <div class="img-gallery-wrap">
       <div class="img-stack" id="mat-img-stack-${i}">${imgSlots}</div>
       <div class="img-path-input-wrap">
         <input class="fi" id="mat-img-path-${i}" placeholder="images/artwork/file.jpg">
-        <button class="img-add-path-btn" onclick="matAddImg(${i})">Add</button>
+        <button class="img-add-path-btn" onclick="matAddImg(${i})">Add Image</button>
       </div>
       ${m.type === 'gif' ? '<div class="fnote">GIFs will auto-loop when displayed.</div>' : ''}
     </div>`;
@@ -782,6 +749,11 @@ function saveForm() {
     currentFormData.mediumTR = getVal('ff-mediumTR');
     currentFormData.desc = getText('ff-desc');
     currentFormData.descTR = getText('ff-descTR');
+    currentFormData.displayImage = getVal('ff-displayImage') || null;
+    const featuredEl = document.getElementById('ff-featured');
+    if (featuredEl) currentFormData.featured = featuredEl.checked;
+    const workTypeEl = document.getElementById('ff-workType');
+    if (workTypeEl) currentFormData.workType = workTypeEl.value;
     if (currentFormType === 'projects') {
       const statusEl = document.getElementById('ff-status');
       if (statusEl) currentFormData.status = statusEl.value;
@@ -830,7 +802,7 @@ function delItem(type,idx) {
 
 function loadTexts() {
   const t = D.texts || {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','featuredArtworks'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) el.value = t[k] || '';
@@ -839,7 +811,7 @@ function loadTexts() {
 
 function saveTexts() {
   if(!D.texts) D.texts = {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','featuredArtworks'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) D.texts[k] = el.value;
