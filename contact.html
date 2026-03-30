@@ -47,15 +47,25 @@
     <div class="sec-title contact-center" data-en="Contact" data-tr="İletişim">Contact</div>
     <div class="contact-center">
       <a href="mailto:hello@veretrir.art" class="contact-email" data-no-transition>hello@veretrir.art</a>
-      <p class="contact-note"
-         data-en="Collaborations, exhibitions, publications."
-         data-tr="İşbirlikleri, sergiler, yayınlar.">
-        Collaborations, exhibitions, publications.
-      </p>
+      <p class="contact-note" id="contactNote"></p>
     </div>
   </div>
 </div>
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
 <script src="data.js"></script><script src="common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  function renderNote() {
+    const l   = currentLang;
+    const txt = (SITE.texts || {});
+    const note = l === 'tr' ? (txt.contactNoteTR || txt.contactNote || '') : (txt.contactNote || 'Collaborations, exhibitions, publications.');
+    const el = document.getElementById('contactNote');
+    if (el) el.textContent = note;
+  }
+  renderNote();
+  document.getElementById('b-en').addEventListener('click', renderNote);
+  document.getElementById('b-tr').addEventListener('click', renderNote);
+});
+</script>
 </body>
 </html>
