@@ -37,20 +37,29 @@
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title" data-en="About" data-tr="Hakkında">About</div>
-    <div class="about-text">
-      <p data-en="Write your biography or artist statement here. Who you are, where you come from, what you make and why."
-         data-tr="Biyografinizi buraya yazın. Kim olduğunuzu, nereden geldiğinizi, ne ürettiğinizi ve neden.">
-        Write your biography or artist statement here. Who you are, where you come from, what you make and why.
-      </p>
-      <p data-en="A second paragraph about your practice — the themes you return to, the tensions that drive your work."
-         data-tr="Pratiğiniz hakkında ikinci paragraf — döndüğünüz temalar, çalışmalarınızı yönlendiren gerilimler.">
-        A second paragraph about your practice — the themes you return to, the tensions that drive your work.
-      </p>
-    </div>
+    <div class="about-text" id="aboutText"></div>
   </div>
 </div>
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
 <script src="data.js"></script><script src="common.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  function renderAbout() {
+    const l   = currentLang;
+    const txt = (SITE.texts || {});
+    const raw = l === 'tr' ? (txt.aboutTR || txt.aboutEN || '') : (txt.aboutEN || '');
+    const el  = document.getElementById('aboutText');
+    if (!el) return;
+    el.innerHTML = raw.split(/\n\n+/)
+      .filter(p => p.trim())
+      .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
+      .join('');
+  }
+  renderAbout();
+  document.getElementById('b-en').addEventListener('click', renderAbout);
+  document.getElementById('b-tr').addEventListener('click', renderAbout);
+});
+</script>
 </body>
 </html>
  
