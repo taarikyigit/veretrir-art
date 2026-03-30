@@ -73,21 +73,9 @@ function _getDisplayImage(aw) {
   return aw.displayImage || _mainImg(aw);
 }
 
-// Function to open full-size image viewer
-function openImageViewer(src, alt) {
-  const win = window.open();
-  win.document.write(`
-    <html><head><title>${_esc(alt || 'Image')}</title>
-    <style>
-      body{margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;cursor:pointer;}
-      img{max-width:95vw;max-height:95vh;object-fit:contain;box-shadow:0 0 30px rgba(0,0,0,0.5);}
-      .close-hint{position:fixed;bottom:20px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.5);font-family:monospace;font-size:12px;}
-    </style>
-    </head><body onclick="window.close()">
-    <img src="${src}" alt="${_esc(alt || '')}">
-    <div class="close-hint">Click anywhere to close</div>
-    </body></html>
-  `);
+function _getAllImages(aw) {
+  if (!aw.images || !aw.images.length) return [];
+  return aw.images.map(img => img.path);
 }
 
 function _renderWork(aw, badgeLabel, overrideTitle) {
@@ -96,21 +84,24 @@ function _renderWork(aw, badgeLabel, overrideTitle) {
   const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
   const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
 
-  // Main hero image
+  // Get all images for gallery
+  const allImages = _getAllImages(aw);
   const mainSrc = _mainImg(aw);
+  
+  // Main hero image - click opens lightbox
   const heroHTML = mainSrc
-    ? `<div class="reading-hero-img" style="cursor:pointer;" onclick="openImageViewer('${mainSrc}','${_esc(title)}')">
+    ? `<div class="reading-hero-img" style="cursor:pointer;" onclick="openLightbox(${JSON.stringify(allImages)}, ${allImages.indexOf(mainSrc)}, '${_esc(title)}')">
         <img src="${mainSrc}" alt="${_esc(title)}" style="width:100%;height:auto;display:block;">
        </div>`
     : `<div class="reading-hero-ph"><span>${l==='tr'?'Görsel eklenecek':'Image coming soon'}</span></div>`;
 
-  // Image gallery (all images in the main images array)
+  // Image gallery (all images)
   let galleryHTML = '';
-  if (aw.images && aw.images.length > 0) {
+  if (allImages.length > 0) {
     galleryHTML = `<div class="reading-sec-label">${l==='tr'?'Görseller':'Images'}</div>
       <div class="reading-photos">
-        ${aw.images.map(img => `<div class="reading-photo" onclick="openImageViewer('${img.path}','${_esc(title)}')" style="cursor:pointer;">
-          <img src="${img.path}" alt="${_esc(img.caption||'')}">
+        ${allImages.map((img, idx) => `<div class="reading-photo" onclick="openLightbox(${JSON.stringify(allImages)}, ${idx}, '${_esc(title)}')" style="cursor:pointer;">
+          <img src="${img}" alt="${_esc(title)}">
         </div>`).join('')}
       </div>`;
   }
@@ -125,10 +116,14 @@ function _renderWork(aw, badgeLabel, overrideTitle) {
         const paras = (content||'').split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
         matsHTML += lbl + `<div class="reading-desc">${paras}</div>`;
       } else if (mat.type === 'image-gallery') {
-        const imgs = (mat.images||[]).map(i=>`<div class="reading-photo" onclick="openImageViewer('${i.path}','${_esc(mat.label||'')}')" style="cursor:pointer;">
-          <img src="${i.path}" alt="${_esc(i.caption||'')}">
-        </div>`).join('');
-        matsHTML += lbl + `<div class="reading-photos">${imgs}</div>`;
+        const matImages = (mat.images||[]).map(i => i.path);
+        if (matImages.length) {
+          matsHTML += lbl + `<div class="reading-photos">
+            ${matImages.map((img, idx) => `<div class="reading-photo" onclick="openLightbox(${JSON.stringify(matImages)}, ${idx}, '${_esc(mat.label||'')}')" style="cursor:pointer;">
+              <img src="${img}" alt="${_esc(mat.label||'')}">
+            </div>`).join('')}
+          </div>`;
+        }
       } else if (mat.type === 'gif') {
         const imgs = (mat.images||[]).map(i=>`<div class="reading-photo"><img src="${i.path}" alt="" style="image-rendering:auto;"></div>`).join('');
         matsHTML += lbl + `<div class="reading-photos">${imgs}</div>`;
@@ -223,5 +218,10 @@ document.addEventListener('keydown', e => {
   if (e.key!=='Escape') return;
   const v=document.getElementById('viewer-overlay');
   if (v&&v.classList.contains('open')) { closeViewer(); return; }
+  const lb = document.getElementById('lightbox-overlay');
+  if (lb && lb.classList.contains('open')) { 
+    closeLightbox(); 
+    return; 
+  }
   closeReading();
 });
