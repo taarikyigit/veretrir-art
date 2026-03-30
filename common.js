@@ -76,11 +76,12 @@ function _mainImg(aw) {
   return (main || aw.images[0]).path;
 }
 
-function _renderWork(aw, badgeLabel) {
-  const l      = currentLang;
-  const title  = l === 'tr' ? (aw.titleTR  || aw.title)  : aw.title;
+function _renderWork(aw, badgeLabel, overrideTitle) {
+  const l = currentLang;
+  // FIXED: Use the passed title that already has correct language
+  const title = overrideTitle || (l === 'tr' ? (aw.titleTR || aw.title) : aw.title);
   const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-  const desc   = l === 'tr' ? (aw.descTR   || aw.desc)   : aw.desc;
+  const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
 
   /* Hero image */
   const mainSrc = _mainImg(aw);
@@ -93,7 +94,7 @@ function _renderWork(aw, badgeLabel) {
   if (aw.images && aw.images.length > 1) {
     const extras = aw.images.filter(i => !i.isMain || aw.images.length === 1);
     if (extras.length) {
-      galleryHTML = `<div class="reading-sec-label">${l==='tr'?'Galerisi':'Gallery'}</div>
+      galleryHTML = `<div class="reading-sec-label">${l==='tr'?'Galeri':'Gallery'}</div>
         <div class="reading-photos">
           ${aw.images.map(img => `<div class="reading-photo"><img src="${img.path}" alt="${_esc(img.caption||'')}"></div>`).join('')}
         </div>`;
@@ -106,7 +107,9 @@ function _renderWork(aw, badgeLabel) {
     aw.materials.forEach(mat => {
       const lbl = `<div class="reading-sec-label">${_esc(mat.label||mat.type)}</div>`;
       if (mat.type === 'text') {
-        const paras = (mat.content||'').split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+        // FIXED: Show Turkish content when language is TR
+        const content = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
+        const paras = (content||'').split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
         matsHTML += lbl + `<div class="reading-desc">${paras}</div>`;
       } else if (mat.type === 'image-gallery') {
         const imgs = (mat.images||[]).map(i=>`<div class="reading-photo"><img src="${i.path}" alt="${_esc(i.caption||'')}"></div>`).join('');
@@ -147,18 +150,30 @@ function _renderWork(aw, badgeLabel) {
 
 function openArtwork(idx) {
   const aw = SITE.artworks[idx]; if (!aw) return;
-  _renderWork(aw, currentLang==='tr'?'Eser':'Artwork');
+  const l = currentLang;
+  // FIXED: Show Turkish when language is TR, English when EN
+  const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+  const badge = l === 'tr' ? 'Eser' : 'Artwork';
+  _renderWork(aw, badge, title);
 }
+
 function openProject(idx) {
   const p = SITE.projects[idx]; if (!p) return;
-  _renderWork(p, currentLang==='tr'?'Proje':'Project');
+  const l = currentLang;
+  // FIXED: Show Turkish when language is TR, English when EN
+  const title = l === 'tr' ? (p.titleTR || p.title) : p.title;
+  const badge = l === 'tr' ? 'Proje' : 'Project';
+  _renderWork(p, badge, title);
 }
 
 /* ── WRITINGS ────────────────────────────────────────────────── */
 function openPoem(idx) {
   const pm = SITE.poems[idx]; if (!pm) return;
-  const l = currentLang, title = l==='tr'?(pm.titleTR||pm.title):pm.title;
-  const body = l==='tr'?(pm.bodyTR||pm.body):pm.body, lbl=l==='tr'?'Şiir':'Poem';
+  const l = currentLang;
+  // FIXED: Show Turkish when language is TR, English when EN
+  const title = l === 'tr' ? (pm.titleTR || pm.title) : pm.title;
+  const body = l === 'tr' ? (pm.bodyTR || pm.body) : pm.body;
+  const lbl = l === 'tr' ? 'Şiir' : 'Poem';
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
     <div class="reading-meta">${_esc(pm.year)}</div>
@@ -166,10 +181,14 @@ function openPoem(idx) {
     <div class="reading-text">${_esc(body)}</div>
   `, lbl, title);
 }
+
 function openArticle(idx) {
   const ar = SITE.articles[idx]; if (!ar) return;
-  const l = currentLang, title=l==='tr'?(ar.titleTR||ar.title):ar.title;
-  const type=l==='tr'?(ar.typeTR||ar.type):ar.type, body=l==='tr'?(ar.bodyTR||ar.body):ar.body;
+  const l = currentLang;
+  // FIXED: Show Turkish when language is TR, English when EN
+  const title = l === 'tr' ? (ar.titleTR || ar.title) : ar.title;
+  const type = l === 'tr' ? (ar.typeTR || ar.type) : ar.type;
+  const body = l === 'tr' ? (ar.bodyTR || ar.body) : ar.body;
   const paras = body.split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
