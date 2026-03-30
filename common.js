@@ -1,6 +1,32 @@
 /* ═══════════════════════════════════════════════════════
    common.js  —  shared logic for all pages
+ 
+   CONTENT LAYER:
+   The site reads from localStorage key 'veretrir_data'
+   first (written by admin panel), falling back to
+   SITE_BASE defined in data.js.
    ═══════════════════════════════════════════════════════ */
+ 
+/* ══════════════════════════════
+   CONTENT LAYER — localStorage first
+══════════════════════════════ */
+let SITE;
+(function loadSITE() {
+  try {
+    const stored = localStorage.getItem('veretrir_data');
+    if (stored) {
+      SITE = JSON.parse(stored);
+      /* Merge any missing keys from SITE_BASE */
+      Object.keys(SITE_BASE).forEach(k => {
+        if (SITE[k] === undefined) SITE[k] = SITE_BASE[k];
+      });
+    } else {
+      SITE = JSON.parse(JSON.stringify(SITE_BASE));
+    }
+  } catch(e) {
+    SITE = JSON.parse(JSON.stringify(SITE_BASE));
+  }
+})();
  
 /* ══════════════════════════════
    PAGE SLIDE TRANSITION
@@ -11,37 +37,28 @@ function navigate(url) {
   if (_navigating) return;
   _navigating = true;
   const mask = document.getElementById('page-transition-mask');
+  if (!mask) { window.location.href = url; return; }
   mask.classList.remove('slide-out');
   mask.classList.add('slide-in');
   setTimeout(() => { window.location.href = url; }, 370);
 }
  
-/* Intercept all internal nav links */
 document.addEventListener('DOMContentLoaded', () => {
-  /* Slide-out on page load (incoming animation) */
   const mask = document.getElementById('page-transition-mask');
-  mask.classList.remove('slide-in');
-  mask.classList.add('slide-out');
-  setTimeout(() => { mask.classList.remove('slide-out'); }, 400);
+  if (mask) {
+    mask.classList.remove('slide-in');
+    mask.classList.add('slide-out');
+    setTimeout(() => mask.classList.remove('slide-out'), 400);
+  }
  
-  /* Attach to all same-origin links except reading/overlay */
   document.querySelectorAll('a[href]').forEach(a => {
     const href = a.getAttribute('href');
-    if (
-      href &&
-      !href.startsWith('#') &&
-      !href.startsWith('mailto:') &&
-      !href.startsWith('http') &&
-      !a.dataset.noTransition
-    ) {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        navigate(href);
-      });
+    if (href && !href.startsWith('#') && !href.startsWith('mailto:') &&
+        !href.startsWith('http') && !a.dataset.noTransition) {
+      a.addEventListener('click', e => { e.preventDefault(); navigate(href); });
     }
   });
  
-  /* Apply saved language */
   setLang(currentLang);
 });
  
@@ -77,9 +94,9 @@ function openReading(html, badge, topTitle) {
   const fab     = document.getElementById('back-fab');
   if (!overlay) return;
  
-  body.innerHTML       = html;
-  badgeEl.textContent  = badge;
-  titleEl.textContent  = topTitle;
+  body.innerHTML      = html;
+  badgeEl.textContent = badge;
+  titleEl.textContent = topTitle;
  
   _savedScroll = window.scrollY;
   document.body.style.overflow = 'hidden';
@@ -103,24 +120,24 @@ function closeReading() {
 ══════════════════════════════ */
 function _esc(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
  
 function openArtwork(idx) {
   const aw = SITE.artworks[idx];
-  const l  = currentLang;
+  if (!aw) return;
+  const l      = currentLang;
   const title  = l === 'tr' ? aw.titleTR  : aw.title;
   const medium = l === 'tr' ? aw.mediumTR : aw.medium;
   const desc   = l === 'tr' ? aw.descTR   : aw.desc;
  
   const lbl = {
-    about:  l === 'tr' ? 'Bu eser hakkında'  : 'About this work',
-    photos: l === 'tr' ? 'Ek fotoğraflar'    : 'Additional photos',
-    view3d: l === 'tr' ? '3D\'yi Görüntüle'  : 'View 3D',
-    addImg: l === 'tr' ? 'Ana görsel ekle'   : 'Add main image',
-    photo:  l === 'tr' ? 'fotoğraf'          : 'photo',
+    about:  l === 'tr' ? 'Bu eser hakkında' : 'About this work',
+    photos: l === 'tr' ? 'Ek fotoğraflar'   : 'Additional photos',
+    view3d: l === 'tr' ? '3D Görüntüle'     : 'View 3D',
+    addImg: l === 'tr' ? 'Görsel ekle'      : 'Add main image',
+    photo:  l === 'tr' ? 'fotoğraf'         : 'photo',
   };
  
   const heroHTML = aw.image
@@ -128,8 +145,9 @@ function openArtwork(idx) {
     : `<div class="reading-hero-ph"><span>${lbl.addImg}</span></div>`;
  
   const btn3d = aw.model
-    ? `<button class="btn-3d" onclick="openViewer('${aw.model}','${_esc(title)}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    ? `<button class="btn-3d" onclick="openViewer('${aw.model.replace(/'/g,"\\'")}','${_esc(title)}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2l9 4.5v9L12 20l-9-4.5v-9L12 2z"/>
           <polyline points="12 2 12 20"/>
           <polyline points="3 6.5 12 11 21 6.5"/>
@@ -140,12 +158,14 @@ function openArtwork(idx) {
  
   const photos = (aw.extraImages && aw.extraImages.length)
     ? aw.extraImages.map(s => `<div class="reading-photo"><img src="${s}" alt=""></div>`).join('')
-    : Array(3).fill(0).map(() => `<div class="reading-photo"><div class="reading-photo-ph"><span>${lbl.photo}</span></div></div>`).join('');
+    : Array(3).fill(0).map(() =>
+        `<div class="reading-photo"><div class="reading-photo-ph"><span>${lbl.photo}</span></div></div>`
+      ).join('');
  
   openReading(`
     ${heroHTML}
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${aw.year} · ${_esc(medium)}</div>
+    <div class="reading-meta">${_esc(aw.year)} · ${_esc(medium)}</div>
     ${btn3d}
     <div class="reading-sec-label">${lbl.about}</div>
     <div class="reading-desc"><p>${_esc(desc)}</p></div>
@@ -156,14 +176,14 @@ function openArtwork(idx) {
  
 function openPoem(idx) {
   const pm = SITE.poems[idx];
-  const l  = currentLang;
+  if (!pm) return;
+  const l     = currentLang;
   const title = l === 'tr' ? pm.titleTR : pm.title;
   const body  = l === 'tr' ? pm.bodyTR  : pm.body;
   const lbl   = l === 'tr' ? 'Şiir' : 'Poem';
- 
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${pm.year}</div>
+    <div class="reading-meta">${_esc(pm.year)}</div>
     <div class="reading-sec-label">${lbl}</div>
     <div class="reading-text">${_esc(body)}</div>
   `, lbl, title);
@@ -171,17 +191,16 @@ function openPoem(idx) {
  
 function openArticle(idx) {
   const ar = SITE.articles[idx];
-  const l  = currentLang;
+  if (!ar) return;
+  const l     = currentLang;
   const title = l === 'tr' ? ar.titleTR : ar.title;
   const type  = l === 'tr' ? ar.typeTR  : ar.type;
   const body  = l === 'tr' ? ar.bodyTR  : ar.body;
   const paras = body.split(/\n\n+/)
-    .map(p => `<p>${_esc(p).replace(/\n/g, '<br>')}</p>`)
-    .join('');
- 
+    .map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${ar.year} · ${_esc(type)}</div>
+    <div class="reading-meta">${_esc(ar.year)} · ${_esc(type)}</div>
     <div class="reading-sec-label">${_esc(type)}</div>
     <div class="reading-desc">${paras}</div>
   `, _esc(type), title);
@@ -208,7 +227,6 @@ function closeViewer() {
   if (mv) setTimeout(() => mv.removeAttribute('src'), 400);
 }
  
-/* ESC closes whatever is open */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const viewer = document.getElementById('viewer-overlay');
