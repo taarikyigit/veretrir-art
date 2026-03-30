@@ -111,7 +111,7 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 /* ─ materials blocks ─ */
 .mat-list{margin-top:8px;}
 .mat-block{background:var(--raised);border:1px solid var(--border);padding:16px;margin-bottom:10px;position:relative;}
-.mat-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.mat-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
 .mat-block-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);}
 .mat-block-acts{display:flex;gap:6px;}
 .mat-del-btn{background:none;border:1px solid var(--border);color:var(--faint);padding:3px 8px;cursor:pointer;font-size:11px;transition:all .15s;}
@@ -186,33 +186,33 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 
   <nav class="sidebar" id="sidebar">
     <div class="sb-sec">Works</div>
-    <div class="sb-item on" onclick="go(this,'artworks')">
+    <div class="sb-item on" data-panel="artworks" onclick="go('artworks')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
       Artworks
     </div>
-    <div class="sb-item" onclick="go(this,'projects')">
+    <div class="sb-item" data-panel="projects" onclick="go('projects')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       Projects
     </div>
     <div class="sb-sec">Writings</div>
-    <div class="sb-item" onclick="go(this,'poems')">
+    <div class="sb-item" data-panel="poems" onclick="go('poems')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
       Poems
     </div>
-    <div class="sb-item" onclick="go(this,'articles')">
+    <div class="sb-item" data-panel="articles" onclick="go('articles')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       Articles
     </div>
-    <div class="sb-item" onclick="go(this,'books')">
+    <div class="sb-item" data-panel="books" onclick="go('books')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       Books
     </div>
     <div class="sb-sec">Site</div>
-    <div class="sb-item" onclick="go(this,'texts')">
+    <div class="sb-item" data-panel="texts" onclick="go('texts')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Site Texts
     </div>
-    <div class="sb-item" onclick="go(this,'export')">
+    <div class="sb-item" data-panel="export" onclick="go('export')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
     </div>
@@ -323,20 +323,39 @@ function doLogout(){ sessionStorage.removeItem('adm'); location.reload(); }
 /* ═══════════════════════════════════════════════
    DATA
 ═══════════════════════════════════════════════ */
-let D;
+let D; // live working copy
 
 function loadD() {
   try {
     const s=localStorage.getItem('veretrir_data');
-    D=s?JSON.parse(s):JSON.parse(JSON.stringify(SITE_BASE));
-    Object.keys(SITE_BASE).forEach(k=>{ if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); });
+    if (s) {
+      D=JSON.parse(s);
+    } else {
+      D=JSON.parse(JSON.stringify(SITE_BASE));
+    }
+    // ensure all required keys from SITE_BASE exist
+    Object.keys(SITE_BASE).forEach(k=>{ 
+      if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); 
+    });
+    // ensure new schema fields on old data for artworks and projects
     ['artworks','projects'].forEach(col=>{
+      if (!D[col]) D[col] = [];
       (D[col]||[]).forEach(item=>{
         if(!item.images)    item.images=[];
         if(!item.materials) item.materials=[];
+        if(item.status === undefined && col === 'projects') item.status = 'ongoing';
       });
     });
-  } catch(e){ D=JSON.parse(JSON.stringify(SITE_BASE)); }
+    // ensure poems, articles, books arrays exist
+    ['poems','articles','books'].forEach(col=>{
+      if(!D[col]) D[col] = [];
+    });
+    // ensure texts object exists
+    if(!D.texts) D.texts = SITE_BASE.texts ? JSON.parse(JSON.stringify(SITE_BASE.texts)) : {};
+  } catch(e){ 
+    console.error('Error loading data:', e);
+    D=JSON.parse(JSON.stringify(SITE_BASE)); 
+  }
 }
 
 function saveD() {
@@ -346,18 +365,32 @@ function saveD() {
 function clearStorage() {
   if(!confirm('This resets all admin changes back to the last uploaded data.js. Continue?')) return;
   localStorage.removeItem('veretrir_data');
-  loadD(); renderAll(); toast('Reset to data.js','ok');
+  loadD(); 
+  renderAll(); 
+  toast('Reset to data.js','ok');
 }
 
 /* ═══════════════════════════════════════════════
    NAVIGATION
-   FIX: pass the element explicitly instead of relying on event.currentTarget
 ═══════════════════════════════════════════════ */
-function go(el, name) {
-  document.querySelectorAll('.sb-item').forEach(e=>e.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(e=>e.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('panel-'+name).classList.add('on');
+function go(name) {
+  // Close any open form first
+  if (window.currentFormType && window.currentFormType !== name) {
+    closeForm();
+  }
+  
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));
+  
+  // Find the clicked sidebar item and add 'on' class
+  const clickedItem = Array.from(document.querySelectorAll('.sb-item')).find(
+    el => el.getAttribute('data-panel') === name
+  );
+  if (clickedItem) clickedItem.classList.add('on');
+  
+  const panel = document.getElementById('panel-'+name);
+  if (panel) panel.classList.add('on');
+  
   renderPanel(name);
 }
 
@@ -380,14 +413,19 @@ function renderAll() {
 ═══════════════════════════════════════════════ */
 function _mainImgAdmin(item) {
   if(!item.images||!item.images.length) return null;
-  const m=item.images.find(i=>i.isMain); return (m||item.images[0]).path;
+  const m=item.images.find(i=>i.isMain); 
+  return (m||item.images[0]).path;
 }
 
 function renderList(type) {
-  const el=document.getElementById('list-'+type); if(!el) return;
+  const el=document.getElementById('list-'+type); 
+  if(!el) return;
   el.innerHTML='';
   const items=D[type]||[];
-  if(!items.length){ el.innerHTML='<p style="color:var(--faint);padding:12px 0;font-style:italic;">No items yet.</p>'; return; }
+  if(!items.length){ 
+    el.innerHTML='<p style="color:var(--faint);padding:12px 0;font-style:italic;">No items yet.</p>'; 
+    return; 
+  }
   items.forEach((item,i)=>{
     const row=document.createElement('div');
     row.className='item-row';
@@ -395,8 +433,10 @@ function renderList(type) {
     const thumbHTML=src
       ?`<img class="item-thumb" src="${src}" alt="">`
       :`<div class="item-thumb-ph">⊞</div>`;
-    let meta=(item.year||'')+(item.medium?' · '+item.medium:'')+(item.type?' · '+item.type:'');
-    if(item.status) meta+=' &nbsp;<span class="sbadge '+(item.status==='ongoing'?'sbadge-on':'sbadge-pl')+'">'+(item.status==='ongoing'?'ongoing':'planned')+'</span>';
+    let meta=(item.year||'')+(item.medium?' · '+item.medium:'');
+    if(type==='projects' && item.status) {
+      meta+=' &nbsp;<span class="sbadge '+(item.status==='ongoing'?'sbadge-on':'sbadge-pl')+'">'+(item.status==='ongoing'?'ongoing':'planned')+'</span>';
+    }
     if(item.images&&item.images.length) meta+=` · ${item.images.length} img`;
     if(item.materials&&item.materials.length) meta+=` · ${item.materials.length} block${item.materials.length>1?'s':''}`;
     row.innerHTML=`
@@ -416,34 +456,81 @@ function renderList(type) {
 /* ═══════════════════════════════════════════════
    FORM STATE
 ═══════════════════════════════════════════════ */
-let FT=null;
-let FI=-1;
-let FD={};
+let currentFormType = null; // form type (artworks, projects, poems, articles, books)
+let currentFormIndex = -1;   // form index (-1=new)
+let currentFormData = {};   // form data (mutable working copy)
 
 function openForm(type, idx) {
-  FT=type; FI=idx;
-  FD = idx>=0
-    ? JSON.parse(JSON.stringify((D[type]||[])[idx]))
-    : defaultItem(type);
+  // Close any existing form first
+  if (currentFormType) {
+    closeForm();
+  }
+  
+  currentFormType = type;
+  currentFormIndex = idx;
+  
+  // Get the item data or create default
+  if (idx >= 0 && D[type] && D[type][idx]) {
+    currentFormData = JSON.parse(JSON.stringify(D[type][idx]));
+  } else {
+    currentFormData = defaultItem(type);
+  }
+  
   renderForm();
 }
 
 function closeForm() {
-  if(!FT) return;
-  const el=document.getElementById('form-'+FT);
-  if(el) el.innerHTML='';
-  FT=null; FI=-1; FD={};
+  const el = document.getElementById('form-' + currentFormType);
+  if (el) el.innerHTML = '';
+  currentFormType = null;
+  currentFormIndex = -1;
+  currentFormData = {};
 }
 
-/* FIX: use plural type keys that match D keys.
-   isWork check now uses 'artworks' / 'projects' */
 function defaultItem(type) {
-  const base={id:type.replace(/s$/,'')+'-'+Date.now(),title:'',titleTR:'',year:'',desc:'',descTR:''};
-  if(type==='artworks') return {...base,medium:'',mediumTR:'',images:[],materials:[]};
-  if(type==='projects') return {...base,medium:'',mediumTR:'',images:[],materials:[],status:'ongoing'};
-  if(type==='poems')    return {...base,body:'',bodyTR:''};
-  if(type==='articles') return {...base,type:'Essay',typeTR:'Deneme',body:'',bodyTR:''};
-  if(type==='books')    return {...base,pdf:'',cover:null,allowDownload:true};
+  const base = {
+    id: type.slice(0,2) + '-' + Date.now(),
+    title: '',
+    titleTR: '',
+    year: '',
+    desc: '',
+    descTR: ''
+  };
+  
+  if (type === 'artworks' || type === 'projects') {
+    return {
+      ...base,
+      medium: '',
+      mediumTR: '',
+      images: [],
+      materials: [],
+      status: (type === 'projects') ? 'ongoing' : undefined
+    };
+  }
+  if (type === 'poems') {
+    return {
+      ...base,
+      body: '',
+      bodyTR: ''
+    };
+  }
+  if (type === 'articles') {
+    return {
+      ...base,
+      type: 'Essay',
+      typeTR: 'Deneme',
+      body: '',
+      bodyTR: ''
+    };
+  }
+  if (type === 'books') {
+    return {
+      ...base,
+      pdf: '',
+      cover: null,
+      allowDownload: true
+    };
+  }
   return base;
 }
 
@@ -451,42 +538,50 @@ function defaultItem(type) {
    RENDER FORM
 ═══════════════════════════════════════════════ */
 function renderForm() {
-  const wrap=document.getElementById('form-'+FT); if(!wrap) return;
-  wrap.innerHTML=buildFormHTML();
+  const wrap = document.getElementById('form-' + currentFormType);
+  if (!wrap) return;
+  wrap.innerHTML = buildFormHTML();
   wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function buildFormHTML() {
-  const isWork=(FT==='artworks'||FT==='projects');
-  const singularLabel = FT==='artworks'?'Artwork': FT==='projects'?'Project': FT==='poems'?'Poem': FT==='articles'?'Article':'Book';
-  const label=FI>=0?`Edit: ${esc(FD.title||FD.id)}`:`New ${singularLabel}`;
-  let h=`<div class="form-drawer"><div class="form-drawer-title">${label}</div>`;
+  const isWork = (currentFormType === 'artworks' || currentFormType === 'projects');
+  const label = currentFormIndex >= 0 ? `Edit: ${esc(currentFormData.title || currentFormData.id || '—')}` : `New ${capitalize(currentFormType.slice(0,-1))}`;
+  let h = `<div class="form-drawer"><div class="form-drawer-title">${label}</div>`;
 
-  h+=`<div class="f2col">
-    <div class="fg"><label class="fl">🇬🇧 Title</label><input class="fi" id="ff-title" value="${ea(FD.title)}"></div>
-    <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(FD.titleTR)}"></div>
+  // ── Bilingual title + year ──
+  h += `<div class="f2col">
+    <div class="fg"><label class="fl">🇬🇧 Title</label><input class="fi" id="ff-title" value="${ea(currentFormData.title || '')}"></div>
+    <div class="fg"><label class="fl">🇹🇷 Başlık</label><input class="fi" id="ff-titleTR" value="${ea(currentFormData.titleTR || '')}"></div>
   </div>`;
 
-  if(isWork) {
-    h+=`<div class="frow">
-      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
-      <div class="fg"><label class="fl">🇬🇧 Medium</label><input class="fi" id="ff-medium" value="${ea(FD.medium)}"></div>
-    </div>
-    <div class="fg" style="max-width:340px"><label class="fl">🇹🇷 Teknik</label><input class="fi" id="ff-mediumTR" value="${ea(FD.mediumTR)}"></div>`;
-    if(FT==='projects') {
-      h+=`<div class="fg" style="max-width:220px"><label class="fl">Status</label><select class="fsel" id="ff-status">
-        <option value="ongoing" ${FD.status==='ongoing'?'selected':''}>Ongoing</option>
-        <option value="planned" ${FD.status==='planned'?'selected':''}>Planned</option>
+  // Year field
+  h += `<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(currentFormData.year || '')}"></div>`;
+
+  if (isWork) {
+    h += `<div class="frow">
+      <div class="fg"><label class="fl">🇬🇧 Medium</label><input class="fi" id="ff-medium" value="${ea(currentFormData.medium || '')}"></div>
+      <div class="fg"><label class="fl">🇹🇷 Teknik</label><input class="fi" id="ff-mediumTR" value="${ea(currentFormData.mediumTR || '')}"></div>
+    </div>`;
+    
+    if (currentFormType === 'projects') {
+      h += `<div class="fg" style="max-width:220px"><label class="fl">Status</label><select class="fsel" id="ff-status">
+        <option value="ongoing" ${currentFormData.status === 'ongoing' ? 'selected' : ''}>Ongoing</option>
+        <option value="planned" ${currentFormData.status === 'planned' ? 'selected' : ''}>Planned</option>
       </select></div>`;
     }
-    h+=`<div class="sdiv"></div>
+
+    // ── Bilingual description ──
+    h += `<div class="sdiv"></div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(FD.desc)}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(FD.descTR)}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
     </div>`;
-    h+=`<div class="sdiv"></div>
+
+    // ── Image gallery ──
+    h += `<div class="sdiv"></div>
     <div class="img-gallery-wrap">
-      <div class="img-gallery-title">Image Gallery — hover image to set as main or remove</div>
+      <div class="img-gallery-title">Image Gallery — click image to set as main, or remove</div>
       <div class="img-stack" id="ff-img-stack">${buildImgStack()}</div>
       <div class="img-path-input-wrap">
         <input class="fi" id="ff-img-path" placeholder="images/artwork/filename.jpg">
@@ -494,7 +589,9 @@ function buildFormHTML() {
       </div>
       <div class="img-upload-hint">Upload the file to your server first, then paste the path above. Supports .jpg .png .gif .webp</div>
     </div>`;
-    h+=`<div class="sdiv"></div>
+
+    // ── Materials blocks ──
+    h += `<div class="sdiv"></div>
     <div class="fg"><label class="fl">Extra Material Blocks</label></div>
     <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
     <div class="mat-add-bar">
@@ -507,45 +604,42 @@ function buildFormHTML() {
     </div>`;
   }
 
-  else if(FT==='poems') {
-    h+=`<div class="fg" style="max-width:180px"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
-    <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(FD.body)}</textarea><div class="fnote">Line breaks preserved as typed</div></div>
-      <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(FD.bodyTR)}</textarea></div>
+  else if (currentFormType === 'poems') {
+    h += `<div class="f2col">
+      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea><div class="fnote">Line breaks preserved as typed</div></div>
+      <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(currentFormData.bodyTR || '')}</textarea></div>
     </div>`;
   }
 
-  else if(FT==='articles') {
-    h+=`<div class="frow">
-      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
-      <div class="fg"><label class="fl">🇬🇧 Type (Essay, Criticism…)</label><input class="fi" id="ff-type" value="${ea(FD.type)}"></div>
+  else if (currentFormType === 'articles') {
+    h += `<div class="frow">
+      <div class="fg"><label class="fl">🇬🇧 Type (Essay, Criticism…)</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div>
+      <div class="fg"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(currentFormData.typeTR || '')}"></div>
     </div>
-    <div class="fg" style="max-width:280px"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(FD.typeTR)}"></div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Article Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(FD.body)}</textarea><div class="fnote">Blank line = new paragraph</div></div>
-      <div class="fg"><label class="fl">🇹🇷 Makale Metni</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(FD.bodyTR)}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Article Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea><div class="fnote">Blank line = new paragraph</div></div>
+      <div class="fg"><label class="fl">🇹🇷 Makale Metni</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
     </div>`;
   }
 
-  else if(FT==='books') {
-    h+=`<div class="frow">
-      <div class="fg"><label class="fl">Year</label><input class="fi" id="ff-year" value="${ea(FD.year)}"></div>
-      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(FD.pdf)}" placeholder="books/mybook.pdf"></div>
+  else if (currentFormType === 'books') {
+    h += `<div class="frow">
+      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}" placeholder="books/mybook.pdf"></div>
+      <div class="fg"><label class="fl">Cover Image Path (optional)</label><input class="fi" id="ff-cover" value="${ea(currentFormData.cover || '')}" placeholder="images/cover.jpg"></div>
     </div>
-    <div class="fg"><label class="fl">Cover Image Path (optional)</label><input class="fi" id="ff-cover" value="${ea(FD.cover)}" placeholder="images/cover.jpg"></div>
     <div class="fg" style="max-width:260px"><label class="fl">Allow Download?</label>
       <select class="fsel" id="ff-allowDownload">
-        <option value="true" ${FD.allowDownload?'selected':''}>Yes — show download button</option>
-        <option value="false" ${!FD.allowDownload?'selected':''}>No — read only</option>
+        <option value="true" ${currentFormData.allowDownload ? 'selected' : ''}>Yes — show download button</option>
+        <option value="false" ${!currentFormData.allowDownload ? 'selected' : ''}>No — read only</option>
       </select>
     </div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(FD.desc)}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(FD.descTR)}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
     </div>`;
   }
 
-  h+=`<div class="form-actions">
+  h += `<div class="form-actions">
     <button class="btn-save" onclick="saveForm()">Save</button>
     <button class="btn-cancel" onclick="closeForm()">Cancel</button>
   </div></div>`;
@@ -554,14 +648,14 @@ function buildFormHTML() {
 
 /* ── Image stack ── */
 function buildImgStack() {
-  const imgs=FD.images||[];
-  let h='';
+  const imgs = currentFormData.images || [];
+  let h = '';
   imgs.forEach((img,i)=>{
-    h+=`<div class="img-slot ${img.isMain?'is-main':''}">
+    h += `<div class="img-slot ${img.isMain ? 'is-main' : ''}">
       <img src="${esc(img.path)}" alt="">
-      ${img.isMain?'<span class="img-slot-main-badge">MAIN</span>':''}
+      ${img.isMain ? '<span class="img-slot-main-badge">MAIN</span>' : ''}
       <div class="img-slot-overlay">
-        ${!img.isMain?`<button class="img-slot-btn" onclick="setMainImg(${i})">Set main</button>`:''}
+        ${!img.isMain ? `<button class="img-slot-btn" onclick="setMainImg(${i})">Set main</button>` : ''}
         <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="removeImg(${i})">Remove</button>
       </div>
     </div>`;
@@ -570,80 +664,97 @@ function buildImgStack() {
 }
 
 function rebuildImgStack() {
-  const el=document.getElementById('ff-img-stack');
-  if(el) el.innerHTML=buildImgStack();
+  const el = document.getElementById('ff-img-stack');
+  if (el) el.innerHTML = buildImgStack();
 }
 
 function addImgByPath() {
-  const inp=document.getElementById('ff-img-path');
-  const path=(inp?inp.value.trim():'');
+  const inp = document.getElementById('ff-img-path');
+  const path = (inp ? inp.value.trim() : '');
   if(!path){ toast('Enter an image path first','err'); return; }
-  if(!FD.images) FD.images=[];
-  const isFirst=FD.images.length===0;
-  FD.images.push({path, isMain:isFirst, caption:''});
-  if(inp) inp.value='';
+  if(!currentFormData.images) currentFormData.images = [];
+  const isFirst = currentFormData.images.length === 0;
+  currentFormData.images.push({path, isMain: isFirst, caption: ''});
+  if(inp) inp.value = '';
   rebuildImgStack();
   toast('Image added','ok');
 }
 
 function setMainImg(i) {
-  FD.images.forEach((img,j)=>img.isMain=(j===i));
+  if (!currentFormData.images) return;
+  currentFormData.images.forEach((img,j)=>img.isMain=(j===i));
   rebuildImgStack();
 }
 
 function removeImg(i) {
-  FD.images.splice(i,1);
-  if(FD.images.length&&!FD.images.some(img=>img.isMain)) FD.images[0].isMain=true;
+  if (!currentFormData.images) return;
+  currentFormData.images.splice(i,1);
+  if(currentFormData.images.length && !currentFormData.images.some(img=>img.isMain)) {
+    currentFormData.images[0].isMain = true;
+  }
   rebuildImgStack();
 }
 
 /* ── Material blocks ── */
 function buildMatBlocks() {
-  const mats=FD.materials||[];
+  const mats = currentFormData.materials || [];
   if(!mats.length) return '<p style="color:var(--faint);font-size:11px;margin-bottom:8px;">No material blocks yet. Add one below.</p>';
   return mats.map((m,i)=>buildMatBlock(m,i)).join('');
 }
 
 function buildMatBlock(m,i) {
-  let inner='';
-  const typeLabel={text:'Text','image-gallery':'Image Gallery',gif:'GIF','3d':'3D Model',pdf:'PDF',video:'Video'}[m.type]||m.type;
-  if(m.type==='text') {
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+  let inner = '';
+  const typeLabel = {
+    text: 'Text', 
+    'image-gallery': 'Image Gallery', 
+    gif: 'GIF', 
+    '3d': '3D Model', 
+    pdf: 'PDF', 
+    video: 'Video'
+  }[m.type] || m.type;
+  
+  if(m.type === 'text') {
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" oninput="matSet(${i},'content',this.value)">${eh(m.content)}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" oninput="matSet(${i},'contentTR',this.value)">${eh(m.contentTR)}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" id="mat-content-${i}" onchange="updateMatField(${i},'content',this.value)">${eh(m.content || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" id="mat-contentTR-${i}" onchange="updateMatField(${i},'contentTR',this.value)">${eh(m.contentTR || '')}</textarea></div>
     </div>`;
-  } else if(m.type==='image-gallery'||m.type==='gif') {
-    const imgs=(m.images||[]);
-    const imgSlots=imgs.map((img,j)=>`<div class="img-slot">
+  } 
+  else if (m.type === 'image-gallery' || m.type === 'gif') {
+    const imgs = (m.images || []);
+    const imgSlots = imgs.map((img,j)=>`<div class="img-slot">
       <img src="${esc(img.path)}" alt="">
       <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="matRemoveImg(${i},${j})">Remove</button></div>
     </div>`).join('');
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
     <div class="img-gallery-wrap">
       <div class="img-stack" id="mat-img-stack-${i}">${imgSlots}</div>
       <div class="img-path-input-wrap">
         <input class="fi" id="mat-img-path-${i}" placeholder="images/artwork/file.jpg">
         <button class="img-add-path-btn" onclick="matAddImg(${i})">Add</button>
       </div>
-      ${m.type==='gif'?'<div class="fnote">GIFs will auto-loop when displayed.</div>':''}
+      ${m.type === 'gif' ? '<div class="fnote">GIFs will auto-loop when displayed.</div>' : ''}
     </div>`;
-  } else if(m.type==='3d') {
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">3D Model Path (.glb / .gltf)</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="images/3d/model.glb"></div>`;
-  } else if(m.type==='pdf') {
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">PDF Path</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="files/document.pdf"></div>`;
-  } else if(m.type==='video') {
-    inner=`<div class="fg"><label class="fl">Label / Title</label><input class="fi" value="${ea(m.label)}" oninput="matSet(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" value="${ea(m.path)}" oninput="matSet(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
+  } 
+  else if (m.type === '3d') {
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">3D Model Path (.glb / .gltf)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="images/3d/model.glb"></div>`;
+  } 
+  else if (m.type === 'pdf') {
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="files/document.pdf"></div>`;
+  } 
+  else if (m.type === 'video') {
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
   }
+  
   return `<div class="mat-block">
     <div class="mat-block-header">
-      <span class="mat-block-label">${typeLabel}: ${esc(m.label||'')}</span>
+      <span class="mat-block-label">${typeLabel}: ${esc(m.label || '')}</span>
       <div class="mat-block-acts">
-        ${i>0?`<button class="mat-del-btn" onclick="moveMat(${i},-1)">↑</button>`:''}
-        ${i<(FD.materials.length-1)?`<button class="mat-del-btn" onclick="moveMat(${i},1)">↓</button>`:''}
+        ${i>0 ? `<button class="mat-del-btn" onclick="moveMat(${i},-1)">↑</button>` : ''}
+        ${i<(currentFormData.materials.length-1) ? `<button class="mat-del-btn" onclick="moveMat(${i},1)">↓</button>` : ''}
         <button class="mat-del-btn" onclick="delMat(${i})">Remove</button>
       </div>
     </div>
@@ -651,114 +762,156 @@ function buildMatBlock(m,i) {
   </div>`;
 }
 
+function updateMatField(i, key, val) {
+  if (currentFormData.materials && currentFormData.materials[i]) {
+    currentFormData.materials[i][key] = val;
+  }
+}
+
 function rebuildMatList() {
-  const el=document.getElementById('ff-mat-list');
-  if(el) el.innerHTML=buildMatBlocks();
+  const el = document.getElementById('ff-mat-list');
+  if (el) el.innerHTML = buildMatBlocks();
 }
 
 function addMat(type) {
-  if(!FD.materials) FD.materials=[];
-  FD.materials.push({id:'m-'+Date.now(),type,label:capitalize(type),content:'',contentTR:'',images:[],path:''});
+  if(!currentFormData.materials) currentFormData.materials = [];
+  currentFormData.materials.push({
+    id: 'm-' + Date.now(),
+    type: type,
+    label: capitalize(type),
+    content: '',
+    contentTR: '',
+    images: [],
+    path: ''
+  });
   rebuildMatList();
 }
 
-function delMat(i) { FD.materials.splice(i,1); rebuildMatList(); }
-
-function moveMat(i,dir) {
-  const j=i+dir;
-  if(j<0||j>=FD.materials.length) return;
-  [FD.materials[i],FD.materials[j]]=[FD.materials[j],FD.materials[i]];
-  rebuildMatList();
+function delMat(i) {
+  if (currentFormData.materials) {
+    currentFormData.materials.splice(i,1);
+    rebuildMatList();
+  }
 }
 
-function matSet(i,key,val) { if(FD.materials[i]) FD.materials[i][key]=val; }
+function moveMat(i, dir) {
+  if (!currentFormData.materials) return;
+  const j = i + dir;
+  if(j<0 || j>=currentFormData.materials.length) return;
+  [currentFormData.materials[i], currentFormData.materials[j]] = [currentFormData.materials[j], currentFormData.materials[i]];
+  rebuildMatList();
+}
 
 function matAddImg(i) {
-  const inp=document.getElementById('mat-img-path-'+i);
-  const path=inp?inp.value.trim():'';
+  const inp = document.getElementById('mat-img-path-'+i);
+  const path = inp ? inp.value.trim() : '';
   if(!path){ toast('Enter path first','err'); return; }
-  if(!FD.materials[i].images) FD.materials[i].images=[];
-  FD.materials[i].images.push({path,caption:''});
-  if(inp) inp.value='';
+  if(!currentFormData.materials[i].images) currentFormData.materials[i].images = [];
+  currentFormData.materials[i].images.push({path, caption: ''});
+  if(inp) inp.value = '';
   rebuildMatList();
   toast('Image added','ok');
 }
 
-function matRemoveImg(mi,ii) {
-  FD.materials[mi].images.splice(ii,1);
-  rebuildMatList();
+function matRemoveImg(mi, ii) {
+  if (currentFormData.materials[mi] && currentFormData.materials[mi].images) {
+    currentFormData.materials[mi].images.splice(ii,1);
+    rebuildMatList();
+  }
 }
 
 /* ═══════════════════════════════════════════════
    SAVE FORM
-   FIX: all type checks now use plural keys
 ═══════════════════════════════════════════════ */
 function saveForm() {
-  const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
-  const gv=(id,def='')=>{ const el=document.getElementById(id); return el?el.value:def; };
+  // Pull simple text fields back from DOM
+  const getVal = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.value : '';
+  };
+  const getText = (id) => {
+    const el = document.getElementById(id);
+    return el ? el.value : '';
+  };
 
-  FD.title   = g('ff-title');
-  FD.titleTR = g('ff-titleTR');
-  FD.year    = g('ff-year');
+  currentFormData.title = getVal('ff-title');
+  currentFormData.titleTR = getVal('ff-titleTR');
+  currentFormData.year = getVal('ff-year');
 
-  if(FT==='artworks'||FT==='projects') {
-    FD.medium   = g('ff-medium');
-    FD.mediumTR = g('ff-mediumTR');
-    FD.desc     = gv('ff-desc');
-    FD.descTR   = gv('ff-descTR');
-    if(FT==='projects') FD.status=gv('ff-status','ongoing');
+  if (currentFormType === 'artworks' || currentFormType === 'projects') {
+    currentFormData.medium = getVal('ff-medium');
+    currentFormData.mediumTR = getVal('ff-mediumTR');
+    currentFormData.desc = getText('ff-desc');
+    currentFormData.descTR = getText('ff-descTR');
+    if (currentFormType === 'projects') {
+      const statusEl = document.getElementById('ff-status');
+      if (statusEl) currentFormData.status = statusEl.value;
+    }
+    // images and materials are already kept live in currentFormData
   }
-  else if(FT==='poems') {
-    FD.body   = gv('ff-body');
-    FD.bodyTR = gv('ff-bodyTR');
+  else if (currentFormType === 'poems') {
+    currentFormData.body = getText('ff-body');
+    currentFormData.bodyTR = getText('ff-bodyTR');
   }
-  else if(FT==='articles') {
-    FD.type   = g('ff-type');
-    FD.typeTR = g('ff-typeTR');
-    FD.body   = gv('ff-body');
-    FD.bodyTR = gv('ff-bodyTR');
+  else if (currentFormType === 'articles') {
+    currentFormData.type = getVal('ff-type');
+    currentFormData.typeTR = getVal('ff-typeTR');
+    currentFormData.body = getText('ff-body');
+    currentFormData.bodyTR = getText('ff-bodyTR');
   }
-  else if(FT==='books') {
-    FD.pdf          = g('ff-pdf');
-    FD.cover        = g('ff-cover')||null;
-    FD.allowDownload= gv('ff-allowDownload')==='true';
-    FD.desc         = gv('ff-desc');
-    FD.descTR       = gv('ff-descTR');
+  else if (currentFormType === 'books') {
+    currentFormData.pdf = getVal('ff-pdf');
+    currentFormData.cover = getVal('ff-cover') || null;
+    const allowEl = document.getElementById('ff-allowDownload');
+    if (allowEl) currentFormData.allowDownload = allowEl.value === 'true';
+    currentFormData.desc = getText('ff-desc');
+    currentFormData.descTR = getText('ff-descTR');
   }
 
-  if(!D[FT]) D[FT]=[];
-  if(FI>=0) D[FT][FI]=JSON.parse(JSON.stringify(FD));
-  else D[FT].push(JSON.parse(JSON.stringify(FD)));
+  // Ensure the array exists
+  if (!D[currentFormType]) D[currentFormType] = [];
+  
+  if (currentFormIndex >= 0) {
+    D[currentFormType][currentFormIndex] = JSON.parse(JSON.stringify(currentFormData));
+  } else {
+    D[currentFormType].push(JSON.parse(JSON.stringify(currentFormData)));
+  }
 
   saveD();
-  const savedType=FT;
   closeForm();
-  renderList(savedType);
+  renderList(currentFormType);
   toast('Saved!','ok');
 }
 
 function delItem(type,idx) {
   if(!confirm('Delete this item? Cannot be undone.')) return;
   D[type].splice(idx,1);
-  saveD(); renderList(type); toast('Deleted','ok');
+  saveD(); 
+  renderList(type); 
+  toast('Deleted','ok');
 }
 
 /* ═══════════════════════════════════════════════
    SITE TEXTS
 ═══════════════════════════════════════════════ */
 function loadTexts() {
-  const t=D.texts||{};
-  ['aboutEN','aboutTR','contactNote','contactNoteTR'].forEach(k=>{
-    const el=document.getElementById('txt-'+k); if(el) el.value=t[k]||'';
+  const t = D.texts || {};
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  fields.forEach(k=>{
+    const el = document.getElementById('txt-'+k);
+    if (el) el.value = t[k] || '';
   });
 }
 
 function saveTexts() {
-  if(!D.texts) D.texts={};
-  ['aboutEN','aboutTR','contactNote','contactNoteTR'].forEach(k=>{
-    const el=document.getElementById('txt-'+k); if(el) D.texts[k]=el.value;
+  if(!D.texts) D.texts = {};
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  fields.forEach(k=>{
+    const el = document.getElementById('txt-'+k);
+    if (el) D.texts[k] = el.value;
   });
-  saveD(); toast('Texts saved!','ok');
+  saveD(); 
+  toast('Texts saved!','ok');
 }
 
 /* ═══════════════════════════════════════════════
@@ -775,16 +928,18 @@ const SITE_BASE = ${JSON.stringify(D,null,2)};
 }
 
 function buildExportPreview() {
-  const txt=buildDataJS();
-  const el=document.getElementById('export-pre');
-  if(el) el.textContent=txt.slice(0,3000)+(txt.length>3000?'\n… (truncated)':'');
+  const txt = buildDataJS();
+  const el = document.getElementById('export-pre');
+  if(el) el.textContent = txt.slice(0,3000) + (txt.length > 3000 ? '\n… (truncated)' : '');
 }
 
 function exportData() {
-  const blob=new Blob([buildDataJS()],{type:'text/javascript'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download='data.js'; a.click();
+  const blob = new Blob([buildDataJS()], {type: 'text/javascript'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; 
+  a.download = 'data.js'; 
+  a.click();
   URL.revokeObjectURL(url);
   toast('data.js downloaded!','ok');
 }
@@ -795,12 +950,14 @@ function exportData() {
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function ea(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 function eh(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
 function toast(msg,type) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='show '+(type||'ok');
-  clearTimeout(t._t); t._t=setTimeout(()=>t.className='',2500);
+  const t = document.getElementById('toast');
+  t.textContent = msg; 
+  t.className = 'show ' + (type||'ok');
+  clearTimeout(t._t); 
+  t._t = setTimeout(()=>t.className='',2500);
 }
 
 /* ═══════════════════════════════════════════════
@@ -809,8 +966,20 @@ function toast(msg,type) {
 function boot() {
   loadD();
   renderList('artworks');
+  // Set initial active sidebar
+  document.querySelectorAll('.sb-item').forEach(el => {
+    if (el.getAttribute('data-panel') === 'artworks') {
+      el.classList.add('on');
+    } else {
+      el.classList.remove('on');
+    }
+  });
+  // Ensure panels are correctly shown
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('panel-artworks').classList.add('on');
 }
 
+// Auto-login if session exists
 if(sessionStorage.getItem('adm')==='1'){
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('on');
