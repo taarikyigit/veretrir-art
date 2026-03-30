@@ -189,7 +189,8 @@ function buildPage() {
   const grid=document.getElementById('artworkGrid');
   grid.innerHTML='';
   SITE.artworks.forEach((aw,idx)=>{
-    const title=l==='tr'?(aw.titleTR||aw.title):aw.title;
+    // FIXED: When language is Turkish (tr), show Turkish title, otherwise English
+    const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const div=document.createElement('div');
     div.className='artwork-thumb';
     div.dataset.year=aw.year||'';
@@ -210,9 +211,10 @@ function buildPage() {
   const pl=document.getElementById('projectsList');
   pl.innerHTML='';
   SITE.projects.forEach((p,idx)=>{
-    const name=l==='tr'?(p.titleTR||p.title):p.title;
-    const desc=l==='tr'?(p.descTR||p.desc):p.desc;
-    const status=p.status==='ongoing'?(l==='tr'?'Devam Ediyor':'Ongoing'):(l==='tr'?'Planlandı':'Planned');
+    // FIXED: When language is Turkish (tr), show Turkish title/desc, otherwise English
+    const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
+    const desc = l === 'tr' ? (p.descTR || p.desc) : p.desc;
+    const status = p.status === 'ongoing' ? (l==='tr'?'Devam Ediyor':'Ongoing') : (l==='tr'?'Planlandı':'Planned');
     const src=_mainImg(p);
     const div=document.createElement('div');
     div.className='project-card';
