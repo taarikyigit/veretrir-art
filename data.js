@@ -7,7 +7,8 @@ const SITE = {
  
   /* -- ARTWORKS -------------------------------------------
      image:       path relative to site root
-     extraImages: array of additional photo paths
+                  e.g. 'images/artwork/mywork.jpg'
+     extraImages: additional photos, same path convention
      model:       .gltf path or null
   -------------------------------------------------------- */
   artworks: [
@@ -153,6 +154,7 @@ Makalenin ikinci paragrafi burada devam eder.`,
       year: '2026',
       pdf: 'books/stainturkish.pdf',
       cover: null,
+      allowDownload: true,
       desc: 'A collection of poems.',
       descTR: 'Siirler derlemesi.',
     },
@@ -184,3 +186,4 @@ Makalenin ikinci paragrafi burada devam eder.`,
     },
   ],
 };
+ 
