@@ -1,16 +1,29 @@
 /* ================================================================
-   common.js  —  shared logic: content layer, nav, overlays, 3D
+   common.js  —  shared logic: content layer, nav, overlays, 3D,
+                 in-page lightbox gallery
    ================================================================ */
 
+/* ── CONTENT LAYER ─────────────────────────────────────────────── */
 let SITE;
 (function () {
   try {
     const s = localStorage.getItem('veretrir_data');
     SITE = s ? JSON.parse(s) : JSON.parse(JSON.stringify(SITE_BASE));
     Object.keys(SITE_BASE).forEach(k => { if (SITE[k] === undefined) SITE[k] = SITE_BASE[k]; });
+    /* Ensure new schema fields on legacy data */
+    ['artworks','projects'].forEach(col => {
+      (SITE[col] || []).forEach(item => {
+        if (!item.images)    item.images    = [];
+        if (!item.materials) item.materials = [];
+        if (item.displayImage === undefined) item.displayImage = null;
+        if (item.featured    === undefined) item.featured     = false;
+        if (item.workType    === undefined) item.workType     = '3d';
+      });
+    });
   } catch(e) { SITE = JSON.parse(JSON.stringify(SITE_BASE)); }
 })();
 
+/* ── PAGE TRANSITIONS ─────────────────────────────────────────── */
 let _nav = false;
 function navigate(url) {
   if (_nav) return; _nav = true;
@@ -22,206 +35,374 @@ function navigate(url) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const m = document.getElementById('page-transition-mask');
-  if (m) { m.classList.remove('slide-in'); m.classList.add('slide-out'); setTimeout(() => m.classList.remove('slide-out'), 400); }
+  if (m) {
+    m.classList.remove('slide-in'); m.classList.add('slide-out');
+    setTimeout(() => m.classList.remove('slide-out'), 400);
+  }
   document.querySelectorAll('a[href]').forEach(a => {
     const h = a.getAttribute('href');
-    if (h && !h.startsWith('#') && !h.startsWith('mailto:') && !h.startsWith('http') && !a.dataset.noTransition)
+    if (h && !h.startsWith('#') && !h.startsWith('mailto:') &&
+        !h.startsWith('http') && !a.dataset.noTransition)
       a.addEventListener('click', e => { e.preventDefault(); navigate(h); });
   });
   setLang(currentLang);
+  _initLightbox();
 });
 
+/* ── LANGUAGE ─────────────────────────────────────────────────── */
 let currentLang = localStorage.getItem('lang') || 'en';
 function setLang(l) {
   currentLang = l; localStorage.setItem('lang', l);
   document.documentElement.lang = l;
-  document.querySelectorAll('[data-en]').forEach(el => { const v = el.getAttribute('data-'+l); if (v !== null) el.innerHTML = v; });
-  ['b-en','b-tr'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.toggle('on', id === 'b-'+l); });
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const v = el.getAttribute('data-' + l);
+    if (v !== null) el.innerHTML = v;
+  });
+  ['b-en','b-tr'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('on', id === 'b-' + l);
+  });
 }
 
+/* ── ESCAPE ───────────────────────────────────────────────────── */
 function _esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ── READING OVERLAY ─────────────────────────────────────────── */
 let _scroll = 0;
 function openReading(html, badge, title) {
   const o = document.getElementById('reading-overlay');
   if (!o) return;
   document.getElementById('reading-body').innerHTML = html;
-  document.getElementById('reading-badge').textContent = badge;
+  document.getElementById('reading-badge').textContent  = badge;
   document.getElementById('reading-top-title').textContent = title;
   _scroll = window.scrollY;
   document.body.style.overflow = 'hidden';
   o.scrollTop = 0; o.classList.add('open');
-  setTimeout(() => { const f = document.getElementById('back-fab'); if (f) f.classList.add('visible'); }, 230);
+  setTimeout(() => {
+    const f = document.getElementById('back-fab');
+    if (f) f.classList.add('visible');
+  }, 230);
 }
 function closeReading() {
   const o = document.getElementById('reading-overlay');
   const f = document.getElementById('back-fab');
   if (!o) return;
-  o.classList.remove('open'); if (f) f.classList.remove('visible');
-  document.body.style.overflow = ''; window.scrollTo(0, _scroll);
+  o.classList.remove('open');
+  if (f) f.classList.remove('visible');
+  document.body.style.overflow = '';
+  window.scrollTo(0, _scroll);
 }
 
+/* ── IMAGE HELPERS ───────────────────────────────────────────── */
+/* Main image = the one marked isMain:true */
 function _mainImg(aw) {
   if (!aw.images || !aw.images.length) return null;
   const main = aw.images.find(i => i.isMain);
   return (main || aw.images[0]).path;
 }
-
+/* Display image = displayImage field OR first in images array */
 function _getDisplayImage(aw) {
-  return aw.displayImage || _mainImg(aw);
+  return aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
 }
 
-function _getAllImages(aw) {
-  if (!aw.images || !aw.images.length) return [];
-  return aw.images.map(img => img.path);
+/* ── IN-PAGE LIGHTBOX ────────────────────────────────────────── */
+/* A proper fullscreen lightbox with zoom, prev/next, keyboard nav */
+let _lb = { images: [], cur: 0, zoomed: false };
+
+function _initLightbox() {
+  if (document.getElementById('lb-overlay')) return; // already added
+  const lb = document.createElement('div');
+  lb.id = 'lb-overlay';
+  lb.innerHTML = `
+    <div id="lb-bg"></div>
+    <button id="lb-close" aria-label="Close">✕</button>
+    <button id="lb-prev"  aria-label="Previous">&#8592;</button>
+    <button id="lb-next"  aria-label="Next">&#8594;</button>
+    <div id="lb-stage">
+      <img id="lb-img" src="" alt="" draggable="false">
+    </div>
+    <div id="lb-counter"></div>
+    <div id="lb-hint">Scroll / pinch to zoom · click to close</div>`;
+  document.body.appendChild(lb);
+
+  document.getElementById('lb-bg').addEventListener('click', closeLightbox);
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+  document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); lbMove(-1); });
+  document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); lbMove( 1); });
+
+  /* Keyboard */
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lb-overlay');
+    if (!lb || !lb.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  lbMove(-1);
+    if (e.key === 'ArrowRight') lbMove( 1);
+    if (e.key === 'Escape')     closeLightbox();
+    if (e.key === '+' || e.key === '=') lbZoom(1.2);
+    if (e.key === '-')           lbZoom(1 / 1.2);
+  });
+
+  /* Wheel zoom */
+  document.getElementById('lb-stage').addEventListener('wheel', e => {
+    e.preventDefault();
+    lbZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
+  }, { passive: false });
+
+  /* Touch swipe */
+  let tsx = 0;
+  const stage = document.getElementById('lb-stage');
+  stage.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tsx;
+    if (Math.abs(dx) > 50) lbMove(dx < 0 ? 1 : -1);
+  });
 }
 
-function _renderWork(aw, badgeLabel, overrideTitle) {
-  const l = currentLang;
-  const title = overrideTitle || (l === 'tr' ? (aw.titleTR || aw.title) : aw.title);
+let _lbScale = 1;
+function openLightbox(images, startIdx) {
+  _lb.images = images;
+  _lb.cur    = Math.max(0, Math.min(startIdx, images.length - 1));
+  _lbScale   = 1;
+  _lbRender();
+  const overlay = document.getElementById('lb-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeLightbox() {
+  const overlay = document.getElementById('lb-overlay');
+  if (overlay) overlay.classList.remove('open');
+  _lbScale = 1;
+  const img = document.getElementById('lb-img');
+  if (img) img.style.transform = '';
+  /* restore scroll only if reading overlay is also not open */
+  if (!document.getElementById('reading-overlay')?.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+function lbMove(dir) {
+  const n = _lb.images.length;
+  if (!n) return;
+  _lb.cur = (_lb.cur + dir + n) % n;
+  _lbScale = 1;
+  _lbRender();
+}
+function lbZoom(factor) {
+  _lbScale = Math.max(0.5, Math.min(6, _lbScale * factor));
+  const img = document.getElementById('lb-img');
+  if (img) img.style.transform = `scale(${_lbScale})`;
+}
+function _lbRender() {
+  const img  = document.getElementById('lb-img');
+  const ctr  = document.getElementById('lb-counter');
+  const prev = document.getElementById('lb-prev');
+  const next = document.getElementById('lb-next');
+  if (!img) return;
+  const item = _lb.images[_lb.cur];
+  img.style.transform = '';
+  img.src = item.path || item;
+  img.alt = item.caption || '';
+  if (ctr) ctr.textContent = `${_lb.cur + 1} / ${_lb.images.length}`;
+  if (prev) prev.style.display = _lb.images.length > 1 ? '' : 'none';
+  if (next) next.style.display = _lb.images.length > 1 ? '' : 'none';
+}
+
+/* ── ARTWORK / PROJECT DETAIL ────────────────────────────────── */
+function _renderWork(aw, badgeLabel) {
+  const l      = currentLang;
+  const title  = l === 'tr' ? (aw.titleTR  || aw.title)  : aw.title;
   const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-  const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
+  const desc   = l === 'tr' ? (aw.descTR   || aw.desc)   : aw.desc;
 
-  // Get all images for gallery
-  const allImages = _getAllImages(aw);
+  /* ── Hero image — uses isMain image, displayed properly ── */
   const mainSrc = _mainImg(aw);
-  
-  // Main hero image - click opens lightbox
   const heroHTML = mainSrc
-    ? `<div class="reading-hero-img" style="cursor:pointer;" onclick="openLightbox(${JSON.stringify(allImages)}, ${allImages.indexOf(mainSrc)}, '${_esc(title)}')">
-        <img src="${mainSrc}" alt="${_esc(title)}" style="width:100%;height:auto;display:block;">
+    ? `<div class="rw-hero-wrap">
+         <img class="rw-hero-img" src="${mainSrc}" alt="${_esc(title)}" data-lb-src="${mainSrc}">
        </div>`
-    : `<div class="reading-hero-ph"><span>${l==='tr'?'Görsel eklenecek':'Image coming soon'}</span></div>`;
+    : `<div class="reading-hero-ph"><span>${l === 'tr' ? 'Görsel eklenecek' : 'Image coming soon'}</span></div>`;
 
-  // Image gallery (all images)
+  /* ── All images as thumbnail strip ── */
   let galleryHTML = '';
-  if (allImages.length > 0) {
-    galleryHTML = `<div class="reading-sec-label">${l==='tr'?'Görseller':'Images'}</div>
-      <div class="reading-photos">
-        ${allImages.map((img, idx) => `<div class="reading-photo" onclick="openLightbox(${JSON.stringify(allImages)}, ${idx}, '${_esc(title)}')" style="cursor:pointer;">
-          <img src="${img}" alt="${_esc(title)}">
-        </div>`).join('')}
-      </div>`;
+  const allImgs = aw.images || [];
+  if (allImgs.length > 0) {
+    const thumbs = allImgs.map((img, i) =>
+      `<div class="rw-thumb" data-lb-idx="${i}" title="${_esc(img.caption || '')}">
+         <img src="${img.path}" alt="${_esc(img.caption || '')}">
+         ${img.isMain ? '<span class="rw-thumb-main">★</span>' : ''}
+       </div>`
+    ).join('');
+    galleryHTML = `
+      <div class="reading-sec-label">${l === 'tr' ? 'Görseller' : 'Images'}</div>
+      <div class="rw-thumbstrip" id="rw-thumbstrip">${thumbs}</div>`;
   }
 
-  // Materials blocks
+  /* ── Materials blocks ── */
   let matsHTML = '';
   if (aw.materials && aw.materials.length) {
-    aw.materials.forEach(mat => {
-      const lbl = `<div class="reading-sec-label">${_esc(mat.label||mat.type)}</div>`;
+    aw.materials.forEach((mat, mi) => {
+      const lbl = `<div class="reading-sec-label">${_esc(mat.label || mat.type)}</div>`;
+
       if (mat.type === 'text') {
         const content = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
-        const paras = (content||'').split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+        const paras = (content || '').split(/\n\n+/).map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
         matsHTML += lbl + `<div class="reading-desc">${paras}</div>`;
-      } else if (mat.type === 'image-gallery') {
-        const matImages = (mat.images||[]).map(i => i.path);
-        if (matImages.length) {
-          matsHTML += lbl + `<div class="reading-photos">
-            ${matImages.map((img, idx) => `<div class="reading-photo" onclick="openLightbox(${JSON.stringify(matImages)}, ${idx}, '${_esc(mat.label||'')}')" style="cursor:pointer;">
-              <img src="${img}" alt="${_esc(mat.label||'')}">
-            </div>`).join('')}
-          </div>`;
-        }
-      } else if (mat.type === 'gif') {
-        const imgs = (mat.images||[]).map(i=>`<div class="reading-photo"><img src="${i.path}" alt="" style="image-rendering:auto;"></div>`).join('');
-        matsHTML += lbl + `<div class="reading-photos">${imgs}</div>`;
+
+      } else if (mat.type === 'image-gallery' || mat.type === 'gif') {
+        const imgs  = mat.images || [];
+        const thumbs = imgs.map((img, j) =>
+          `<div class="rw-thumb rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
+             <img src="${img.path}" alt="${_esc(img.caption || '')}">
+           </div>`
+        ).join('');
+        matsHTML += lbl + `<div class="rw-thumbstrip rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
+
       } else if (mat.type === '3d') {
-        const safeTitle = _esc(title).replace(/'/g,"\\'");
-        const safePath  = (mat.path||'').replace(/'/g,"\\'");
+        const safeTitle = _esc(title).replace(/'/g, "\\'");
+        const safePath  = (mat.path || '').replace(/'/g, "\\'");
         matsHTML += lbl + `<button class="btn-3d" onclick="openViewer('${safePath}','${safeTitle}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2l9 4.5v9L12 20l-9-4.5v-9L12 2z"/>
             <polyline points="12 2 12 20"/><polyline points="3 6.5 12 11 21 6.5"/>
           </svg>
-          ${l==='tr'?'3D Görüntüle':'View 3D'}
+          ${l === 'tr' ? '3D Görüntüle' : 'View 3D'}
         </button>`;
+
       } else if (mat.type === 'pdf') {
-        matsHTML += lbl + `<a href="${mat.path}" target="_blank" class="btn-3d" style="text-decoration:none;">↓ ${l==='tr'?'PDF İndir':'Download PDF'}</a>`;
+        matsHTML += lbl + `<a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;">
+          ↓ ${l === 'tr' ? 'PDF İndir' : 'Download PDF'}
+        </a>`;
+
       } else if (mat.type === 'video') {
         matsHTML += lbl + `<video controls style="width:100%;max-width:100%;margin-top:8px;" src="${mat.path}"></video>`;
       }
     });
   }
 
-  return openReading(`
+  /* ── Description paragraphs ── */
+  const descParas = (desc || '').split(/\n\n+/)
+    .filter(p => p.trim())
+    .map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+
+  openReading(`
     ${heroHTML}
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${_esc(aw.year)}${medium?' · '+_esc(medium):''}</div>
-    <div class="reading-sec-label">${l==='tr'?'Açıklama':'About this work'}</div>
-    <div class="reading-desc"><p>${_esc(desc||'')}</p></div>
+    <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
+    <div class="reading-sec-label">${l === 'tr' ? 'Açıklama' : 'About this work'}</div>
+    <div class="reading-desc">${descParas || `<p>${_esc(desc || '')}</p>`}</div>
     ${galleryHTML}
     ${matsHTML}
   `, badgeLabel, title);
+
+  /* Attach lightbox after render */
+  requestAnimationFrame(() => {
+    _attachGalleryLightbox(aw);
+  });
+}
+
+function _attachGalleryLightbox(aw) {
+  const allImgs = (aw.images || []);
+
+  /* Main hero image click */
+  const heroImg = document.querySelector('.rw-hero-img');
+  if (heroImg) {
+    heroImg.style.cursor = 'zoom-in';
+    heroImg.addEventListener('click', () => {
+      openLightbox(allImgs, allImgs.findIndex(i => i.isMain) || 0);
+    });
+  }
+
+  /* Thumbnail strip */
+  const strip = document.getElementById('rw-thumbstrip');
+  if (strip) {
+    strip.querySelectorAll('.rw-thumb').forEach(th => {
+      th.addEventListener('click', () => {
+        const idx = parseInt(th.dataset.lbIdx, 10);
+        openLightbox(allImgs, idx);
+      });
+    });
+  }
+
+  /* Material gallery thumbs */
+  document.querySelectorAll('.rw-mat-strip').forEach(mStrip => {
+    const mi = parseInt(mStrip.dataset.mat, 10);
+    const matImgs = (aw.materials[mi] && aw.materials[mi].images) || [];
+    mStrip.querySelectorAll('.rw-mat-thumb').forEach(th => {
+      th.addEventListener('click', () => {
+        const ii = parseInt(th.dataset.imgIdx, 10);
+        openLightbox(matImgs, ii);
+      });
+    });
+  });
 }
 
 function openArtwork(idx) {
   const aw = SITE.artworks[idx]; if (!aw) return;
-  const l = currentLang;
-  const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-  const badge = l === 'tr' ? 'Eser' : 'Artwork';
-  _renderWork(aw, badge, title);
+  _renderWork(aw, currentLang === 'tr' ? 'Eser' : 'Artwork');
 }
-
 function openProject(idx) {
   const p = SITE.projects[idx]; if (!p) return;
-  const l = currentLang;
-  const title = l === 'tr' ? (p.titleTR || p.title) : p.title;
-  const badge = l === 'tr' ? 'Proje' : 'Project';
-  _renderWork(p, badge, title);
+  _renderWork(p, currentLang === 'tr' ? 'Proje' : 'Project');
 }
 
+/* ── WRITINGS ────────────────────────────────────────────────── */
 function openPoem(idx) {
   const pm = SITE.poems[idx]; if (!pm) return;
-  const l = currentLang;
+  const l     = currentLang;
   const title = l === 'tr' ? (pm.titleTR || pm.title) : pm.title;
-  const body = l === 'tr' ? (pm.bodyTR || pm.body) : pm.body;
-  const lbl = l === 'tr' ? 'Şiir' : 'Poem';
+  const body  = l === 'tr' ? (pm.bodyTR  || pm.body)  : pm.body;
+  const lbl   = l === 'tr' ? 'Şiir' : 'Poem';
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${_esc(pm.year)}</div>
+    <div class="reading-meta">${_esc(pm.year || '')}</div>
     <div class="reading-sec-label">${lbl}</div>
-    <div class="reading-text" style="white-space:pre-line;line-height:2;">${_esc(body)}</div>
+    <div class="reading-text">${_esc(body)}</div>
   `, lbl, title);
 }
-
 function openArticle(idx) {
   const ar = SITE.articles[idx]; if (!ar) return;
-  const l = currentLang;
+  const l     = currentLang;
   const title = l === 'tr' ? (ar.titleTR || ar.title) : ar.title;
-  const type = l === 'tr' ? (ar.typeTR || ar.type) : ar.type;
-  const body = l === 'tr' ? (ar.bodyTR || ar.body) : ar.body;
-  const paras = body.split(/\n\n+/).map(p=>`<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const type  = l === 'tr' ? (ar.typeTR  || ar.type)  : ar.type;
+  const body  = l === 'tr' ? (ar.bodyTR  || ar.body)  : ar.body;
+  const paras = (body || '').split(/\n\n+/).map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${_esc(ar.year)} · ${_esc(type)}</div>
-    <div class="reading-sec-label">${_esc(type)}</div>
+    <div class="reading-meta">${_esc(ar.year || '')} · ${_esc(type || '')}</div>
+    <div class="reading-sec-label">${_esc(type || '')}</div>
     <div class="reading-desc">${paras}</div>
-  `, _esc(type), title);
+  `, _esc(type || ''), title);
 }
 
+/* ── 3D VIEWER ───────────────────────────────────────────────── */
 function openViewer(src, title) {
-  const o=document.getElementById('viewer-overlay'), mv=document.getElementById('model-viewer-el');
-  if (!o||!mv) return;
+  const o  = document.getElementById('viewer-overlay');
+  const mv = document.getElementById('model-viewer-el');
+  if (!o || !mv) return;
   mv.setAttribute('src', src);
-  const t=document.getElementById('viewer-title-el'); if (t) t.textContent=title||'';
+  const t = document.getElementById('viewer-title-el');
+  if (t) t.textContent = title || '';
   o.classList.add('open');
 }
 function closeViewer() {
-  const o=document.getElementById('viewer-overlay'), mv=document.getElementById('model-viewer-el');
-  if (!o) return; o.classList.remove('open');
-  if (mv) setTimeout(()=>mv.removeAttribute('src'),400);
+  const o  = document.getElementById('viewer-overlay');
+  const mv = document.getElementById('model-viewer-el');
+  if (!o) return;
+  o.classList.remove('open');
+  if (mv) setTimeout(() => mv.removeAttribute('src'), 400);
 }
 
+/* ── ESC key ─────────────────────────────────────────────────── */
 document.addEventListener('keydown', e => {
-  if (e.key!=='Escape') return;
-  const v=document.getElementById('viewer-overlay');
-  if (v&&v.classList.contains('open')) { closeViewer(); return; }
-  const lb = document.getElementById('lightbox-overlay');
-  if (lb && lb.classList.contains('open')) { 
-    closeLightbox(); 
-    return; 
-  }
+  if (e.key !== 'Escape') return;
+  /* Close in order: lightbox → 3D viewer → reading overlay */
+  const lb = document.getElementById('lb-overlay');
+  if (lb && lb.classList.contains('open')) { closeLightbox(); return; }
+  const v = document.getElementById('viewer-overlay');
+  if (v && v.classList.contains('open')) { closeViewer(); return; }
   closeReading();
 });
