@@ -441,6 +441,10 @@ function getArtworkMainImage(aw) {
   return (main || aw.images[0]).path;
 }
  
+function getArtworkDisplayImage(aw) {
+  return aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
+}
+ 
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -460,7 +464,7 @@ function firstLines(str, n) {
 }
  
 /* ═══════════════════════════════════════════════════
-   HERO — manually selected featured artworks
+   HERO — random selection from featured artworks
 ═══════════════════════════════════════════════════ */
 (function initHero() {
   const track     = document.getElementById('hsTrack');
@@ -469,27 +473,21 @@ function firstLines(str, n) {
   const nextBtn   = document.getElementById('hsNext');
   const fillEl    = document.getElementById('hsProgressFill');
 
-  let featuredIds = [];
-  if (SITE.texts && SITE.texts.featuredArtworks) {
-    featuredIds = SITE.texts.featuredArtworks.split(',').map(id => id.trim()).filter(id => id);
-  }
+  // Get all artworks marked as featured
+  const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
   
-  let pool = [];
-  if (featuredIds.length === 3) {
-    pool = featuredIds.map(id => SITE.artworks.find(aw => aw.id === id)).filter(aw => aw);
-    if (pool.length !== 3) {
-      pool = SITE.artworks.slice(0, 3);
-    }
-  } else {
-    pool = SITE.artworks.slice(0, 3);
-  }
+  // If no featured works, use all artworks as fallback
+  const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+  
+  // Pick 3 random artworks from the pool
+  const selectedWorks = pickRandom(pool, 3);
 
-  const TOTAL    = pool.length;
+  const TOTAL    = selectedWorks.length;
   const INTERVAL = 5500;
   let   cur      = 0;
   let   timer, progressAnim;
 
-  pool.forEach((aw, i) => {
+  selectedWorks.forEach((aw, i) => {
     const slide = document.createElement('div');
     slide.className = 'hs-slide' + (i === 0 ? ' active' : '');
 
@@ -497,12 +495,13 @@ function firstLines(str, n) {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const meta  = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
 
-    const mainImage = getArtworkMainImage(aw);
+    // Use display image for hero, fallback to main image
+    const heroImage = getArtworkDisplayImage(aw) || getArtworkMainImage(aw);
     
     const imgDiv = document.createElement('div');
     imgDiv.className = 'hs-slide-img';
-    if (mainImage) {
-      imgDiv.style.backgroundImage = `url('${mainImage}')`;
+    if (heroImage) {
+      imgDiv.style.backgroundImage = `url('${heroImage}')`;
       imgDiv.style.backgroundSize = 'cover';
       imgDiv.style.backgroundPosition = 'center';
       imgDiv.style.backgroundColor = 'transparent';
@@ -671,14 +670,20 @@ window.setLang = function(l) {
   originalSetLang(l);
   refreshPreviews();
   refreshPoem();
+  
+  // Refresh hero slides to update text
   const track = document.getElementById('hsTrack');
   if (track) {
     const slides = track.querySelectorAll('.hs-slide');
+    const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
+    const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+    const selectedWorks = pickRandom(pool, 3);
+    
     slides.forEach((slide, idx) => {
       const titleEl = slide.querySelector('.hs-slide-title');
       const metaEl = slide.querySelector('.hs-slide-meta');
-      if (titleEl && metaEl && SITE.artworks[idx]) {
-        const aw = SITE.artworks[idx];
+      if (titleEl && metaEl && selectedWorks[idx]) {
+        const aw = selectedWorks[idx];
         const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
         const meta = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
         titleEl.textContent = title;
