@@ -207,7 +207,7 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   <main class="main" id="main">
     <div class="panel on" id="panel-artworks">
       <div class="ptitle">Artworks</div>
-      <div class="pdesc">Each artwork has a Display Image (for gallery thumbnails) and a Main Image (for detail page top). Check "Show in Hero Slider" to include in homepage randomizer.</div>
+      <div class="pdesc">Each artwork has a Display Image (for gallery thumbnails) and a Main Image (for detail page top). Check "Show in Hero Slider" to include in homepage.</div>
       <button class="add-btn" onclick="openForm('artworks',-1)">+ Add New Artwork</button>
       <div id="form-artworks"></div>
       <div class="item-list" id="list-artworks"></div>
@@ -490,7 +490,7 @@ function buildFormHTML() {
           <input type="checkbox" id="ff-featured" ${currentFormData.featured ? 'checked' : ''} style="width:18px;height:18px;"> 
           ★ Include in Homepage Hero Slider
         </label>
-        <div class="fnote">Featured artworks will appear randomly in the hero slider on homepage.</div>
+        <div class="fnote">Check this to show this artwork in the homepage hero slider (maximum 3 artworks).</div>
       </div>
     </div>`;
 
