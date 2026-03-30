@@ -34,10 +34,11 @@
   cursor: pointer;
 }
  
-/* Background image */
+/* Background image - transparent background for different aspect ratios */
 .hs-slide-img {
-  position: absolute; inset: 0;
-  background-color: #111;
+  position: absolute; 
+  inset: 0;
+  background-color: transparent !important;
   background-size: cover;
   background-position: center;
   transform: scale(1.04);
@@ -47,9 +48,10 @@
   transform: scale(1.0);
 }
  
-/* Dark gradient from bottom */
+/* Dark gradient from bottom - ensures text readability */
 .hs-slide-grad {
-  position: absolute; inset: 0;
+  position: absolute; 
+  inset: 0;
   background: linear-gradient(
     to top,
     rgba(0,0,0,0.72) 0%,
@@ -57,6 +59,7 @@
     rgba(0,0,0,0.08) 100%
   );
   z-index: 1;
+  pointer-events: none;
 }
  
 /* Text info at bottom left */
@@ -183,7 +186,7 @@
 }
 .hs-arrow:hover { background: rgba(255,255,255,0.18); color: #fff; }
 .hs-arrow.prev { left: 24px; }
-.hs-arrow.next { right: 64px; } /* offset from counter */
+.hs-arrow.next { right: 64px; }
  
 /* ── Auto-progress bar at very bottom ── */
 .hs-progress {
@@ -360,14 +363,12 @@
 <!-- ══════════════════ RANDOM POEM ══════════════════ -->
 <section id="poem-block">
   <div class="poem-inner">
-    <!-- Left: title + button -->
     <div>
       <div class="poem-label" data-en="— poem of the day" data-tr="— günün şiiri">— poem of the day</div>
       <div class="poem-title"  id="poemTitle"></div>
       <div class="poem-year"   id="poemYear"></div>
       <button class="poem-read-btn" id="poemBtn" data-en="Read poem →" data-tr="Şiiri oku →">Read poem →</button>
     </div>
-    <!-- Right: excerpt -->
     <div class="poem-excerpt" id="poemExcerpt"></div>
   </div>
 </section>
@@ -397,10 +398,10 @@
   <span>veretrir.art</span>
 </footer>
  
-<!-- ══ Reading overlay (artwork detail opens here) ══ -->
+<!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
-    <span class="reading-badge"    id="reading-badge"></span>
+    <span class="reading-badge" id="reading-badge"></span>
     <span class="reading-top-title" id="reading-top-title"></span>
   </div>
   <div class="reading-body" id="reading-body"></div>
@@ -413,7 +414,7 @@
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
  
-<!-- 3D viewer (reused from common.js) -->
+<!-- 3D viewer -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
@@ -425,10 +426,8 @@
     style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
  
-<!-- model-viewer for 3D (only loaded if needed) -->
 <script type="module"
   src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
- 
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
@@ -436,14 +435,12 @@
    UTILITIES
 ═══════════════════════════════════════════════════ */
  
-/** Get the main image path from an artwork's images array */
 function getArtworkMainImage(aw) {
   if (!aw.images || !aw.images.length) return null;
   const main = aw.images.find(i => i.isMain);
   return (main || aw.images[0]).path;
 }
  
-/** Fisher-Yates shuffle — returns a new shuffled array */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -453,19 +450,17 @@ function shuffle(arr) {
   return a;
 }
  
-/** Pick n unique random items from array */
 function pickRandom(arr, n) {
   return shuffle(arr).slice(0, Math.min(n, arr.length));
 }
  
-/** Get first n lines of a string */
 function firstLines(str, n) {
   if (!str) return '';
   return str.split('\n').filter(l => l.trim() !== '').slice(0, n).join('\n');
 }
  
 /* ═══════════════════════════════════════════════════
-   HERO — 3 random artworks
+   HERO — manually selected featured artworks
 ═══════════════════════════════════════════════════ */
 (function initHero() {
   const track     = document.getElementById('hsTrack');
@@ -473,46 +468,53 @@ function firstLines(str, n) {
   const prevBtn   = document.getElementById('hsPrev');
   const nextBtn   = document.getElementById('hsNext');
   const fillEl    = document.getElementById('hsProgressFill');
- 
-  /* Pick 3 random artworks; if fewer than 3 exist, repeat */
-  const pool = SITE.artworks.length >= 3
-    ? pickRandom(SITE.artworks, 3)
-    : [...SITE.artworks, ...SITE.artworks, ...SITE.artworks].slice(0, 3);
- 
-  const TOTAL    = pool.length;  // 3
-  const INTERVAL = 5500;         // ms per slide
+
+  let featuredIds = [];
+  if (SITE.texts && SITE.texts.featuredArtworks) {
+    featuredIds = SITE.texts.featuredArtworks.split(',').map(id => id.trim()).filter(id => id);
+  }
+  
+  let pool = [];
+  if (featuredIds.length === 3) {
+    pool = featuredIds.map(id => SITE.artworks.find(aw => aw.id === id)).filter(aw => aw);
+    if (pool.length !== 3) {
+      pool = SITE.artworks.slice(0, 3);
+    }
+  } else {
+    pool = SITE.artworks.slice(0, 3);
+  }
+
+  const TOTAL    = pool.length;
+  const INTERVAL = 5500;
   let   cur      = 0;
   let   timer, progressAnim;
- 
-  /* Build slides */
+
   pool.forEach((aw, i) => {
     const slide = document.createElement('div');
     slide.className = 'hs-slide' + (i === 0 ? ' active' : '');
- 
-    // FIXED: Get correct language content
+
     const l     = currentLang;
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const meta  = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
- 
-    // FIXED: Get image from images array, not aw.image
+
     const mainImage = getArtworkMainImage(aw);
     
-    // Background image
     const imgDiv = document.createElement('div');
     imgDiv.className = 'hs-slide-img';
     if (mainImage) {
       imgDiv.style.backgroundImage = `url('${mainImage}')`;
+      imgDiv.style.backgroundSize = 'cover';
+      imgDiv.style.backgroundPosition = 'center';
+      imgDiv.style.backgroundColor = 'transparent';
     } else {
       imgDiv.classList.add('hs-slide-ph');
     }
     slide.appendChild(imgDiv);
- 
-    // Gradient overlay
+
     const grad = document.createElement('div');
     grad.className = 'hs-slide-grad';
     slide.appendChild(grad);
- 
-    // Info block
+
     const info = document.createElement('div');
     info.className = 'hs-slide-info';
     info.innerHTML = `
@@ -524,139 +526,110 @@ function firstLines(str, n) {
         <span class="hs-slide-cta-arrow">→</span>
       </span>`;
     slide.appendChild(info);
- 
-    // Click opens artwork detail overlay
-    const awIdx = SITE.artworks.indexOf(aw);
+
+    const awIdx = SITE.artworks.findIndex(a => a.id === aw.id);
     slide.addEventListener('click', (e) => {
-      // Prevent if clicking on buttons
       if (e.target.closest('.hs-arrow')) return;
       if (awIdx >= 0) openArtwork(awIdx);
     });
- 
+
     track.appendChild(slide);
   });
- 
-  /* Build counter dots */
+
   for (let i = 0; i < TOTAL; i++) {
     const dot = document.createElement('button');
     dot.className = 'hs-counter-dot' + (i === 0 ? ' on' : '');
     dot.addEventListener('click', () => goTo(i));
     counter.appendChild(dot);
   }
- 
-  /* Navigation */
+
   function goTo(n) {
     const slides = track.querySelectorAll('.hs-slide');
     const dots   = counter.querySelectorAll('.hs-counter-dot');
- 
+
     if (slides[cur]) slides[cur].classList.remove('active');
     cur = (n + TOTAL) % TOTAL;
     if (slides[cur]) slides[cur].classList.add('active');
- 
+
     track.style.transform = `translateX(-${cur * 100}vw)`;
     dots.forEach((d, i) => d.classList.toggle('on', i === cur));
- 
-    // Reset progress bar
+
     startProgress();
   }
- 
+
   function move(dir) {
     clearInterval(timer);
     clearProgressAnim();
     goTo(cur + dir);
     timer = setInterval(() => move(1), INTERVAL);
   }
- 
-  prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    move(-1);
-  });
-  nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    move(1);
-  });
- 
-  // Touch / swipe
+
+  prevBtn.addEventListener('click', (e) => { e.stopPropagation(); move(-1); });
+  nextBtn.addEventListener('click', (e) => { e.stopPropagation(); move(1); });
+
   let touchStartX = 0;
-  track.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
+  track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
   track.addEventListener('touchend', e => {
     const deltaX = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(deltaX) > 50) move(deltaX < 0 ? 1 : -1);
   });
   
-  // Mouse drag
   let mouseDownX = 0, dragging = false;
-  track.addEventListener('mousedown', e => {
-    mouseDownX = e.clientX;
-    dragging = true;
-  });
+  track.addEventListener('mousedown', e => { mouseDownX = e.clientX; dragging = true; });
   track.addEventListener('mouseup', e => {
     if (!dragging) return;
     dragging = false;
     const deltaX = e.clientX - mouseDownX;
     if (Math.abs(deltaX) > 60) move(deltaX < 0 ? 1 : -1);
   });
- 
-  /* Progress bar animation */
+
   function startProgress() {
     clearProgressAnim();
     fillEl.style.transition = 'none';
     fillEl.style.width = '0%';
-    // Force reflow
     fillEl.offsetWidth;
     fillEl.style.transition = `width ${INTERVAL}ms linear`;
     fillEl.style.width = '100%';
-    // Advance after interval
     progressAnim = setTimeout(() => move(1), INTERVAL);
   }
- 
+
   function clearProgressAnim() {
     clearTimeout(progressAnim);
     fillEl.style.transition = 'none';
     fillEl.style.width = '0%';
   }
- 
-  // Kick off
+
   if (TOTAL > 0) {
     startProgress();
     timer = setInterval(() => move(1), INTERVAL);
   }
 })();
- 
+
 /* ═══════════════════════════════════════════════════
    RANDOM POEM BLOCK
 ═══════════════════════════════════════════════════ */
 function refreshPoem() {
   if (!SITE.poems || !SITE.poems.length) return;
- 
   const poem  = SITE.poems[Math.floor(Math.random() * SITE.poems.length)];
   const pIdx  = SITE.poems.indexOf(poem);
   const l     = currentLang;
- 
-  // FIXED: Show Turkish when language is TR, English when EN
-  const title   = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
-  const body    = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
+  const title = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
+  const body  = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
   const excerpt = firstLines(body, 4);
- 
-  document.getElementById('poemTitle').textContent   = title;
-  document.getElementById('poemYear').textContent    = poem.year || '';
+  document.getElementById('poemTitle').textContent = title;
+  document.getElementById('poemYear').textContent = poem.year || '';
   document.getElementById('poemExcerpt').textContent = excerpt;
- 
   const btn = document.getElementById('poemBtn');
-  // Remove old listener and add new one
   const newBtn = btn.cloneNode(true);
   btn.parentNode.replaceChild(newBtn, btn);
   newBtn.addEventListener('click', () => openPoem(pIdx));
 }
- 
+
 /* ═══════════════════════════════════════════════════
    BOTTOM PREVIEW STRIP
 ═══════════════════════════════════════════════════ */
 function refreshPreviews() {
   const l = currentLang;
- 
   const artEl = document.getElementById('homeArtworks');
   if (artEl) {
     artEl.innerHTML = '';
@@ -664,16 +637,12 @@ function refreshPreviews() {
       const div = document.createElement('a');
       div.href = 'artworks.html';
       div.className = 'home-link-item';
-      // FIXED: Show Turkish when language is TR, English when EN
       const title = l === 'tr' ? (a.titleTR || a.title) : a.title;
       const medium = l === 'tr' ? (a.mediumTR || a.medium) : a.medium;
-      div.innerHTML = `
-        <div class="hli-title">${_esc(title)}</div>
-        <div class="hli-meta">${a.year || ''}${medium ? ' · ' + _esc(medium) : ''}</div>`;
+      div.innerHTML = `<div class="hli-title">${_esc(title)}</div><div class="hli-meta">${a.year || ''}${medium ? ' · ' + _esc(medium) : ''}</div>`;
       artEl.appendChild(div);
     });
   }
- 
   const wrEl = document.getElementById('homeWritings');
   if (wrEl) {
     wrEl.innerHTML = '';
@@ -685,31 +654,23 @@ function refreshPreviews() {
       const div = document.createElement('a');
       div.href = 'writings.html';
       div.className = 'home-link-item';
-      // FIXED: Show Turkish when language is TR, English when EN
       const title = l === 'tr' ? (w.titleTR || w.title) : w.title;
       const type = w.type ? (l === 'tr' ? (w.typeTR || w.type) : w.type) : '';
       const meta = type ? `${w.year || ''} · ${_esc(type)}` : (w.year || '');
-      div.innerHTML = `
-        <div class="hli-title">${_esc(title)}</div>
-        <div class="hli-meta">${meta}</div>`;
+      div.innerHTML = `<div class="hli-title">${_esc(title)}</div><div class="hli-meta">${meta}</div>`;
       wrEl.appendChild(div);
     });
   }
 }
- 
+
 /* ═══════════════════════════════════════════════════
    LANGUAGE CHANGE HANDLER
 ═══════════════════════════════════════════════════ */
-// Store original setLang function
 const originalSetLang = window.setLang;
- 
-// Override setLang to refresh dynamic content
 window.setLang = function(l) {
   originalSetLang(l);
   refreshPreviews();
   refreshPoem();
-  
-  // Also refresh hero slides to update text
   const track = document.getElementById('hsTrack');
   if (track) {
     const slides = track.querySelectorAll('.hs-slide');
@@ -726,8 +687,7 @@ window.setLang = function(l) {
     });
   }
 };
- 
-// Initialize everything
+
 refreshPreviews();
 refreshPoem();
 </script>
