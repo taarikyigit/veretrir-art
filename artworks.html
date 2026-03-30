@@ -8,108 +8,63 @@
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 /* ── filter bar ── */
-.filter-bar {
-  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-  margin-bottom: 32px; padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
-.filter-label {
-  font-size: 10px; letter-spacing: .25em; text-transform: uppercase;
-  color: var(--dim); font-family: var(--mono); white-space: nowrap;
-}
-.filter-select {
-  background: var(--bg); border: 1px solid var(--line);
-  font-family: var(--mono); font-size: 11px; color: var(--ink);
-  padding: 6px 10px; outline: none; cursor: pointer;
-  transition: border-color .2s;
-}
-.filter-select:focus { border-color: var(--ink); }
-.filter-clear {
-  background: none; border: 1px solid var(--line); color: var(--mid);
-  font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
-  text-transform: uppercase; padding: 6px 12px; cursor: pointer;
-  transition: border-color .2s, color .2s;
-}
-.filter-clear:hover { border-color: var(--ink); color: var(--ink); }
-.filter-count {
-  font-size: 10px; letter-spacing: .1em; color: var(--dim);
-  font-family: var(--mono); margin-left: auto;
-}
- 
+.filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line);}
+.filter-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);font-family:var(--mono);white-space:nowrap;}
+.filter-select{background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink);padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;}
+.filter-select:focus{border-color:var(--ink);}
+.filter-clear{background:none;border:1px solid var(--line);color:var(--mid);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:border-color .2s,color .2s;}
+.filter-clear:hover{border-color:var(--ink);color:var(--ink);}
+.filter-count{font-size:10px;color:var(--dim);font-family:var(--mono);margin-left:auto;}
+
 /* ── artwork grid ── */
-.artwork-grid {
-  display: grid; grid-template-columns: repeat(4,1fr); gap: 6px;
-}
-.artwork-thumb {
-  position: relative; aspect-ratio: 1;
-  background: #e8e4de; overflow: hidden; cursor: pointer;
-}
-.artwork-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s; }
-.artwork-thumb:hover img { transform:scale(1.04); }
-.artwork-thumb.hidden { display: none; }
- 
-.aw-ph {
-  width:100%; height:100%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
-  transition:background .3s;
-}
-.artwork-thumb:hover .aw-ph { background:#dedad4; }
-.aw-ph-cross { width:20px; height:20px; position:relative; }
-.aw-ph-cross::before,.aw-ph-cross::after { content:''; position:absolute; background:#c8c4be; }
-.aw-ph-cross::before { width:1px; height:100%; left:50%; top:0; }
-.aw-ph-cross::after  { width:100%; height:1px; top:50%; left:0; }
-.aw-ph-lbl { font-size:8px; letter-spacing:.2em; text-transform:uppercase; color:#bbb; font-family:var(--mono); }
- 
-.aw-overlay {
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.52);
-  display:flex; flex-direction:column; justify-content:flex-end; padding:12px;
-  opacity:0; transition:opacity .3s;
-}
-.artwork-thumb:hover .aw-overlay { opacity:1; }
-.aw-ov-title { font-size:13px; font-style:italic; color:#fff; margin-bottom:2px; line-height:1.3; }
-.aw-ov-meta  { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.5); font-family:var(--mono); }
- 
-/* has-3d badge */
-.aw-3d-badge {
-  position: absolute; top: 8px; right: 8px;
-  background: rgba(0,0,0,.6); color: rgba(255,255,255,.7);
-  font-family: var(--mono); font-size: 8px; letter-spacing: .12em;
-  text-transform: uppercase; padding: 3px 7px;
-  pointer-events: none;
-}
- 
-/* no results */
-.no-results {
-  grid-column: 1/-1; padding: 48px; text-align: center;
-  font-style: italic; color: var(--dim); font-size: 15px;
-}
- 
-/* ── projects ── */
-.project-item {
-  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start;
-  padding:20px 0; border-bottom:1px solid #e8e4de;
-}
-.project-item:first-child { border-top:1px solid #e8e4de; }
-.project-name { font-size:15px; font-weight:500; margin-bottom:4px; }
-.project-desc { font-size:13px; font-style:italic; color:var(--mid); }
-.p-tag { font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 9px; border:1px solid; white-space:nowrap; font-family:var(--mono); }
-.tag-on { color:var(--red); border-color:var(--red); }
-.tag-pl { color:#ccc; border-color:#ccc; }
- 
-@media(max-width:640px) { .artwork-grid { grid-template-columns:repeat(2,1fr); } }
+.artwork-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.artwork-thumb{position:relative;aspect-ratio:1;background:#e8e4de;overflow:hidden;cursor:pointer;}
+.artwork-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
+.artwork-thumb:hover img{transform:scale(1.04);}
+.artwork-thumb.hidden{display:none;}
+
+.aw-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;transition:background .3s;}
+.artwork-thumb:hover .aw-ph{background:#dedad4;}
+.aw-ph-cross{width:20px;height:20px;position:relative;}
+.aw-ph-cross::before,.aw-ph-cross::after{content:'';position:absolute;background:#c8c4be;}
+.aw-ph-cross::before{width:1px;height:100%;left:50%;top:0;}
+.aw-ph-cross::after{width:100%;height:1px;top:50%;left:0;}
+.aw-ph-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;font-family:var(--mono);}
+
+.aw-overlay{position:absolute;inset:0;background:rgba(0,0,0,.52);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;opacity:0;transition:opacity .3s;}
+.artwork-thumb:hover .aw-overlay{opacity:1;}
+.aw-ov-title{font-size:13px;font-style:italic;color:#fff;margin-bottom:2px;line-height:1.3;}
+.aw-ov-meta{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);font-family:var(--mono);}
+
+.aw-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:rgba(255,255,255,.7);font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;pointer-events:none;}
+
+.no-results{grid-column:1/-1;padding:48px;text-align:center;font-style:italic;color:var(--dim);font-size:15px;}
+
+/* ── projects list ── */
+.project-card{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start;padding:20px 0;border-bottom:1px solid #e8e4de;cursor:pointer;transition:padding-left .2s;}
+.project-card:first-child{border-top:1px solid #e8e4de;}
+.project-card:hover{padding-left:8px;}
+.project-thumb{width:64px;height:64px;flex-shrink:0;background:#e8e4de;overflow:hidden;}
+.project-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.project-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#bbb;font-family:var(--mono);}
+.project-name{font-size:15px;font-weight:500;margin-bottom:4px;transition:color .2s;}
+.project-card:hover .project-name{color:var(--red);}
+.project-desc{font-size:13px;font-style:italic;color:var(--mid);}
+.p-tag{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border:1px solid;white-space:nowrap;font-family:var(--mono);margin-top:4px;}
+.tag-on{color:var(--red);border-color:var(--red);}
+.tag-pl{color:#ccc;border-color:#ccc;}
+
+@media(max-width:640px){.artwork-grid{grid-template-columns:repeat(2,1fr);}.project-card{grid-template-columns:1fr auto;}.project-thumb{display:none;}}
 </style>
 </head>
 <body>
 <div id="page-transition-mask"></div>
- 
 <header>
   <div class="header-left">
     <a href="index.html" class="header-name">tarık yiğit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" data-no-transition>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
@@ -126,51 +81,36 @@
     <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
   </div>
 </header>
- 
+
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
- 
     <div class="tabs">
-      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"
-              data-en="Works" data-tr="Eserler">Works</button>
-      <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')"
-              data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
+      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works"                data-tr="Eserler">Works</button>
+      <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
     </div>
- 
-    <!-- WORKS PANEL -->
+
+    <!-- WORKS -->
     <div class="tab-panel on" id="panel-works">
- 
-      <!-- Filter bar -->
       <div class="filter-bar">
         <span class="filter-label" data-en="Filter:" data-tr="Filtrele:">Filter:</span>
- 
-        <select class="filter-select" id="filterYear" onchange="applyFilters()">
-          <option value="" data-en="All years" data-tr="Tüm yıllar">All years</option>
-        </select>
- 
-        <select class="filter-select" id="filterMedium" onchange="applyFilters()">
-          <option value="" data-en="All media" data-tr="Tüm teknikler">All media</option>
-        </select>
- 
-        <button class="filter-clear" onclick="clearFilters()"
-                data-en="Clear" data-tr="Temizle">Clear</button>
- 
+        <select class="filter-select" id="filterYear"   onchange="applyFilters()"></select>
+        <select class="filter-select" id="filterMedium" onchange="applyFilters()"></select>
+        <button class="filter-clear" onclick="clearFilters()" data-en="Clear" data-tr="Temizle">Clear</button>
         <span class="filter-count" id="filterCount"></span>
       </div>
- 
       <div class="artwork-grid" id="artworkGrid"></div>
     </div>
- 
-    <!-- PROJECTS PANEL -->
+
+    <!-- PROJECTS -->
     <div class="tab-panel" id="panel-projects">
       <div id="projectsList"></div>
     </div>
   </div>
 </div>
- 
+
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
- 
+
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
@@ -183,164 +123,118 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   <span data-en="Back" data-tr="Geri">Back</span>
 </button>
- 
+
 <!-- 3D VIEWER -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
     <button class="viewer-close" onclick="closeViewer()" data-en="Close" data-tr="Kapat">Close</button>
   </div>
-  <model-viewer id="model-viewer-el"
-    camera-controls
-    auto-rotate
-    autoplay
-    animation-name=""
-    shadow-intensity="1"
-    exposure="0.85"
-    style="background:#000;width:100%;height:100%;flex:1;">
-  </model-viewer>
+  <model-viewer id="model-viewer-el" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="0.85"
+    style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
- 
+
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
 function swTab(t) {
   ['works','projects'].forEach(id => {
-    document.getElementById('tab-' + id).classList.toggle('on', id === t);
-    document.getElementById('panel-' + id).classList.toggle('on', id === t);
+    document.getElementById('tab-'+id).classList.toggle('on', id===t);
+    document.getElementById('panel-'+id).classList.toggle('on', id===t);
   });
 }
- 
-/* ── Build filters from artwork data ── */
+
+function _mainImg(aw) {
+  if (!aw.images||!aw.images.length) return null;
+  const m = aw.images.find(i=>i.isMain); return (m||aw.images[0]).path;
+}
+
 function buildFilters() {
-  const years   = [...new Set(SITE.artworks.map(a => a.year).filter(Boolean))].sort().reverse();
-  const mediums = [...new Set(SITE.artworks.map(a => a.medium).filter(Boolean))].sort();
   const l = currentLang;
- 
-  const yEl = document.getElementById('filterYear');
-  const mEl = document.getElementById('filterMedium');
- 
-  // Keep first option
-  yEl.innerHTML = `<option value="">${l === 'tr' ? 'Tüm yıllar' : 'All years'}</option>`;
-  mEl.innerHTML = `<option value="">${l === 'tr' ? 'Tüm teknikler' : 'All media'}</option>`;
- 
-  years.forEach(y => {
-    const o = document.createElement('option');
-    o.value = y; o.textContent = y;
-    yEl.appendChild(o);
-  });
-  mediums.forEach(m => {
-    const o = document.createElement('option');
-    o.value = m; o.textContent = m;
-    mEl.appendChild(o);
-  });
+  const years   = [...new Set(SITE.artworks.map(a=>a.year).filter(Boolean))].sort().reverse();
+  const mediums = [...new Set(SITE.artworks.map(a=>a.medium).filter(Boolean))].sort();
+  const yEl=document.getElementById('filterYear'), mEl=document.getElementById('filterMedium');
+  yEl.innerHTML=`<option value="">${l==='tr'?'Tüm yıllar':'All years'}</option>`;
+  mEl.innerHTML=`<option value="">${l==='tr'?'Tüm teknikler':'All media'}</option>`;
+  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o);});
+  mediums.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;mEl.appendChild(o);});
 }
- 
-/* ── Apply filters ── */
+
 function applyFilters() {
-  const year   = document.getElementById('filterYear').value;
-  const medium = document.getElementById('filterMedium').value;
-  const thumbs = document.querySelectorAll('.artwork-thumb');
-  let visible  = 0;
- 
-  thumbs.forEach(th => {
-    const y = th.dataset.year   || '';
-    const m = th.dataset.medium || '';
-    const show = (!year || y === year) && (!medium || m === medium);
-    th.classList.toggle('hidden', !show);
-    if (show) visible++;
+  const year=document.getElementById('filterYear').value;
+  const medium=document.getElementById('filterMedium').value;
+  const thumbs=document.querySelectorAll('.artwork-thumb');
+  let vis=0;
+  thumbs.forEach(th=>{
+    const show=(!year||th.dataset.year===year)&&(!medium||th.dataset.medium===medium);
+    th.classList.toggle('hidden',!show); if(show) vis++;
   });
- 
-  const grid = document.getElementById('artworkGrid');
-  let noRes = grid.querySelector('.no-results');
-  if (visible === 0) {
-    if (!noRes) {
-      noRes = document.createElement('div');
-      noRes.className = 'no-results';
-      noRes.textContent = currentLang === 'tr' ? 'Eser bulunamadı.' : 'No works match the selected filters.';
-      grid.appendChild(noRes);
-    }
-  } else {
-    if (noRes) noRes.remove();
-  }
- 
-  document.getElementById('filterCount').textContent =
-    visible + ' / ' + SITE.artworks.length + (currentLang === 'tr' ? ' eser' : ' works');
+  const grid=document.getElementById('artworkGrid');
+  let nr=grid.querySelector('.no-results');
+  if(vis===0){
+    if(!nr){nr=document.createElement('div');nr.className='no-results';grid.appendChild(nr);}
+    nr.textContent=currentLang==='tr'?'Eser bulunamadı.':'No works match the selected filters.';
+  } else { if(nr) nr.remove(); }
+  document.getElementById('filterCount').textContent=vis+' / '+SITE.artworks.length+(currentLang==='tr'?' eser':' works');
 }
- 
+
 function clearFilters() {
-  document.getElementById('filterYear').value   = '';
-  document.getElementById('filterMedium').value = '';
+  document.getElementById('filterYear').value='';
+  document.getElementById('filterMedium').value='';
   applyFilters();
 }
- 
-/* ── Build page ── */
+
 function buildPage() {
-  const l    = currentLang;
-  const grid = document.getElementById('artworkGrid');
-  grid.innerHTML = '';
- 
-  SITE.artworks.forEach((aw, idx) => {
-    const title = l === 'tr' ? aw.titleTR : aw.title;
-    const div   = document.createElement('div');
-    div.className = 'artwork-thumb';
-    div.dataset.year   = aw.year   || '';
-    div.dataset.medium = aw.medium || '';
-    div.addEventListener('click', () => openArtwork(idx));
- 
-    div.innerHTML = aw.image
-      ? `<img src="${aw.image}" alt="${title}">`
-      : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">image</span></div>`;
- 
-    div.innerHTML += `<div class="aw-overlay">
-      <div class="aw-ov-title">${title}</div>
-      <div class="aw-ov-meta">${aw.year}${aw.medium ? ' · ' + (l === 'tr' ? aw.mediumTR : aw.medium) : ''}</div>
-    </div>`;
- 
-    if (aw.model) {
-      div.innerHTML += `<span class="aw-3d-badge">3D</span>`;
-    }
- 
+  const l=currentLang;
+  const grid=document.getElementById('artworkGrid');
+  grid.innerHTML='';
+  SITE.artworks.forEach((aw,idx)=>{
+    const title=l==='tr'?(aw.titleTR||aw.title):aw.title;
+    const div=document.createElement('div');
+    div.className='artwork-thumb';
+    div.dataset.year=aw.year||'';
+    div.dataset.medium=aw.medium||'';
+    div.addEventListener('click',()=>openArtwork(idx));
+    const src=_mainImg(aw);
+    div.innerHTML=(src?`<img src="${src}" alt="${title}">`:`<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">${l==='tr'?'görsel':'image'}</span></div>`)
+      +`<div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year||''}${aw.medium?' · '+(l==='tr'?(aw.mediumTR||aw.medium):aw.medium):''}</div></div>`;
+    const hasMats=aw.materials&&aw.materials.length;
+    const has3d=hasMats&&aw.materials.some(m=>m.type==='3d');
+    if(has3d) div.innerHTML+=`<span class="aw-badge">3D</span>`;
     grid.appendChild(div);
   });
- 
-  buildFilters();
-  applyFilters();
- 
+
+  buildFilters(); applyFilters();
+
   /* Projects */
-  const projEl = document.getElementById('projectsList');
-  projEl.innerHTML = '';
-  SITE.projects.forEach(p => {
-    const name   = l === 'tr' ? p.titleTR : p.title;
-    const desc   = l === 'tr' ? p.descTR  : p.desc;
-    const status = p.status === 'ongoing'
-      ? (l === 'tr' ? 'Devam Ediyor' : 'Ongoing')
-      : (l === 'tr' ? 'Planlandı'    : 'Planned');
-    const div = document.createElement('div');
-    div.className = 'project-item';
-    div.innerHTML = `
+  const pl=document.getElementById('projectsList');
+  pl.innerHTML='';
+  SITE.projects.forEach((p,idx)=>{
+    const name=l==='tr'?(p.titleTR||p.title):p.title;
+    const desc=l==='tr'?(p.descTR||p.desc):p.desc;
+    const status=p.status==='ongoing'?(l==='tr'?'Devam Ediyor':'Ongoing'):(l==='tr'?'Planlandı':'Planned');
+    const src=_mainImg(p);
+    const div=document.createElement('div');
+    div.className='project-card';
+    div.addEventListener('click',()=>openProject(idx));
+    div.innerHTML=`
+      <div class="project-thumb">${src?`<img src="${src}" alt="${name}">`:`<div class="project-thumb-ph">${l==='tr'?'görsel':'img'}</div>`}</div>
       <div>
         <div class="project-name">${name}</div>
-        <div class="project-desc">${desc}</div>
+        <div class="project-desc">${desc||''}</div>
       </div>
-      <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${status}</span>`;
-    projEl.appendChild(div);
+      <span class="p-tag ${p.status==='ongoing'?'tag-on':'tag-pl'}">${status}</span>`;
+    pl.appendChild(div);
   });
 }
- 
-/* Override setLang to rebuild */
-const _baseLang = window.setLang;
-window.setLang = function(l) {
-  _baseLang(l);
+
+const _base=window.setLang;
+window.setLang=function(l){_base(l);buildPage();};
+document.addEventListener('DOMContentLoaded',()=>{
   buildPage();
-};
- 
-document.addEventListener('DOMContentLoaded', () => {
-  buildPage();
-  document.getElementById('b-en').addEventListener('click', () => buildPage());
-  document.getElementById('b-tr').addEventListener('click', () => buildPage());
+  document.getElementById('b-en').addEventListener('click',()=>buildPage());
+  document.getElementById('b-tr').addEventListener('click',()=>buildPage());
 });
 </script>
 </body>
 </html>
- 
