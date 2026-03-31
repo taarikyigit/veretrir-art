@@ -3,14 +3,34 @@
                  in-page lightbox gallery
    ================================================================ */
 
+/* ── DATA VERSION — increment when schema changes ────────────── */
+const DATA_VERSION = 2;
+
 /* ── CONTENT LAYER ─────────────────────────────────────────────── */
 let SITE;
 (function () {
   try {
-    const s = localStorage.getItem('veretrir_data');
-    SITE = s ? JSON.parse(s) : JSON.parse(JSON.stringify(SITE_BASE));
-    Object.keys(SITE_BASE).forEach(k => { if (SITE[k] === undefined) SITE[k] = SITE_BASE[k]; });
-    /* Ensure new schema fields on legacy data */
+    const stored  = localStorage.getItem('veretrir_data');
+    const storedV = parseInt(localStorage.getItem('veretrir_data_v') || '0', 10);
+
+    /* If stored version doesn't match current, discard stale data */
+    if (stored && storedV === DATA_VERSION) {
+      SITE = JSON.parse(stored);
+    } else {
+      /* Clear stale cache — this fixes the "works in Incognito" bug */
+      localStorage.removeItem('veretrir_data');
+      SITE = JSON.parse(JSON.stringify(SITE_BASE));
+    }
+
+    /* Ensure all base keys exist */
+    Object.keys(SITE_BASE).forEach(k => {
+      if (SITE[k] === undefined) SITE[k] = JSON.parse(JSON.stringify(SITE_BASE[k]));
+    });
+
+    /* Remove legacy 'artwork' (singular) key if present */
+    if (SITE.artwork) delete SITE.artwork;
+
+    /* Ensure new schema fields on items */
     ['artworks','projects'].forEach(col => {
       (SITE[col] || []).forEach(item => {
         if (!item.images)    item.images    = [];
@@ -20,7 +40,12 @@ let SITE;
         if (item.workType    === undefined) item.workType     = '3d';
       });
     });
-  } catch(e) { SITE = JSON.parse(JSON.stringify(SITE_BASE)); }
+
+    /* Stamp version */
+    localStorage.setItem('veretrir_data_v', String(DATA_VERSION));
+  } catch(e) {
+    SITE = JSON.parse(JSON.stringify(SITE_BASE));
+  }
 })();
 
 /* ── PAGE TRANSITIONS ─────────────────────────────────────────── */
@@ -97,23 +122,20 @@ function closeReading() {
 }
 
 /* ── IMAGE HELPERS ───────────────────────────────────────────── */
-/* Main image = the one marked isMain:true */
 function _mainImg(aw) {
   if (!aw.images || !aw.images.length) return null;
   const main = aw.images.find(i => i.isMain);
   return (main || aw.images[0]).path;
 }
-/* Display image = displayImage field OR first in images array */
 function _getDisplayImage(aw) {
   return aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
 }
 
 /* ── IN-PAGE LIGHTBOX ────────────────────────────────────────── */
-/* A proper fullscreen lightbox with zoom, prev/next, keyboard nav */
 let _lb = { images: [], cur: 0, zoomed: false };
 
 function _initLightbox() {
-  if (document.getElementById('lb-overlay')) return; // already added
+  if (document.getElementById('lb-overlay')) return;
   const lb = document.createElement('div');
   lb.id = 'lb-overlay';
   lb.innerHTML = `
@@ -133,10 +155,9 @@ function _initLightbox() {
   document.getElementById('lb-prev').addEventListener('click', e => { e.stopPropagation(); lbMove(-1); });
   document.getElementById('lb-next').addEventListener('click', e => { e.stopPropagation(); lbMove( 1); });
 
-  /* Keyboard */
   document.addEventListener('keydown', e => {
-    const lb = document.getElementById('lb-overlay');
-    if (!lb || !lb.classList.contains('open')) return;
+    const lbEl = document.getElementById('lb-overlay');
+    if (!lbEl || !lbEl.classList.contains('open')) return;
     if (e.key === 'ArrowLeft')  lbMove(-1);
     if (e.key === 'ArrowRight') lbMove( 1);
     if (e.key === 'Escape')     closeLightbox();
@@ -144,13 +165,11 @@ function _initLightbox() {
     if (e.key === '-')           lbZoom(1 / 1.2);
   });
 
-  /* Wheel zoom */
   document.getElementById('lb-stage').addEventListener('wheel', e => {
     e.preventDefault();
     lbZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
   }, { passive: false });
 
-  /* Touch swipe */
   let tsx = 0;
   const stage = document.getElementById('lb-stage');
   stage.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
@@ -178,7 +197,6 @@ function closeLightbox() {
   _lbScale = 1;
   const img = document.getElementById('lb-img');
   if (img) img.style.transform = '';
-  /* restore scroll only if reading overlay is also not open */
   if (!document.getElementById('reading-overlay')?.classList.contains('open')) {
     document.body.style.overflow = '';
   }
@@ -217,7 +235,7 @@ function _renderWork(aw, badgeLabel) {
   const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
   const desc   = l === 'tr' ? (aw.descTR   || aw.desc)   : aw.desc;
 
-  /* ── Hero image — uses isMain image, displayed properly ── */
+  /* ── Hero image ── */
   const mainSrc = _mainImg(aw);
   const heroHTML = mainSrc
     ? `<div class="rw-hero-wrap">
@@ -225,19 +243,27 @@ function _renderWork(aw, badgeLabel) {
        </div>`
     : `<div class="reading-hero-ph"><span>${l === 'tr' ? 'Görsel eklenecek' : 'Image coming soon'}</span></div>`;
 
-  /* ── All images as thumbnail strip ── */
+  /* ── Info bar ── */
+  const infoHTML = `
+    <div class="rw-info-bar">
+      <div class="reading-title">${_esc(title)}</div>
+      <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
+    </div>`;
+
+  /* ── Gallery grid (larger thumbnails, Behance-style) ── */
   let galleryHTML = '';
   const allImgs = aw.images || [];
-  if (allImgs.length > 0) {
+  if (allImgs.length > 1) {
     const thumbs = allImgs.map((img, i) =>
-      `<div class="rw-thumb" data-lb-idx="${i}" title="${_esc(img.caption || '')}">
+      `<div class="rw-gallery-item" data-lb-idx="${i}" title="${_esc(img.caption || '')}">
          <img src="${img.path}" alt="${_esc(img.caption || '')}">
-         ${img.isMain ? '<span class="rw-thumb-main">★</span>' : ''}
+         ${img.isMain ? '<span class="rw-gallery-main">★</span>' : ''}
+         <div class="rw-gallery-hover"></div>
        </div>`
     ).join('');
     galleryHTML = `
       <div class="reading-sec-label">${l === 'tr' ? 'Görseller' : 'Images'}</div>
-      <div class="rw-thumbstrip" id="rw-thumbstrip">${thumbs}</div>`;
+      <div class="rw-gallery-grid" id="rw-thumbstrip">${thumbs}</div>`;
   }
 
   /* ── Materials blocks ── */
@@ -254,11 +280,12 @@ function _renderWork(aw, badgeLabel) {
       } else if (mat.type === 'image-gallery' || mat.type === 'gif') {
         const imgs  = mat.images || [];
         const thumbs = imgs.map((img, j) =>
-          `<div class="rw-thumb rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
+          `<div class="rw-gallery-item rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
              <img src="${img.path}" alt="${_esc(img.caption || '')}">
+             <div class="rw-gallery-hover"></div>
            </div>`
         ).join('');
-        matsHTML += lbl + `<div class="rw-thumbstrip rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
+        matsHTML += lbl + `<div class="rw-gallery-grid rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
 
       } else if (mat.type === '3d') {
         const safeTitle = _esc(title).replace(/'/g, "\\'");
@@ -290,8 +317,7 @@ function _renderWork(aw, badgeLabel) {
 
   openReading(`
     ${heroHTML}
-    <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
+    ${infoHTML}
     <div class="reading-sec-label">${l === 'tr' ? 'Açıklama' : 'About this work'}</div>
     <div class="reading-desc">${descParas || `<p>${_esc(desc || '')}</p>`}</div>
     ${galleryHTML}
@@ -312,14 +338,15 @@ function _attachGalleryLightbox(aw) {
   if (heroImg) {
     heroImg.style.cursor = 'zoom-in';
     heroImg.addEventListener('click', () => {
-      openLightbox(allImgs, allImgs.findIndex(i => i.isMain) || 0);
+      const mainIdx = allImgs.findIndex(i => i.isMain);
+      openLightbox(allImgs, mainIdx >= 0 ? mainIdx : 0);
     });
   }
 
-  /* Thumbnail strip */
+  /* Gallery grid items */
   const strip = document.getElementById('rw-thumbstrip');
   if (strip) {
-    strip.querySelectorAll('.rw-thumb').forEach(th => {
+    strip.querySelectorAll('.rw-gallery-item').forEach(th => {
       th.addEventListener('click', () => {
         const idx = parseInt(th.dataset.lbIdx, 10);
         openLightbox(allImgs, idx);
@@ -399,9 +426,8 @@ function closeViewer() {
 /* ── ESC key ─────────────────────────────────────────────────── */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  /* Close in order: lightbox → 3D viewer → reading overlay */
-  const lb = document.getElementById('lb-overlay');
-  if (lb && lb.classList.contains('open')) { closeLightbox(); return; }
+  const lbEl = document.getElementById('lb-overlay');
+  if (lbEl && lbEl.classList.contains('open')) { closeLightbox(); return; }
   const v = document.getElementById('viewer-overlay');
   if (v && v.classList.contains('open')) { closeViewer(); return; }
   closeReading();
