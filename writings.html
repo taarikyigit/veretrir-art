@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Writings — tarık yiğit</title>
+<title>writings — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
 .writings-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
@@ -12,20 +12,20 @@
 /* ── book list ── */
 .book-item {
   display:flex; align-items:center; gap:20px;
-  padding:18px 0; border-bottom:1px solid #e8e4de;
+  padding:18px 0; border-bottom:1px solid var(--line);
   cursor:pointer; transition:padding-left .2s;
 }
 .book-item:hover { padding-left:8px; }
 .book-cover-thumb {
   width:48px; height:64px; flex-shrink:0;
-  background:#e0dcd6; overflow:hidden;
+  background:#f5f5f5; overflow:hidden;
   display:flex; align-items:center; justify-content:center;
 }
 .book-cover-thumb img { width:100%;height:100%;object-fit:cover; }
-.book-cover-ph { font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:#bbb;font-family:var(--mono); }
-.book-info-title { font-size:15px;font-style:italic;color:var(--ink);margin-bottom:3px;transition:color .2s; }
-.book-item:hover .book-info-title { color:var(--red); }
-.book-info-meta { font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#bbb;font-family:var(--mono); }
+.book-cover-ph { font-size:8px;letter-spacing:.1em;text-transform:lowercase;color:var(--dim);font-family:var(--mono); }
+.book-info-title { font-size:14px;color:var(--ink);margin-bottom:3px;transition:color .2s;text-transform:lowercase; }
+.book-item:hover .book-info-title { color:var(--mid); }
+.book-info-meta { font-size:10px;letter-spacing:.08em;text-transform:lowercase;color:var(--dim);font-family:var(--mono); }
  
 /* ════════════════════════════════════════
    BOOK READER OVERLAY
@@ -179,7 +179,7 @@
   <div class="header-left">
     <a href="index.html" class="header-name">tarık yiğit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
         <circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
@@ -187,42 +187,42 @@
     </a>
   </div>
   <nav>
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" class="active" data-en="Writings" data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"    data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"  data-tr="İletişim">Contact</a>
+    <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
+    <a href="writings.html" class="active" data-en="writings" data-tr="yazılar">writings</a>
+    <a href="about.html"    data-en="about"    data-tr="hakkında">about</a>
+    <a href="contact.html"  data-en="contact"  data-tr="iletişim">contact</a>
   </nav>
   <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
     <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
   </div>
 </header>
  
 <div class="page-wrap">
   <div class="sec">
-    <div class="sec-title" data-en="Writings" data-tr="Yazılar">Writings</div>
+    <div class="sec-title" data-en="writings" data-tr="yazılar">writings</div>
  
     <div class="tabs">
-      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="All"      data-tr="Tümü">All</button>
-      <button class="tab-btn"    id="tab-books"    onclick="swTab('books')"    data-en="Books"    data-tr="Kitaplar">Books</button>
-      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="Poems"    data-tr="Şiirler">Poems</button>
-      <button class="tab-btn"    id="tab-articles" onclick="swTab('articles')" data-en="Articles" data-tr="Makaleler">Articles</button>
+      <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="all"      data-tr="tümü">all</button>
+      <button class="tab-btn"    id="tab-books"    onclick="swTab('books')"    data-en="books"    data-tr="kitaplar">books</button>
+      <button class="tab-btn"    id="tab-poems"    onclick="swTab('poems')"    data-en="poems"    data-tr="şiirler">poems</button>
+      <button class="tab-btn"    id="tab-articles" onclick="swTab('articles')" data-en="articles" data-tr="makaleler">articles</button>
     </div>
  
     <!-- ALL -->
     <div class="tab-panel on" id="panel-all">
       <div style="margin-bottom:36px;">
-        <div class="col-title" data-en="Books" data-tr="Kitaplar">Books</div>
+        <div class="col-title" data-en="books" data-tr="kitaplar">books</div>
         <div id="all-books"></div>
       </div>
       <div class="writings-grid">
         <div>
-          <div class="col-title" data-en="Poems" data-tr="Şiirler">Poems</div>
+          <div class="col-title" data-en="poems" data-tr="şiirler">poems</div>
           <div id="all-poems"></div>
         </div>
         <div>
-          <div class="col-title" data-en="Articles" data-tr="Makaleler">Articles</div>
+          <div class="col-title" data-en="articles" data-tr="makaleler">articles</div>
           <div id="all-articles"></div>
         </div>
       </div>
@@ -249,7 +249,7 @@
 </div>
 <button id="back-fab" onclick="closeReading()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  <span data-en="Back" data-tr="Geri">Back</span>
+  <span data-en="back" data-tr="geri">Back</span>
 </button>
  
 <!-- ════════════════════════════════════════
@@ -264,7 +264,7 @@
     <div class="br-tools">
       <!-- page nav -->
       <span class="br-page-total" id="brPageOf" style="margin-right:2px;"></span>
-      <span class="br-page-total" data-en="Page" data-tr="Sayfa">Page</span>
+      <span class="br-page-total" data-en="page" data-tr="sayfa">Page</span>
       <input class="br-page-input" id="brPageInput" type="number" min="1" value="1"/>
       <span class="br-page-total" id="brPageTotal"></span>
  
@@ -281,9 +281,9 @@
       <!-- download (shown only if book.allowDownload) -->
       <a id="brDownload" class="br-download-btn" style="display:none;text-decoration:none;line-height:34px;"
          target="_blank" rel="noopener"
-         data-en="↓ Download" data-tr="↓ İndir">↓ Download</a>
+         data-en="↓ download" data-tr="↓ indir">↓ Download</a>
  
-      <button class="br-close-btn" onclick="closeBook()" data-en="Close" data-tr="Kapat">Close</button>
+      <button class="br-close-btn" onclick="closeBook()" data-en="close" data-tr="kapat">Close</button>
     </div>
   </div>
  
@@ -291,7 +291,7 @@
   <div class="br-stage" id="brStage">
     <div class="br-loading" id="brLoading">
       <div class="br-spinner"></div>
-      <span data-en="Loading…" data-tr="Yükleniyor…">Loading…</span>
+      <span data-en="loading…" data-tr="yükleniyor…">Loading…</span>
     </div>
  
     <!-- spread: left canvas + spine + right canvas + flip overlay canvas -->
