@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -7,131 +8,140 @@
 <link rel="stylesheet" href="style.css"/>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
-/* ── HOME LAYOUT ── */
+/* ── HOME LAYOUT — full height, left-center nav ── */
+html, body { height: 100%; margin: 0; }
+
 .home-wrap {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: 100vh;
+display: grid;
+grid-template-columns: 280px 1fr;
+height: 100vh;
+min-height: 100vh;
 }
 
-/* Left panel — name + nav */
+/* Left panel — vertically centered */
 .home-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 40px 60px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0 40px;
+height: 100%;
 }
 .home-name {
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-  margin-bottom: 24px;
-  line-height: 1.4;
+font-size: 15px;
+font-weight: 400;
+letter-spacing: 0.04em;
+text-transform: lowercase;
+margin-bottom: 24px;
+line-height: 1.4;
 }
 .home-nav { display: flex; flex-direction: column; gap: 6px; }
 .home-nav a {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: lowercase;
-  color: var(--mid);
-  text-decoration: none;
-  transition: color 0.2s;
+font-size: 11px;
+letter-spacing: 0.05em;
+text-transform: lowercase;
+color: var(–mid);
+text-decoration: none;
+transition: color 0.2s;
 }
-.home-nav a:hover { color: var(--ink); }
+.home-nav a:hover { color: var(–ink); }
 .home-lang {
-  margin-top: 20px;
-  display: flex; gap: 6px; align-items: center;
+margin-top: 20px;
+display: flex; gap: 6px; align-items: center;
 }
 .home-ig {
-  margin-top: 16px;
+margin-top: 16px;
 }
 .home-ig a {
-  display: inline-flex; align-items: center;
-  text-decoration: none; color: var(--dim);
-  transition: color 0.2s;
+display: inline-flex; align-items: center;
+text-decoration: none; color: var(–dim);
+transition: color 0.2s;
 }
-.home-ig a:hover { color: var(--ink); }
+.home-ig a:hover { color: var(–ink); }
 .home-ig svg { width: 14px; height: 14px; }
 
-/* Right panel — image-only slideshow */
+/* Right panel — image-only slideshow, full height */
 .home-right {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  background: #f5f5f5;
+position: relative;
+overflow: hidden;
+cursor: pointer;
+background: #f5f5f5;
+height: 100%;
 }
 
 .hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.8s ease;
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity 0.8s ease;
 }
 .hero-slide.active { opacity: 1; }
 
 .hero-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
 }
 
 .hero-slide-ph {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f0;
+width: 100%;
+height: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+background: #f0f0f0;
 }
 .hero-slide-ph span {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: lowercase;
-  color: var(--dim);
+font-size: 10px;
+letter-spacing: 0.15em;
+text-transform: lowercase;
+color: var(–dim);
 }
 
 /* Minimal dot nav */
 .hero-dots {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  z-index: 2;
-  display: flex;
-  gap: 6px;
+position: absolute;
+bottom: 24px;
+right: 24px;
+z-index: 2;
+display: flex;
+gap: 6px;
 }
 .hero-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.2);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.3s;
+width: 5px; height: 5px;
+border-radius: 50%;
+background: rgba(0,0,0,0.2);
+border: none;
+cursor: pointer;
+padding: 0;
+transition: background 0.3s;
 }
 .hero-dot.on { background: rgba(0,0,0,0.7); }
 
 /* ── Responsive ── */
 @media (max-width: 800px) {
-  .home-wrap {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
-  }
-  .home-right { min-height: 60vh; order: -1; }
-  .home-left {
-    padding: 32px 20px 40px;
-    justify-content: flex-start;
-  }
+.home-wrap {
+grid-template-columns: 1fr;
+grid-template-rows: 1fr auto;
+height: 100vh;
+}
+.home-right { min-height: 60vh; order: -1; }
+.home-left {
+padding: 32px 20px 40px;
+justify-content: flex-start;
+height: auto;
+}
 }
 </style>
+
 </head>
 <body>
 
 <div id="page-transition-mask" style="position:fixed;inset:0;background:#fff;z-index:9000;"></div>
 
 <div class="home-wrap">
-  <!-- LEFT: name + nav -->
+  <!-- LEFT: name + nav — vertically centered -->
   <div class="home-left">
     <div class="home-name">tarık yiğit</div>
     <div class="home-nav">
@@ -156,12 +166,14 @@
   </div>
 
   <!-- RIGHT: image-only slideshow -->
+
   <div class="home-right" id="heroArea">
     <div class="hero-dots" id="heroDots"></div>
   </div>
 </div>
 
-<!-- READING OVERLAY -->
+<!-- READING OVERLAY — same left-center nav style -->
+
 <div id="reading-overlay">
   <div class="reading-topbar">
     <span class="reading-badge" id="reading-badge"></span>
@@ -175,6 +187,7 @@
 </button>
 
 <!-- 3D viewer -->
+
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
@@ -185,9 +198,11 @@
 </div>
 
 <script src="data.js"></script>
+
 <script src="common.js"></script>
+
 <script>
-/* ═══ IMAGE-ONLY HERO SLIDESHOW ═══ */
+/* ═══ IMAGE-ONLY HERO SLIDESHOW — FIXED: stores artwork index correctly ═══ */
 (function() {
   const area = document.getElementById('heroArea');
   const dotsEl = document.getElementById('heroDots');
@@ -195,7 +210,7 @@
   const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
   const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
 
-  // Pick up to 5 random works
+  // Pick up to 5 random works, but STORE their actual index in SITE.artworks
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, Math.min(5, shuffled.length));
 
@@ -204,7 +219,7 @@
   const INTERVAL = 5000;
   let cur = 0, timer;
 
-  // Build slides — images only, no text
+  // Build slides — store the CORRECT artwork index for each slide
   selected.forEach((aw, i) => {
     const slide = document.createElement('div');
     slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
@@ -219,9 +234,16 @@
       slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
 
-    // Click anywhere to open artwork
-    const awIdx = SITE.artworks.findIndex(a => a.id === aw.id);
-    slide.addEventListener('click', () => { if (awIdx >= 0) openArtwork(awIdx); });
+    // CRITICAL FIX: Find the CORRECT index of THIS artwork in SITE.artworks
+    const correctIdx = SITE.artworks.findIndex(a => a.id === aw.id);
+    
+    // Store the index on the slide element
+    slide.dataset.artworkIdx = correctIdx;
+    
+    // Click opens the CORRECT artwork
+    slide.addEventListener('click', () => {
+      if (correctIdx >= 0) openArtwork(correctIdx);
+    });
 
     area.insertBefore(slide, dotsEl);
   });
@@ -256,5 +278,6 @@
   });
 })();
 </script>
+
 </body>
 </html>
