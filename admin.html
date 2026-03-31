@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -16,130 +17,131 @@ body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13
 button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 
 #login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0d0d0d;}
-.lbox{background:var(--surface);border:1px solid var(--border);padding:52px 44px;width:360px;}
-.ltitle{font-family:var(--font);font-style:italic;font-size:20px;color:#ccc;margin-bottom:4px;}
-.lsub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:36px;}
+.lbox{background:var(–surface);border:1px solid var(–border);padding:52px 44px;width:360px;}
+.ltitle{font-family:var(–font);font-style:italic;font-size:20px;color:#ccc;margin-bottom:4px;}
+.lsub{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(–faint);margin-bottom:36px;}
 .lf{margin-bottom:14px;}
-.ll{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
-.li{width:100%;background:#0d0d0d;border:1px solid var(--border);color:#ccc;padding:10px 12px;outline:none;transition:border-color .2s;}
-.li:focus{border-color:var(--dim);}
-.lbtn{width:100%;margin-top:8px;background:var(--accent);color:#fff;border:none;padding:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
+.ll{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(–faint);margin-bottom:5px;}
+.li{width:100%;background:#0d0d0d;border:1px solid var(–border);color:#ccc;padding:10px 12px;outline:none;transition:border-color .2s;}
+.li:focus{border-color:var(–dim);}
+.lbtn{width:100%;margin-top:8px;background:var(–accent);color:#fff;border:none;padding:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
 .lbtn:hover{background:#219a52;}
-.lerr{color:var(--red);font-size:11px;margin-top:10px;display:none;}
+.lerr{color:var(–red);font-size:11px;margin-top:10px;display:none;}
 
 #app{display:none;height:100vh;grid-template-columns:200px 1fr;grid-template-rows:48px 1fr;overflow:hidden;}
 #app.on{display:grid;}
 
-.topbar{grid-column:1/-1;background:#0d0d0d;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:10px;flex-shrink:0;}
-.topbar-left{font-family:var(--font);font-style:italic;font-size:13px;color:var(--dim);}
+.topbar{grid-column:1/-1;background:#0d0d0d;border-bottom:1px solid var(–border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:10px;flex-shrink:0;}
+.topbar-left{font-family:var(–font);font-style:italic;font-size:13px;color:var(–dim);}
 .topbar-right{display:flex;gap:8px;align-items:center;}
-.t-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;cursor:pointer;font-size:11px;letter-spacing:.06em;transition:border-color .2s,color .2s;text-decoration:none;display:inline-block;}
+.t-btn{background:none;border:1px solid var(–border);color:var(–dim);padding:5px 12px;cursor:pointer;font-size:11px;letter-spacing:.06em;transition:border-color .2s,color .2s;text-decoration:none;display:inline-block;}
 .t-btn:hover{border-color:#aaa;color:#aaa;}
-.t-btn.green{border-color:var(--accent);color:var(--accent);}
-.t-btn.green:hover{background:var(--accent);color:#fff;}
-.t-btn.danger:hover{border-color:var(--red);color:var(--red);}
+.t-btn.green{border-color:var(–accent);color:var(–accent);}
+.t-btn.green:hover{background:var(–accent);color:#fff;}
+.t-btn.danger:hover{border-color:var(–red);color:var(–red);}
 
-.sidebar{background:#0d0d0d;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;}
-.sb-sec{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);padding:18px 16px 5px;}
-.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(--dim);cursor:pointer;transition:background .12s,color .12s;border-left:2px solid transparent;font-size:12px;user-select:none;}
-.sb-item:hover{background:var(--surface);color:var(--text);}
-.sb-item.on{background:var(--surface);color:#fff;border-left-color:var(--accent);}
+.sidebar{background:#0d0d0d;border-right:1px solid var(–border);overflow-y:auto;display:flex;flex-direction:column;}
+.sb-sec{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(–faint);padding:18px 16px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;color:var(–dim);cursor:pointer;transition:background .12s,color .12s;border-left:2px solid transparent;font-size:12px;user-select:none;}
+.sb-item:hover{background:var(–surface);color:var(–text);}
+.sb-item.on{background:var(–surface);color:#fff;border-left-color:var(–accent);}
 .sb-icon{width:13px;height:13px;flex-shrink:0;stroke:currentColor;}
 
-.main{overflow-y:auto;background:var(--bg);}
+.main{overflow-y:auto;background:var(–bg);}
 .panel{display:none;padding:32px 36px 80px;}
 .panel.on{display:block;}
-.ptitle{font-family:var(--font);font-style:italic;font-size:22px;color:var(--text);margin-bottom:4px;}
-.pdesc{font-size:12px;color:var(--faint);margin-bottom:28px;}
+.ptitle{font-family:var(–font);font-style:italic;font-size:22px;color:var(–text);margin-bottom:4px;}
+.pdesc{font-size:12px;color:var(–faint);margin-bottom:28px;}
 
 .item-list{margin-top:4px;}
-.item-row{background:var(--surface);border:1px solid var(--border);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:default;}
-.item-thumb{width:52px;height:52px;object-fit:cover;background:var(--raised);flex-shrink:0;border:1px solid var(--border);}
-.item-thumb-ph{width:52px;height:52px;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:18px;flex-shrink:0;}
+.item-row{background:var(–surface);border:1px solid var(–border);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:default;}
+.item-thumb{width:52px;height:52px;object-fit:cover;background:var(–raised);flex-shrink:0;border:1px solid var(–border);}
+.item-thumb-ph{width:52px;height:52px;background:var(–raised);border:1px solid var(–border);display:flex;align-items:center;justify-content:center;color:var(–faint);font-size:18px;flex-shrink:0;}
 .item-info{}
-.item-title{font-size:14px;font-family:var(--font);font-style:italic;color:var(--text);margin-bottom:2px;}
-.item-meta{font-size:10px;color:var(--faint);letter-spacing:.1em;}
+.item-title{font-size:14px;font-family:var(–font);font-style:italic;color:var(–text);margin-bottom:2px;}
+.item-meta{font-size:10px;color:var(–faint);letter-spacing:.1em;}
 .item-acts{display:flex;gap:6px;flex-shrink:0;}
-.btn-e,.btn-d{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
+.btn-e,.btn-d{border:1px solid var(–border);background:none;color:var(–dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
 .btn-e:hover{border-color:#aaa;color:#aaa;}
-.btn-d:hover{border-color:var(--red);color:var(--red);}
-.add-btn{width:100%;background:none;border:1px dashed var(--border);color:var(--faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
-.add-btn:hover{border-color:var(--dim);color:var(--dim);}
+.btn-d:hover{border-color:var(–red);color:var(–red);}
+.add-btn{width:100%;background:none;border:1px dashed var(–border);color:var(–faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
+.add-btn:hover{border-color:var(–dim);color:var(–dim);}
 
-.form-drawer{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);padding:28px;margin-bottom:16px;}
-.form-drawer-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:24px;}
+.form-drawer{background:var(–surface);border:1px solid var(–border);border-top:2px solid var(–accent);padding:28px;margin-bottom:16px;}
+.form-drawer-title{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(–accent);margin-bottom:24px;}
 
 .fg{margin-bottom:14px;}
-.fl{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:5px;}
-.fi{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;transition:border-color .2s;}
-.fi:focus{border-color:var(--dim);}
-.ft{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;resize:vertical;min-height:90px;line-height:1.7;transition:border-color .2s;}
-.ft:focus{border-color:var(--dim);}
+.fl{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(–faint);margin-bottom:5px;}
+.fi{width:100%;background:var(–bg);border:1px solid var(–border);color:var(–text);padding:8px 10px;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(–dim);}
+.ft{width:100%;background:var(–bg);border:1px solid var(–border);color:var(–text);padding:8px 10px;outline:none;resize:vertical;min-height:90px;line-height:1.7;transition:border-color .2s;}
+.ft:focus{border-color:var(–dim);}
 .ft.poem{min-height:180px;font-style:italic;line-height:2;}
-.fsel{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 10px;outline:none;cursor:pointer;}
+.fsel{width:100%;background:var(–bg);border:1px solid var(–border);color:var(–text);padding:8px 10px;outline:none;cursor:pointer;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.fnote{font-size:10px;color:var(--faint);margin-top:4px;font-style:italic;}
+.fnote{font-size:10px;color:var(–faint);margin-top:4px;font-style:italic;}
 .f2col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .f3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 
-.img-gallery-wrap{border:1px solid var(--border);padding:16px;background:var(--raised);}
-.img-gallery-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+.img-gallery-wrap{border:1px solid var(–border);padding:16px;background:var(–raised);}
+.img-gallery-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(–faint);margin-bottom:12px;}
 .img-stack{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.img-slot{position:relative;width:88px;height:88px;border:1px solid var(--border);overflow:hidden;flex-shrink:0;cursor:pointer;}
+.img-slot{position:relative;width:88px;height:88px;border:1px solid var(–border);overflow:hidden;flex-shrink:0;cursor:pointer;}
 .img-slot img{width:100%;height:100%;object-fit:cover;display:block;}
-.img-slot.is-main{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.img-slot.is-main{border-color:var(–accent);box-shadow:0 0 0 1px var(–accent);}
 .img-slot-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;transition:opacity .15s;}
 .img-slot:hover .img-slot-overlay{opacity:1;}
 .img-slot-btn{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:9px;letter-spacing:.08em;padding:3px 7px;cursor:pointer;width:60px;text-align:center;transition:border-color .15s;}
 .img-slot-btn:hover{border-color:#fff;}
-.img-slot-main-badge{position:absolute;top:3px;left:3px;background:var(--accent);color:#fff;font-size:7px;letter-spacing:.1em;padding:1px 5px;pointer-events:none;}
+.img-slot-main-badge{position:absolute;top:3px;left:3px;background:var(–accent);color:#fff;font-size:7px;letter-spacing:.1em;padding:1px 5px;pointer-events:none;}
 .img-path-input-wrap{display:flex;gap:6px;margin-bottom:6px;}
 .img-path-input-wrap input{flex:1;}
-.img-add-path-btn{background:var(--accent);border:none;color:#fff;padding:0 14px;cursor:pointer;font-size:11px;transition:background .2s;flex-shrink:0;}
+.img-add-path-btn{background:var(–accent);border:none;color:#fff;padding:0 14px;cursor:pointer;font-size:11px;transition:background .2s;flex-shrink:0;}
 .img-add-path-btn:hover{background:#219a52;}
-.img-upload-hint{font-size:10px;color:var(--faint);font-style:italic;}
+.img-upload-hint{font-size:10px;color:var(–faint);font-style:italic;}
 
 .mat-list{margin-top:8px;}
-.mat-block{background:var(--raised);border:1px solid var(--border);padding:16px;margin-bottom:10px;position:relative;}
+.mat-block{background:var(–raised);border:1px solid var(–border);padding:16px;margin-bottom:10px;position:relative;}
 .mat-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-.mat-block-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);}
+.mat-block-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(–accent);}
 .mat-block-acts{display:flex;gap:6px;}
-.mat-del-btn{background:none;border:1px solid var(--border);color:var(--faint);padding:3px 8px;cursor:pointer;font-size:11px;transition:all .15s;}
-.mat-del-btn:hover{border-color:var(--red);color:var(--red);}
+.mat-del-btn{background:none;border:1px solid var(–border);color:var(–faint);padding:3px 8px;cursor:pointer;font-size:11px;transition:all .15s;}
+.mat-del-btn:hover{border-color:var(–red);color:var(–red);}
 .mat-add-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.mat-type-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:6px 12px;cursor:pointer;font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
-.mat-type-btn:hover{border-color:var(--accent);color:var(--accent);}
+.mat-type-btn{background:none;border:1px solid var(–border);color:var(–dim);padding:6px 12px;cursor:pointer;font-size:10px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
+.mat-type-btn:hover{border-color:var(–accent);color:var(–accent);}
 
 .form-actions{display:flex;gap:8px;margin-top:20px;}
-.btn-save{background:var(--accent);color:#fff;border:none;padding:10px 24px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
+.btn-save{background:var(–accent);color:#fff;border:none;padding:10px 24px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:background .2s;}
 .btn-save:hover{background:#219a52;}
-.btn-cancel{background:none;border:1px solid var(--border);color:var(--dim);padding:10px 18px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
-.btn-cancel:hover{border-color:var(--dim);color:var(--text);}
+.btn-cancel{background:none;border:1px solid var(–border);color:var(–dim);padding:10px 18px;cursor:pointer;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s;}
+.btn-cancel:hover{border-color:var(–dim);color:var(–text);}
 
-.export-pre{background:#0a0a0a;border:1px solid var(--border);color:var(--faint);font-size:11px;padding:16px;max-height:260px;overflow-y:auto;white-space:pre;margin-top:10px;line-height:1.6;}
+.export-pre{background:#0a0a0a;border:1px solid var(–border);color:var(–faint);font-size:11px;padding:16px;max-height:260px;overflow-y:auto;white-space:pre;margin-top:10px;line-height:1.6;}
 
-.sbadge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid;font-family:var(--mono);}
-.sbadge-on{color:var(--accent);border-color:var(--accent);}
-.sbadge-pl{color:var(--faint);border-color:var(--border);}
-.featured-badge{background:var(--accent);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
-.type-badge-2d{background:var(--blue);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
-.type-badge-3d{background:var(--orange);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.sbadge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid;font-family:var(–mono);}
+.sbadge-on{color:var(–accent);border-color:var(–accent);}
+.sbadge-pl{color:var(–faint);border-color:var(–border);}
+.featured-badge{background:var(–accent);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.type-badge-2d{background:var(–blue);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
+.type-badge-3d{background:var(–orange);color:#fff;font-size:8px;padding:2px 6px;border-radius:2px;margin-left:8px;}
 
 #toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:11px 20px;font-size:12px;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
-#toast.ok{background:var(--accent);color:#fff;}
-#toast.err{background:var(--red);color:#fff;}
+#toast.ok{background:var(–accent);color:#fff;}
+#toast.err{background:var(–red);color:#fff;}
 
-.sdiv{height:1px;background:var(--border);margin:24px 0;}
+.sdiv{height:1px;background:var(–border);margin:24px 0;}
 
 @media(max-width:700px){
-  #app{grid-template-columns:1fr;grid-template-rows:48px auto 1fr;}
-  .sidebar{flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(--border);height:auto;}
-  .sb-sec{display:none;}.sb-item{padding:8px 10px;font-size:11px;border-left:none;border-bottom:2px solid transparent;}
-  .sb-item.on{border-bottom-color:var(--accent);border-left:none;}
-  .panel{padding:20px 16px 60px;}.frow,.f2col,.f3col{grid-template-columns:1fr;}
+#app{grid-template-columns:1fr;grid-template-rows:48px auto 1fr;}
+.sidebar{flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid var(–border);height:auto;}
+.sb-sec{display:none;}.sb-item{padding:8px 10px;font-size:11px;border-left:none;border-bottom:2px solid transparent;}
+.sb-item.on{border-bottom-color:var(–accent);border-left:none;}
+.panel{padding:20px 16px 60px;}.frow,.f2col,.f3col{grid-template-columns:1fr;}
 }
 </style>
+
 </head>
 <body>
 
@@ -213,67 +215,71 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <div class="item-list" id="list-artworks"></div>
     </div>
 
-    <div class="panel" id="panel-projects">
-      <div class="ptitle">Projects</div>
-      <div class="pdesc">Ongoing and planned projects.</div>
-      <button class="add-btn" onclick="openForm('projects',-1)">+ Add New Project</button>
-      <div id="form-projects"></div>
-      <div class="item-list" id="list-projects"></div>
-    </div>
+```
+<div class="panel" id="panel-projects">
+  <div class="ptitle">Projects</div>
+  <div class="pdesc">Ongoing and planned projects.</div>
+  <button class="add-btn" onclick="openForm('projects',-1)">+ Add New Project</button>
+  <div id="form-projects"></div>
+  <div class="item-list" id="list-projects"></div>
+</div>
 
-    <div class="panel" id="panel-poems">
-      <div class="ptitle">Poems</div>
-      <div class="pdesc">Line breaks are preserved exactly as typed.</div>
-      <button class="add-btn" onclick="openForm('poems',-1)">+ Add New Poem</button>
-      <div id="form-poems"></div>
-      <div class="item-list" id="list-poems"></div>
-    </div>
+<div class="panel" id="panel-poems">
+  <div class="ptitle">Poems</div>
+  <div class="pdesc">Line breaks are preserved exactly as typed.</div>
+  <button class="add-btn" onclick="openForm('poems',-1)">+ Add New Poem</button>
+  <div id="form-poems"></div>
+  <div class="item-list" id="list-poems"></div>
+</div>
 
-    <div class="panel" id="panel-articles">
-      <div class="ptitle">Articles</div>
-      <div class="pdesc">Separate paragraphs with a blank line.</div>
-      <button class="add-btn" onclick="openForm('articles',-1)">+ Add New Article</button>
-      <div id="form-articles"></div>
-      <div class="item-list" id="list-articles"></div>
-    </div>
+<div class="panel" id="panel-articles">
+  <div class="ptitle">Articles</div>
+  <div class="pdesc">Separate paragraphs with a blank line.</div>
+  <button class="add-btn" onclick="openForm('articles',-1)">+ Add New Article</button>
+  <div id="form-articles"></div>
+  <div class="item-list" id="list-articles"></div>
+</div>
 
-    <div class="panel" id="panel-books">
-      <div class="ptitle">Books</div>
-      <div class="pdesc">PDF books with page-flip reader.</div>
-      <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
-      <div id="form-books"></div>
-      <div class="item-list" id="list-books"></div>
-    </div>
+<div class="panel" id="panel-books">
+  <div class="ptitle">Books</div>
+  <div class="pdesc">PDF books with page-flip reader.</div>
+  <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
+  <div id="form-books"></div>
+  <div class="item-list" id="list-books"></div>
+</div>
 
-    <div class="panel" id="panel-texts">
-      <div class="ptitle">Site Texts</div>
-      <div class="pdesc">Edit static text content.</div>
-      <div class="sdiv"></div>
-      <div class="fg"><label class="fl">🇬🇧 About Page (English)</label><textarea class="ft" id="txt-aboutEN" style="min-height:120px;"></textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Hakkında Sayfası (Türkçe)</label><textarea class="ft" id="txt-aboutTR" style="min-height:120px;"></textarea></div>
-      <div class="sdiv"></div>
-      <div class="frow">
-        <div class="fg"><label class="fl">🇬🇧 Contact Note</label><input class="fi" id="txt-contactNote"/></div>
-        <div class="fg"><label class="fl">🇹🇷 İletişim Notu</label><input class="fi" id="txt-contactNoteTR"/></div>
-      </div>
-      <button class="btn-save" onclick="saveTexts()">Save Texts</button>
-    </div>
+<div class="panel" id="panel-texts">
+  <div class="ptitle">Site Texts</div>
+  <div class="pdesc">Edit static text content.</div>
+  <div class="sdiv"></div>
+  <div class="fg"><label class="fl">🇬🇧 About Page (English)</label><textarea class="ft" id="txt-aboutEN" style="min-height:120px;"></textarea></div>
+  <div class="fg"><label class="fl">🇹🇷 Hakkında Sayfası (Türkçe)</label><textarea class="ft" id="txt-aboutTR" style="min-height:120px;"></textarea></div>
+  <div class="sdiv"></div>
+  <div class="frow">
+    <div class="fg"><label class="fl">🇬🇧 Contact Note</label><input class="fi" id="txt-contactNote"/></div>
+    <div class="fg"><label class="fl">🇹🇷 İletişim Notu</label><input class="fi" id="txt-contactNoteTR"/></div>
+  </div>
+  <button class="btn-save" onclick="saveTexts()">Save Texts</button>
+</div>
 
-    <div class="panel" id="panel-export">
-      <div class="ptitle">Export data.js</div>
-      <div class="pdesc">Download data.js and upload to your server.</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-        <button class="btn-save" onclick="exportData()">⬇ Download data.js</button>
-        <button class="btn-cancel" onclick="clearStorage()" style="border-color:var(--red);color:var(--red);">⚠ Reset to data.js</button>
-      </div>
-      <div class="export-pre" id="export-pre"></div>
-    </div>
+<div class="panel" id="panel-export">
+  <div class="ptitle">Export data.js</div>
+  <div class="pdesc">Download data.js and upload to your server.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <button class="btn-save" onclick="exportData()">⬇ Download data.js</button>
+    <button class="btn-cancel" onclick="clearStorage()" style="border-color:var(--red);color:var(--red);">⚠ Reset to data.js</button>
+  </div>
+  <div class="export-pre" id="export-pre"></div>
+</div>
+```
+
   </main>
 </div>
 
 <div id="toast"></div>
 
 <script src="data.js"></script>
+
 <script>
 const AUTH = { user:'tarik', pass:'mandalinac31' };
 function doLogin() {
@@ -506,381 +512,331 @@ function buildFormHTML() {
     h += `<div class="sdiv"></div>
     <div class="f2col">
       <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
-    </div>`;
 
-    h += `<div class="sdiv"></div>
-    <div class="fg"><label class="fl">Extra Material Blocks (optional)</label></div>
-    <div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
-    <div class="mat-add-bar">
-      <button class="mat-type-btn" onclick="addMat('text')">+ Text Block</button>
-      <button class="mat-type-btn" onclick="addMat('image-gallery')">+ Image Gallery</button>
-      <button class="mat-type-btn" onclick="addMat('gif')">+ GIF</button>
-      <button class="mat-type-btn" onclick="addMat('3d')">+ 3D Model</button>
-      <button class="mat-type-btn" onclick="addMat('pdf')">+ PDF</button>
-      <button class="mat-type-btn" onclick="addMat('video')">+ Video</button>
-    </div>`;
-  }
+```
+  <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
+</div>`;
 
-  else if (currentFormType === 'poems') {
-    h += `<div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(currentFormData.bodyTR || '')}</textarea></div>
-    </div>`;
-  }
+h += `<div class="sdiv"></div>
+<div class="fg"><label class="fl">Extra Material Blocks (optional)</label></div>
+<div class="mat-list" id="ff-mat-list">${buildMatBlocks()}</div>
+<div class="mat-add-bar">
+  <button class="mat-type-btn" onclick="addMat('text')">+ Text Block</button>
+  <button class="mat-type-btn" onclick="addMat('image-gallery')">+ Image Gallery</button>
+  <button class="mat-type-btn" onclick="addMat('gif')">+ GIF</button>
+  <button class="mat-type-btn" onclick="addMat('3d')">+ 3D Model</button>
+  <button class="mat-type-btn" onclick="addMat('pdf')">+ PDF</button>
+  <button class="mat-type-btn" onclick="addMat('video')">+ Video</button>
+</div>`;
+```
 
-  else if (currentFormType === 'articles') {
-    h += `<div class="frow">
-      <div class="fg"><label class="fl">🇬🇧 Type</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div>
-      <div class="fg"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(currentFormData.typeTR || '')}"></div>
-    </div>
-    <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Metin</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
-    </div>`;
-  }
+}
 
-  else if (currentFormType === 'books') {
-    h += `<div class="frow">
-      <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}"></div>
-      <div class="fg"><label class="fl">Cover Image</label><input class="fi" id="ff-cover" value="${ea(currentFormData.cover || '')}"></div>
-    </div>
-    <div class="fg"><label class="fl">Allow Download?</label>
-      <select class="fsel" id="ff-allowDownload">
-        <option value="true" ${currentFormData.allowDownload ? 'selected' : ''}>Yes</option>
-        <option value="false" ${!currentFormData.allowDownload ? 'selected' : ''}>No</option>
-      </select>
-    </div>
-    <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div>
-    </div>`;
-  }
+else if (currentFormType === ‘poems’) {
+h += `<div class="f2col"> <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea></div> <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(currentFormData.bodyTR || '')}</textarea></div> </div>`;
+}
 
-  h += `<div class="form-actions">
-    <button class="btn-save" onclick="saveForm()">Save</button>
-    <button class="btn-cancel" onclick="closeForm()">Cancel</button>
+else if (currentFormType === ‘articles’) {
+h += `<div class="frow"> <div class="fg"><label class="fl">🇬🇧 Type</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div> <div class="fg"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(currentFormData.typeTR || '')}"></div> </div> <div class="f2col"> <div class="fg"><label class="fl">🇬🇧 Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea></div> <div class="fg"><label class="fl">🇹🇷 Metin</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div> </div>`;
+}
+
+else if (currentFormType === ‘books’) {
+h += `<div class="frow"> <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}"></div> <div class="fg"><label class="fl">Cover Image</label><input class="fi" id="ff-cover" value="${ea(currentFormData.cover || '')}"></div> </div> <div class="fg"><label class="fl">Allow Download?</label> <select class="fsel" id="ff-allowDownload"> <option value="true" ${currentFormData.allowDownload ? 'selected' : ''}>Yes</option> <option value="false" ${!currentFormData.allowDownload ? 'selected' : ''}>No</option> </select> </div> <div class="f2col"> <div class="fg"><label class="fl">🇬🇧 Description</label><textarea class="ft" id="ff-desc">${eh(currentFormData.desc || '')}</textarea></div> <div class="fg"><label class="fl">🇹🇷 Açıklama</label><textarea class="ft" id="ff-descTR">${eh(currentFormData.descTR || '')}</textarea></div> </div>`;
+}
+
+h += `<div class="form-actions">
+<button class="btn-save" onclick="saveForm()">Save</button>
+<button class="btn-cancel" onclick="closeForm()">Cancel</button>
+
   </div></div>`;
   return h;
 }
 
 function buildImgStack() {
-  const imgs = currentFormData.images || [];
-  let h = '';
-  imgs.forEach((img,i)=>{
-    h += `<div class="img-slot ${img.isMain ? 'is-main' : ''}" onclick="viewFullImage('${esc(img.path)}')">
-      <img src="${esc(img.path)}" alt="">
-      ${img.isMain ? '<span class="img-slot-main-badge">MAIN</span>' : ''}
-      <div class="img-slot-overlay">
-        ${!img.isMain ? `<button class="img-slot-btn" onclick="event.stopPropagation();setMainImg(${i})">Set main</button>` : ''}
-        <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();removeImg(${i})">Remove</button>
-      </div>
-    </div>`;
-  });
-  return h;
+const imgs = currentFormData.images || [];
+let h = ‘’;
+imgs.forEach((img,i)=>{
+h += `<div class="img-slot ${img.isMain ? 'is-main' : ''}" onclick="viewFullImage('${esc(img.path)}')"> <img src="${esc(img.path)}" alt=""> ${img.isMain ? '<span class="img-slot-main-badge">MAIN</span>' : ''} <div class="img-slot-overlay"> ${!img.isMain ? `<button class="img-slot-btn" onclick="event.stopPropagation();setMainImg(${i})">Set main</button>` : ''} <button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();removeImg(${i})">Remove</button> </div> </div>`;
+});
+return h;
 }
 
 function viewFullImage(src) {
-  const win = window.open();
-  win.document.write(`
-    <html><head><title>Image View</title>
-    <style>body{margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;}img{max-width:95vw;max-height:95vh;object-fit:contain;}</style>
-    </head><body><img src="${src}" onclick="window.close()"></body></html>
-  `);
+const win = window.open();
+win.document.write(`<html><head><title>Image View</title> <style>body{margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;}img{max-width:95vw;max-height:95vh;object-fit:contain;}</style> </head><body><img src="${src}" onclick="window.close()"></body></html>`);
 }
 
 function rebuildImgStack() {
-  const el = document.getElementById('ff-img-stack');
-  if (el) el.innerHTML = buildImgStack();
+const el = document.getElementById(‘ff-img-stack’);
+if (el) el.innerHTML = buildImgStack();
 }
 
 function addImgByPath() {
-  const inp = document.getElementById('ff-img-path');
-  const path = (inp ? inp.value.trim() : '');
-  if(!path){ toast('Enter an image path first','err'); return; }
-  if(!currentFormData.images) currentFormData.images = [];
-  const isFirst = currentFormData.images.length === 0;
-  currentFormData.images.push({path, isMain: isFirst, caption: ''});
-  if(inp) inp.value = '';
-  rebuildImgStack();
-  toast('Image added','ok');
+const inp = document.getElementById(‘ff-img-path’);
+const path = (inp ? inp.value.trim() : ‘’);
+if(!path){ toast(‘Enter an image path first’,‘err’); return; }
+if(!currentFormData.images) currentFormData.images = [];
+const isFirst = currentFormData.images.length === 0;
+currentFormData.images.push({path, isMain: isFirst, caption: ‘’});
+if(inp) inp.value = ‘’;
+rebuildImgStack();
+toast(‘Image added’,‘ok’);
 }
 
 function setMainImg(i) {
-  if (!currentFormData.images) return;
-  currentFormData.images.forEach((img,j)=>img.isMain=(j===i));
-  rebuildImgStack();
+if (!currentFormData.images) return;
+currentFormData.images.forEach((img,j)=>img.isMain=(j===i));
+rebuildImgStack();
 }
 
 function removeImg(i) {
-  if (!currentFormData.images) return;
-  currentFormData.images.splice(i,1);
-  if(currentFormData.images.length && !currentFormData.images.some(img=>img.isMain)) {
-    currentFormData.images[0].isMain = true;
-  }
-  rebuildImgStack();
+if (!currentFormData.images) return;
+currentFormData.images.splice(i,1);
+if(currentFormData.images.length && !currentFormData.images.some(img=>img.isMain)) {
+currentFormData.images[0].isMain = true;
+}
+rebuildImgStack();
 }
 
 function buildMatBlocks() {
-  const mats = currentFormData.materials || [];
-  if(!mats.length) return '<p style="color:var(--faint);font-size:11px;margin-bottom:8px;">No material blocks yet. Add one below.</p>';
-  return mats.map((m,i)=>buildMatBlock(m,i)).join('');
+const mats = currentFormData.materials || [];
+if(!mats.length) return ‘<p style="color:var(--faint);font-size:11px;margin-bottom:8px;">No material blocks yet. Add one below.</p>’;
+return mats.map((m,i)=>buildMatBlock(m,i)).join(’’);
 }
 
 function buildMatBlock(m,i) {
-  let inner = '';
-  const typeLabel = { text: 'Text', 'image-gallery': 'Image Gallery', gif: 'GIF', '3d': '3D Model', pdf: 'PDF', video: 'Video' }[m.type] || m.type;
-  
-  if(m.type === 'text') {
-    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
-    <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" id="mat-content-${i}" onchange="updateMatField(${i},'content',this.value)">${eh(m.content || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" id="mat-contentTR-${i}" onchange="updateMatField(${i},'contentTR',this.value)">${eh(m.contentTR || '')}</textarea></div>
-    </div>`;
-  } 
-  else if (m.type === 'image-gallery' || m.type === 'gif') {
-    const imgs = (m.images || []);
-    const imgSlots = imgs.map((img,j)=>`<div class="img-slot" onclick="viewFullImage('${esc(img.path)}')">
-      <img src="${esc(img.path)}" alt="">
-      <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();matRemoveImg(${i},${j})">Remove</button></div>
-    </div>`).join('');
-    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
-    <div class="img-gallery-wrap">
-      <div class="img-stack" id="mat-img-stack-${i}">${imgSlots}</div>
-      <div class="img-path-input-wrap">
-        <input class="fi" id="mat-img-path-${i}" placeholder="images/artwork/file.jpg">
-        <button class="img-add-path-btn" onclick="matAddImg(${i})">Add Image</button>
-      </div>
-      ${m.type === 'gif' ? '<div class="fnote">GIFs will auto-loop when displayed.</div>' : ''}
-    </div>`;
-  } 
-  else if (m.type === '3d') {
-    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">3D Model Path (.glb / .gltf)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="images/3d/model.glb"></div>`;
-  } 
-  else if (m.type === 'pdf') {
-    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="files/document.pdf"></div>`;
-  } 
-  else if (m.type === 'video') {
-    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
-    <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
-  }
-  
-  return `<div class="mat-block">
-    <div class="mat-block-header">
-      <span class="mat-block-label">${typeLabel}: ${esc(m.label || '')}</span>
-      <div class="mat-block-acts">
-        ${i>0 ? `<button class="mat-del-btn" onclick="moveMat(${i},-1)">↑</button>` : ''}
-        ${i<(currentFormData.materials.length-1) ? `<button class="mat-del-btn" onclick="moveMat(${i},1)">↓</button>` : ''}
-        <button class="mat-del-btn" onclick="delMat(${i})">Remove</button>
-      </div>
-    </div>
-    ${inner}
+let inner = ‘’;
+const typeLabel = { text: ‘Text’, ‘image-gallery’: ‘Image Gallery’, gif: ‘GIF’, ‘3d’: ‘3D Model’, pdf: ‘PDF’, video: ‘Video’ }[m.type] || m.type;
+
+if(m.type === ‘text’) {
+inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div> <div class="f2col"> <div class="fg"><label class="fl">🇬🇧 Content</label><textarea class="ft" id="mat-content-${i}" onchange="updateMatField(${i},'content',this.value)">${eh(m.content || '')}</textarea></div> <div class="fg"><label class="fl">🇹🇷 İçerik</label><textarea class="ft" id="mat-contentTR-${i}" onchange="updateMatField(${i},'contentTR',this.value)">${eh(m.contentTR || '')}</textarea></div> </div>`;
+}
+else if (m.type === ‘image-gallery’ || m.type === ‘gif’) {
+const imgs = (m.images || []);
+const imgSlots = imgs.map((img,j)=>`<div class="img-slot" onclick="viewFullImage('${esc(img.path)}')"> <img src="${esc(img.path)}" alt=""> <div class="img-slot-overlay"><button class="img-slot-btn" style="border-color:rgba(231,76,60,.6);color:#e74c3c;" onclick="event.stopPropagation();matRemoveImg(${i},${j})">Remove</button></div> </div>`).join(’’);
+inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div> <div class="img-gallery-wrap"> <div class="img-stack" id="mat-img-stack-${i}">${imgSlots}</div> <div class="img-path-input-wrap"> <input class="fi" id="mat-img-path-${i}" placeholder="images/artwork/file.jpg"> <button class="img-add-path-btn" onclick="matAddImg(${i})">Add Image</button> </div> ${m.type === 'gif' ? '<div class="fnote">GIFs will auto-loop when displayed.</div>' : ''} </div>`;
+}
+else if (m.type === ‘3d’) {
+inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div> <div class="fg"><label class="fl">3D Model Path (.glb / .gltf)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="images/3d/model.glb"></div>`;
+}
+else if (m.type === ‘pdf’) {
+inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div> <div class="fg"><label class="fl">PDF Path</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="files/document.pdf"></div>`;
+}
+else if (m.type === ‘video’) {
+inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div> <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
+}
+
+return `<div class="mat-block"> <div class="mat-block-header"> <span class="mat-block-label">${typeLabel}: ${esc(m.label || '')}</span> <div class="mat-block-acts"> ${i>0 ? `<button class="mat-del-btn" onclick="moveMat(${i},-1)">↑</button>`: ''} ${i<(currentFormData.materials.length-1) ?`<button class="mat-del-btn" onclick="moveMat(${i},1)">↓</button>` : ‘’}
+<button class="mat-del-btn" onclick="delMat(${i})">Remove</button>
+</div>
+</div>
+${inner}
+
   </div>`;
 }
 
 function updateMatField(i, key, val) {
-  if (currentFormData.materials && currentFormData.materials[i]) {
-    currentFormData.materials[i][key] = val;
-  }
+if (currentFormData.materials && currentFormData.materials[i]) {
+currentFormData.materials[i][key] = val;
+}
 }
 
 function rebuildMatList() {
-  const el = document.getElementById('ff-mat-list');
-  if (el) el.innerHTML = buildMatBlocks();
+const el = document.getElementById(‘ff-mat-list’);
+if (el) el.innerHTML = buildMatBlocks();
 }
 
 function addMat(type) {
-  if(!currentFormData.materials) currentFormData.materials = [];
-  currentFormData.materials.push({
-    id: 'm-' + Date.now(),
-    type: type,
-    label: capitalize(type),
-    content: '',
-    contentTR: '',
-    images: [],
-    path: ''
-  });
-  rebuildMatList();
+if(!currentFormData.materials) currentFormData.materials = [];
+currentFormData.materials.push({
+id: ‘m-’ + Date.now(),
+type: type,
+label: capitalize(type),
+content: ‘’,
+contentTR: ‘’,
+images: [],
+path: ‘’
+});
+rebuildMatList();
 }
 
 function delMat(i) {
-  if (currentFormData.materials) {
-    currentFormData.materials.splice(i,1);
-    rebuildMatList();
-  }
+if (currentFormData.materials) {
+currentFormData.materials.splice(i,1);
+rebuildMatList();
+}
 }
 
 function moveMat(i, dir) {
-  if (!currentFormData.materials) return;
-  const j = i + dir;
-  if(j<0 || j>=currentFormData.materials.length) return;
-  [currentFormData.materials[i], currentFormData.materials[j]] = [currentFormData.materials[j], currentFormData.materials[i]];
-  rebuildMatList();
+if (!currentFormData.materials) return;
+const j = i + dir;
+if(j<0 || j>=currentFormData.materials.length) return;
+[currentFormData.materials[i], currentFormData.materials[j]] = [currentFormData.materials[j], currentFormData.materials[i]];
+rebuildMatList();
 }
 
 function matAddImg(i) {
-  const inp = document.getElementById('mat-img-path-'+i);
-  const path = inp ? inp.value.trim() : '';
-  if(!path){ toast('Enter path first','err'); return; }
-  if(!currentFormData.materials[i].images) currentFormData.materials[i].images = [];
-  currentFormData.materials[i].images.push({path, caption: ''});
-  if(inp) inp.value = '';
-  rebuildMatList();
-  toast('Image added','ok');
+const inp = document.getElementById(‘mat-img-path-’+i);
+const path = inp ? inp.value.trim() : ‘’;
+if(!path){ toast(‘Enter path first’,‘err’); return; }
+if(!currentFormData.materials[i].images) currentFormData.materials[i].images = [];
+currentFormData.materials[i].images.push({path, caption: ‘’});
+if(inp) inp.value = ‘’;
+rebuildMatList();
+toast(‘Image added’,‘ok’);
 }
 
 function matRemoveImg(mi, ii) {
-  if (currentFormData.materials[mi] && currentFormData.materials[mi].images) {
-    currentFormData.materials[mi].images.splice(ii,1);
-    rebuildMatList();
-  }
+if (currentFormData.materials[mi] && currentFormData.materials[mi].images) {
+currentFormData.materials[mi].images.splice(ii,1);
+rebuildMatList();
+}
 }
 
 function saveForm() {
-  const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
-  const getText = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ‘’; };
+const getText = (id) => { const el = document.getElementById(id); return el ? el.value : ‘’; };
 
-  currentFormData.title = getVal('ff-title');
-  currentFormData.titleTR = getVal('ff-titleTR');
-  currentFormData.year = getVal('ff-year');
+currentFormData.title = getVal(‘ff-title’);
+currentFormData.titleTR = getVal(‘ff-titleTR’);
+currentFormData.year = getVal(‘ff-year’);
 
-  if (currentFormType === 'artworks' || currentFormType === 'projects') {
-    currentFormData.medium = getVal('ff-medium');
-    currentFormData.mediumTR = getVal('ff-mediumTR');
-    currentFormData.desc = getText('ff-desc');
-    currentFormData.descTR = getText('ff-descTR');
-    currentFormData.displayImage = getVal('ff-displayImage') || null;
-    const featuredEl = document.getElementById('ff-featured');
-    if (featuredEl) currentFormData.featured = featuredEl.checked;
-    const workTypeEl = document.getElementById('ff-workType');
-    if (workTypeEl) currentFormData.workType = workTypeEl.value;
-    if (currentFormType === 'projects') {
-      const statusEl = document.getElementById('ff-status');
-      if (statusEl) currentFormData.status = statusEl.value;
-    }
-  }
-  else if (currentFormType === 'poems') {
-    currentFormData.body = getText('ff-body');
-    currentFormData.bodyTR = getText('ff-bodyTR');
-  }
-  else if (currentFormType === 'articles') {
-    currentFormData.type = getVal('ff-type');
-    currentFormData.typeTR = getVal('ff-typeTR');
-    currentFormData.body = getText('ff-body');
-    currentFormData.bodyTR = getText('ff-bodyTR');
-  }
-  else if (currentFormType === 'books') {
-    currentFormData.pdf = getVal('ff-pdf');
-    currentFormData.cover = getVal('ff-cover') || null;
-    const allowEl = document.getElementById('ff-allowDownload');
-    if (allowEl) currentFormData.allowDownload = allowEl.value === 'true';
-    currentFormData.desc = getText('ff-desc');
-    currentFormData.descTR = getText('ff-descTR');
-  }
+if (currentFormType === ‘artworks’ || currentFormType === ‘projects’) {
+currentFormData.medium = getVal(‘ff-medium’);
+currentFormData.mediumTR = getVal(‘ff-mediumTR’);
+currentFormData.desc = getText(‘ff-desc’);
+currentFormData.descTR = getText(‘ff-descTR’);
+currentFormData.displayImage = getVal(‘ff-displayImage’) || null;
+const featuredEl = document.getElementById(‘ff-featured’);
+if (featuredEl) currentFormData.featured = featuredEl.checked;
+const workTypeEl = document.getElementById(‘ff-workType’);
+if (workTypeEl) currentFormData.workType = workTypeEl.value;
+if (currentFormType === ‘projects’) {
+const statusEl = document.getElementById(‘ff-status’);
+if (statusEl) currentFormData.status = statusEl.value;
+}
+}
+else if (currentFormType === ‘poems’) {
+currentFormData.body = getText(‘ff-body’);
+currentFormData.bodyTR = getText(‘ff-bodyTR’);
+}
+else if (currentFormType === ‘articles’) {
+currentFormData.type = getVal(‘ff-type’);
+currentFormData.typeTR = getVal(‘ff-typeTR’);
+currentFormData.body = getText(‘ff-body’);
+currentFormData.bodyTR = getText(‘ff-bodyTR’);
+}
+else if (currentFormType === ‘books’) {
+currentFormData.pdf = getVal(‘ff-pdf’);
+currentFormData.cover = getVal(‘ff-cover’) || null;
+const allowEl = document.getElementById(‘ff-allowDownload’);
+if (allowEl) currentFormData.allowDownload = allowEl.value === ‘true’;
+currentFormData.desc = getText(‘ff-desc’);
+currentFormData.descTR = getText(‘ff-descTR’);
+}
 
-  if (!D[currentFormType]) D[currentFormType] = [];
-  
-  if (currentFormIndex >= 0) {
-    D[currentFormType][currentFormIndex] = JSON.parse(JSON.stringify(currentFormData));
-  } else {
-    D[currentFormType].push(JSON.parse(JSON.stringify(currentFormData)));
-  }
+if (!D[currentFormType]) D[currentFormType] = [];
 
-  saveD();
-  closeForm();
-  renderList(currentFormType);
-  toast('Saved!','ok');
+if (currentFormIndex >= 0) {
+D[currentFormType][currentFormIndex] = JSON.parse(JSON.stringify(currentFormData));
+} else {
+D[currentFormType].push(JSON.parse(JSON.stringify(currentFormData)));
+}
+
+saveD();
+closeForm();
+renderList(currentFormType);
+toast(‘Saved!’,‘ok’);
 }
 
 function delItem(type,idx) {
-  if(!confirm('Delete this item? Cannot be undone.')) return;
-  D[type].splice(idx,1);
-  saveD(); 
-  renderList(type); 
-  toast('Deleted','ok');
+if(!confirm(‘Delete this item? Cannot be undone.’)) return;
+D[type].splice(idx,1);
+saveD();
+renderList(type);
+toast(‘Deleted’,‘ok’);
 }
 
 function loadTexts() {
-  const t = D.texts || {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
-  fields.forEach(k=>{
-    const el = document.getElementById('txt-'+k);
-    if (el) el.value = t[k] || '';
-  });
+const t = D.texts || {};
+const fields = [‘aboutEN’,‘aboutTR’,‘contactNote’,‘contactNoteTR’];
+fields.forEach(k=>{
+const el = document.getElementById(‘txt-’+k);
+if (el) el.value = t[k] || ‘’;
+});
 }
 
 function saveTexts() {
-  if(!D.texts) D.texts = {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
-  fields.forEach(k=>{
-    const el = document.getElementById('txt-'+k);
-    if (el) D.texts[k] = el.value;
-  });
-  saveD(); 
-  toast('Texts saved!','ok');
+if(!D.texts) D.texts = {};
+const fields = [‘aboutEN’,‘aboutTR’,‘contactNote’,‘contactNoteTR’];
+fields.forEach(k=>{
+const el = document.getElementById(‘txt-’+k);
+if (el) D.texts[k] = el.value;
+});
+saveD();
+toast(‘Texts saved!’,‘ok’);
 }
 
 function buildDataJS() {
-  return `/* =============================================================
-   data.js  —  Generated by admin panel on ${new Date().toLocaleString()}
-   Upload this file to your server root to publish changes.
-   ============================================================= */
+return `/* =============================================================
+data.js  —  Generated by admin panel on ${new Date().toLocaleString()}
+Upload this file to your server root to publish changes.
+============================================================= */
 
 const SITE_BASE = ${JSON.stringify(D,null,2)};
 `;
 }
 
 function buildExportPreview() {
-  const txt = buildDataJS();
-  const el = document.getElementById('export-pre');
-  if(el) el.textContent = txt.slice(0,3000) + (txt.length > 3000 ? '\n… (truncated)' : '');
+const txt = buildDataJS();
+const el = document.getElementById(‘export-pre’);
+if(el) el.textContent = txt.slice(0,3000) + (txt.length > 3000 ? ‘\n… (truncated)’ : ‘’);
 }
 
 function exportData() {
-  const blob = new Blob([buildDataJS()], {type: 'text/javascript'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; 
-  a.download = 'data.js'; 
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('data.js downloaded!','ok');
+const blob = new Blob([buildDataJS()], {type: ‘text/javascript’});
+const url = URL.createObjectURL(blob);
+const a = document.createElement(‘a’);
+a.href = url;
+a.download = ‘data.js’;
+a.click();
+URL.revokeObjectURL(url);
+toast(‘data.js downloaded!’,‘ok’);
 }
 
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function ea(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-function eh(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return String(s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’); }
+function ea(s){ return String(s||’’).replace(/&/g,’&’).replace(/”/g,’"’).replace(/</g,’<’); }
+function eh(s){ return String(s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’); }
 function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
 function toast(msg,type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; 
-  t.className = 'show ' + (type||'ok');
-  clearTimeout(t._t); 
-  t._t = setTimeout(()=>t.className='',2500);
+const t = document.getElementById(‘toast’);
+t.textContent = msg;
+t.className = ‘show ’ + (type||‘ok’);
+clearTimeout(t._t);
+t._t = setTimeout(()=>t.className=’’,2500);
 }
 
 function boot() {
-  loadD();
-  renderList('artworks');
-  document.querySelectorAll('.sb-item').forEach(el => {
-    if (el.getAttribute('data-panel') === 'artworks') {
-      el.classList.add('on');
-    } else {
-      el.classList.remove('on');
-    }
-  });
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('panel-artworks').classList.add('on');
+loadD();
+renderList(‘artworks’);
+document.querySelectorAll(’.sb-item’).forEach(el => {
+if (el.getAttribute(‘data-panel’) === ‘artworks’) {
+el.classList.add(‘on’);
+} else {
+el.classList.remove(‘on’);
+}
+});
+document.querySelectorAll(’.panel’).forEach(p => p.classList.remove(‘on’));
+document.getElementById(‘panel-artworks’).classList.add(‘on’);
 }
 
-if(sessionStorage.getItem('adm')==='1'){
-  document.getElementById('login').style.display='none';
-  document.getElementById('app').classList.add('on');
-  boot();
+if(sessionStorage.getItem(‘adm’)===‘1’){
+document.getElementById(‘login’).style.display=‘none’;
+document.getElementById(‘app’).classList.add(‘on’);
+boot();
 }
 </script>
+
 </body>
 </html>
