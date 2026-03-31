@@ -328,11 +328,13 @@ function loadD() {
 
 function saveD() {
   localStorage.setItem('veretrir_data',JSON.stringify(D));
+  localStorage.setItem('veretrir_data_v','2');
 }
 
 function clearStorage() {
   if(!confirm('Reset all admin changes?')) return;
   localStorage.removeItem('veretrir_data');
+  localStorage.removeItem('veretrir_data_v');
   loadD(); 
   renderAll(); 
   toast('Reset to data.js','ok');
