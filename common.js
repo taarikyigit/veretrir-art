@@ -1,10 +1,10 @@
 /* ================================================================
    common.js  —  shared logic: content layer, nav, overlays, 3D,
                  in-page lightbox gallery
+   Minimal gallery redesign · v3
    ================================================================ */
 
-/* ── DATA VERSION — increment when schema changes ────────────── */
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
 
 /* ── CONTENT LAYER ─────────────────────────────────────────────── */
 let SITE;
@@ -12,25 +12,16 @@ let SITE;
   try {
     const stored  = localStorage.getItem('veretrir_data');
     const storedV = parseInt(localStorage.getItem('veretrir_data_v') || '0', 10);
-
-    /* If stored version doesn't match current, discard stale data */
     if (stored && storedV === DATA_VERSION) {
       SITE = JSON.parse(stored);
     } else {
-      /* Clear stale cache — this fixes the "works in Incognito" bug */
       localStorage.removeItem('veretrir_data');
       SITE = JSON.parse(JSON.stringify(SITE_BASE));
     }
-
-    /* Ensure all base keys exist */
     Object.keys(SITE_BASE).forEach(k => {
       if (SITE[k] === undefined) SITE[k] = JSON.parse(JSON.stringify(SITE_BASE[k]));
     });
-
-    /* Remove legacy 'artwork' (singular) key if present */
     if (SITE.artwork) delete SITE.artwork;
-
-    /* Ensure new schema fields on items */
     ['artworks','projects'].forEach(col => {
       (SITE[col] || []).forEach(item => {
         if (!item.images)    item.images    = [];
@@ -40,8 +31,6 @@ let SITE;
         if (item.workType    === undefined) item.workType     = '3d';
       });
     });
-
-    /* Stamp version */
     localStorage.setItem('veretrir_data_v', String(DATA_VERSION));
   } catch(e) {
     SITE = JSON.parse(JSON.stringify(SITE_BASE));
@@ -54,15 +43,19 @@ function navigate(url) {
   if (_nav) return; _nav = true;
   const m = document.getElementById('page-transition-mask');
   if (!m) { location.href = url; return; }
-  m.classList.remove('slide-out'); m.classList.add('slide-in');
-  setTimeout(() => location.href = url, 370);
+  m.style.opacity = '1'; m.style.pointerEvents = 'all';
+  setTimeout(() => location.href = url, 300);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   const m = document.getElementById('page-transition-mask');
   if (m) {
-    m.classList.remove('slide-in'); m.classList.add('slide-out');
-    setTimeout(() => m.classList.remove('slide-out'), 400);
+    m.style.opacity = '1';
+    requestAnimationFrame(() => {
+      m.style.transition = 'opacity 0.4s ease';
+      m.style.opacity = '0';
+      setTimeout(() => { m.style.pointerEvents = 'none'; }, 400);
+    });
   }
   document.querySelectorAll('a[href]').forEach(a => {
     const h = a.getAttribute('href');
@@ -109,7 +102,7 @@ function openReading(html, badge, title) {
   setTimeout(() => {
     const f = document.getElementById('back-fab');
     if (f) f.classList.add('visible');
-  }, 230);
+  }, 200);
 }
 function closeReading() {
   const o = document.getElementById('reading-overlay');
@@ -132,7 +125,8 @@ function _getDisplayImage(aw) {
 }
 
 /* ── IN-PAGE LIGHTBOX ────────────────────────────────────────── */
-let _lb = { images: [], cur: 0, zoomed: false };
+let _lb = { images: [], cur: 0 };
+let _lbScale = 1;
 
 function _initLightbox() {
   if (document.getElementById('lb-overlay')) return;
@@ -141,13 +135,11 @@ function _initLightbox() {
   lb.innerHTML = `
     <div id="lb-bg"></div>
     <button id="lb-close" aria-label="Close">✕</button>
-    <button id="lb-prev"  aria-label="Previous">&#8592;</button>
-    <button id="lb-next"  aria-label="Next">&#8594;</button>
-    <div id="lb-stage">
-      <img id="lb-img" src="" alt="" draggable="false">
-    </div>
+    <button id="lb-prev" aria-label="Previous">←</button>
+    <button id="lb-next" aria-label="Next">→</button>
+    <div id="lb-stage"><img id="lb-img" src="" alt="" draggable="false"></div>
     <div id="lb-counter"></div>
-    <div id="lb-hint">Scroll / pinch to zoom · click to close</div>`;
+    <div id="lb-hint">scroll to zoom · esc to close</div>`;
   document.body.appendChild(lb);
 
   document.getElementById('lb-bg').addEventListener('click', closeLightbox);
@@ -162,34 +154,30 @@ function _initLightbox() {
     if (e.key === 'ArrowRight') lbMove( 1);
     if (e.key === 'Escape')     closeLightbox();
     if (e.key === '+' || e.key === '=') lbZoom(1.2);
-    if (e.key === '-')           lbZoom(1 / 1.2);
+    if (e.key === '-') lbZoom(1/1.2);
   });
 
   document.getElementById('lb-stage').addEventListener('wheel', e => {
     e.preventDefault();
-    lbZoom(e.deltaY < 0 ? 1.15 : 1 / 1.15);
+    lbZoom(e.deltaY < 0 ? 1.15 : 1/1.15);
   }, { passive: false });
 
   let tsx = 0;
   const stage = document.getElementById('lb-stage');
   stage.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
-  stage.addEventListener('touchend',   e => {
+  stage.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - tsx;
     if (Math.abs(dx) > 50) lbMove(dx < 0 ? 1 : -1);
   });
 }
 
-let _lbScale = 1;
 function openLightbox(images, startIdx) {
   _lb.images = images;
-  _lb.cur    = Math.max(0, Math.min(startIdx, images.length - 1));
-  _lbScale   = 1;
+  _lb.cur = Math.max(0, Math.min(startIdx, images.length - 1));
+  _lbScale = 1;
   _lbRender();
   const overlay = document.getElementById('lb-overlay');
-  if (overlay) {
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
+  if (overlay) { overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
 }
 function closeLightbox() {
   const overlay = document.getElementById('lb-overlay');
@@ -197,16 +185,13 @@ function closeLightbox() {
   _lbScale = 1;
   const img = document.getElementById('lb-img');
   if (img) img.style.transform = '';
-  if (!document.getElementById('reading-overlay')?.classList.contains('open')) {
+  if (!document.getElementById('reading-overlay')?.classList.contains('open'))
     document.body.style.overflow = '';
-  }
 }
 function lbMove(dir) {
-  const n = _lb.images.length;
-  if (!n) return;
+  const n = _lb.images.length; if (!n) return;
   _lb.cur = (_lb.cur + dir + n) % n;
-  _lbScale = 1;
-  _lbRender();
+  _lbScale = 1; _lbRender();
 }
 function lbZoom(factor) {
   _lbScale = Math.max(0.5, Math.min(6, _lbScale * factor));
@@ -214,8 +199,8 @@ function lbZoom(factor) {
   if (img) img.style.transform = `scale(${_lbScale})`;
 }
 function _lbRender() {
-  const img  = document.getElementById('lb-img');
-  const ctr  = document.getElementById('lb-counter');
+  const img = document.getElementById('lb-img');
+  const ctr = document.getElementById('lb-counter');
   const prev = document.getElementById('lb-prev');
   const next = document.getElementById('lb-next');
   if (!img) return;
@@ -230,159 +215,116 @@ function _lbRender() {
 
 /* ── ARTWORK / PROJECT DETAIL ────────────────────────────────── */
 function _renderWork(aw, badgeLabel) {
-  const l      = currentLang;
+  const l = currentLang;
   const title  = l === 'tr' ? (aw.titleTR  || aw.title)  : aw.title;
   const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
   const desc   = l === 'tr' ? (aw.descTR   || aw.desc)   : aw.desc;
 
-  /* ── Hero image ── */
   const mainSrc = _mainImg(aw);
   const heroHTML = mainSrc
-    ? `<div class="rw-hero-wrap">
-         <img class="rw-hero-img" src="${mainSrc}" alt="${_esc(title)}" data-lb-src="${mainSrc}">
-       </div>`
-    : `<div class="reading-hero-ph"><span>${l === 'tr' ? 'Görsel eklenecek' : 'Image coming soon'}</span></div>`;
+    ? `<div class="rw-hero-wrap"><img class="rw-hero-img" src="${mainSrc}" alt="${_esc(title)}"></div>`
+    : `<div class="reading-hero-ph"><span>${l === 'tr' ? 'görsel eklenecek' : 'image coming soon'}</span></div>`;
 
-  /* ── Info bar ── */
-  const infoHTML = `
-    <div class="rw-info-bar">
-      <div class="reading-title">${_esc(title)}</div>
-      <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
-    </div>`;
+  const infoHTML = `<div class="rw-info-bar">
+    <div class="reading-title">${_esc(title)}</div>
+    <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
+  </div>`;
 
-  /* ── Gallery grid (larger thumbnails, Behance-style) ── */
   let galleryHTML = '';
   const allImgs = aw.images || [];
   if (allImgs.length > 1) {
     const thumbs = allImgs.map((img, i) =>
-      `<div class="rw-gallery-item" data-lb-idx="${i}" title="${_esc(img.caption || '')}">
+      `<div class="rw-gallery-item" data-lb-idx="${i}">
          <img src="${img.path}" alt="${_esc(img.caption || '')}">
          ${img.isMain ? '<span class="rw-gallery-main">★</span>' : ''}
-         <div class="rw-gallery-hover"></div>
-       </div>`
-    ).join('');
-    galleryHTML = `
-      <div class="reading-sec-label">${l === 'tr' ? 'Görseller' : 'Images'}</div>
+       </div>`).join('');
+    galleryHTML = `<div class="reading-sec-label">${l === 'tr' ? 'görseller' : 'images'}</div>
       <div class="rw-gallery-grid" id="rw-thumbstrip">${thumbs}</div>`;
   }
 
-  /* ── Materials blocks ── */
   let matsHTML = '';
   if (aw.materials && aw.materials.length) {
     aw.materials.forEach((mat, mi) => {
       const lbl = `<div class="reading-sec-label">${_esc(mat.label || mat.type)}</div>`;
-
       if (mat.type === 'text') {
         const content = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
         const paras = (content || '').split(/\n\n+/).map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
         matsHTML += lbl + `<div class="reading-desc">${paras}</div>`;
-
       } else if (mat.type === 'image-gallery' || mat.type === 'gif') {
-        const imgs  = mat.images || [];
+        const imgs = mat.images || [];
         const thumbs = imgs.map((img, j) =>
           `<div class="rw-gallery-item rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
              <img src="${img.path}" alt="${_esc(img.caption || '')}">
-             <div class="rw-gallery-hover"></div>
-           </div>`
-        ).join('');
+           </div>`).join('');
         matsHTML += lbl + `<div class="rw-gallery-grid rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
-
       } else if (mat.type === '3d') {
         const safeTitle = _esc(title).replace(/'/g, "\\'");
-        const safePath  = (mat.path || '').replace(/'/g, "\\'");
+        const safePath = (mat.path || '').replace(/'/g, "\\'");
         matsHTML += lbl + `<button class="btn-3d" onclick="openViewer('${safePath}','${safeTitle}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l9 4.5v9L12 20l-9-4.5v-9L12 2z"/>
-            <polyline points="12 2 12 20"/><polyline points="3 6.5 12 11 21 6.5"/>
-          </svg>
-          ${l === 'tr' ? '3D Görüntüle' : 'View 3D'}
-        </button>`;
-
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l9 4.5v9L12 20l-9-4.5v-9L12 2z"/><polyline points="12 2 12 20"/><polyline points="3 6.5 12 11 21 6.5"/>
+          </svg>${l === 'tr' ? '3d görüntüle' : 'view 3d'}</button>`;
       } else if (mat.type === 'pdf') {
-        matsHTML += lbl + `<a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;">
-          ↓ ${l === 'tr' ? 'PDF İndir' : 'Download PDF'}
-        </a>`;
-
+        matsHTML += lbl + `<a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;">↓ ${l === 'tr' ? 'pdf indir' : 'download pdf'}</a>`;
       } else if (mat.type === 'video') {
         matsHTML += lbl + `<video controls style="width:100%;max-width:100%;margin-top:8px;" src="${mat.path}"></video>`;
       }
     });
   }
 
-  /* ── Description paragraphs ── */
-  const descParas = (desc || '').split(/\n\n+/)
-    .filter(p => p.trim())
+  const descParas = (desc || '').split(/\n\n+/).filter(p => p.trim())
     .map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
 
   openReading(`
-    ${heroHTML}
-    ${infoHTML}
-    <div class="reading-sec-label">${l === 'tr' ? 'Açıklama' : 'About this work'}</div>
+    ${heroHTML}${infoHTML}
+    <div class="reading-sec-label">${l === 'tr' ? 'açıklama' : 'about this work'}</div>
     <div class="reading-desc">${descParas || `<p>${_esc(desc || '')}</p>`}</div>
-    ${galleryHTML}
-    ${matsHTML}
+    ${galleryHTML}${matsHTML}
   `, badgeLabel, title);
 
-  /* Attach lightbox after render */
-  requestAnimationFrame(() => {
-    _attachGalleryLightbox(aw);
-  });
+  requestAnimationFrame(() => _attachGalleryLightbox(aw));
 }
 
 function _attachGalleryLightbox(aw) {
-  const allImgs = (aw.images || []);
-
-  /* Main hero image click */
+  const allImgs = aw.images || [];
   const heroImg = document.querySelector('.rw-hero-img');
   if (heroImg) {
-    heroImg.style.cursor = 'zoom-in';
     heroImg.addEventListener('click', () => {
       const mainIdx = allImgs.findIndex(i => i.isMain);
       openLightbox(allImgs, mainIdx >= 0 ? mainIdx : 0);
     });
   }
-
-  /* Gallery grid items */
   const strip = document.getElementById('rw-thumbstrip');
   if (strip) {
     strip.querySelectorAll('.rw-gallery-item').forEach(th => {
-      th.addEventListener('click', () => {
-        const idx = parseInt(th.dataset.lbIdx, 10);
-        openLightbox(allImgs, idx);
-      });
+      th.addEventListener('click', () => openLightbox(allImgs, parseInt(th.dataset.lbIdx, 10)));
     });
   }
-
-  /* Material gallery thumbs */
   document.querySelectorAll('.rw-mat-strip').forEach(mStrip => {
     const mi = parseInt(mStrip.dataset.mat, 10);
     const matImgs = (aw.materials[mi] && aw.materials[mi].images) || [];
     mStrip.querySelectorAll('.rw-mat-thumb').forEach(th => {
-      th.addEventListener('click', () => {
-        const ii = parseInt(th.dataset.imgIdx, 10);
-        openLightbox(matImgs, ii);
-      });
+      th.addEventListener('click', () => openLightbox(matImgs, parseInt(th.dataset.imgIdx, 10)));
     });
   });
 }
 
 function openArtwork(idx) {
   const aw = SITE.artworks[idx]; if (!aw) return;
-  _renderWork(aw, currentLang === 'tr' ? 'Eser' : 'Artwork');
+  _renderWork(aw, currentLang === 'tr' ? 'eser' : 'artwork');
 }
 function openProject(idx) {
   const p = SITE.projects[idx]; if (!p) return;
-  _renderWork(p, currentLang === 'tr' ? 'Proje' : 'Project');
+  _renderWork(p, currentLang === 'tr' ? 'proje' : 'project');
 }
 
 /* ── WRITINGS ────────────────────────────────────────────────── */
 function openPoem(idx) {
   const pm = SITE.poems[idx]; if (!pm) return;
-  const l     = currentLang;
+  const l = currentLang;
   const title = l === 'tr' ? (pm.titleTR || pm.title) : pm.title;
   const body  = l === 'tr' ? (pm.bodyTR  || pm.body)  : pm.body;
-  const lbl   = l === 'tr' ? 'Şiir' : 'Poem';
+  const lbl   = l === 'tr' ? 'şiir' : 'poem';
   openReading(`
     <div class="reading-title">${_esc(title)}</div>
     <div class="reading-meta">${_esc(pm.year || '')}</div>
@@ -392,7 +334,7 @@ function openPoem(idx) {
 }
 function openArticle(idx) {
   const ar = SITE.articles[idx]; if (!ar) return;
-  const l     = currentLang;
+  const l = currentLang;
   const title = l === 'tr' ? (ar.titleTR || ar.title) : ar.title;
   const type  = l === 'tr' ? (ar.typeTR  || ar.type)  : ar.type;
   const body  = l === 'tr' ? (ar.bodyTR  || ar.body)  : ar.body;
@@ -407,7 +349,7 @@ function openArticle(idx) {
 
 /* ── 3D VIEWER ───────────────────────────────────────────────── */
 function openViewer(src, title) {
-  const o  = document.getElementById('viewer-overlay');
+  const o = document.getElementById('viewer-overlay');
   const mv = document.getElementById('model-viewer-el');
   if (!o || !mv) return;
   mv.setAttribute('src', src);
@@ -416,7 +358,7 @@ function openViewer(src, title) {
   o.classList.add('open');
 }
 function closeViewer() {
-  const o  = document.getElementById('viewer-overlay');
+  const o = document.getElementById('viewer-overlay');
   const mv = document.getElementById('model-viewer-el');
   if (!o) return;
   o.classList.remove('open');
