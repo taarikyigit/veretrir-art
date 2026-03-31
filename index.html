@@ -5,399 +5,162 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
- 
-/* ══════════════════════════════════════════
-   HERO — three-slide fullscreen artwork strip
-══════════════════════════════════════════ */
-#hero {
-  position: relative;
-  height: 100vh;
-  overflow: hidden;
+/* ── HOME LAYOUT ── */
+.home-wrap {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
 }
- 
-/* The moving strip — 3 slides side by side */
-.hs-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
-  will-change: transform;
-}
- 
-/* Each slide is full viewport width */
-.hs-slide {
-  flex: 0 0 100vw;
-  width: 100vw;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
- 
-/* Background image - transparent background for different aspect ratios */
-.hs-slide-img {
-  position: absolute; 
-  inset: 0;
-  background-color: transparent !important;
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.04);
-  transition: transform 6s ease-out;
-}
-.hs-slide.active .hs-slide-img {
-  transform: scale(1.0);
-}
- 
-/* Dark gradient from bottom - ensures text readability */
-.hs-slide-grad {
-  position: absolute; 
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.72) 0%,
-    rgba(0,0,0,0.18) 45%,
-    rgba(0,0,0,0.08) 100%
-  );
-  z-index: 1;
-  pointer-events: none;
-}
- 
-/* Text info at bottom left */
-.hs-slide-info {
-  position: absolute;
-  bottom: 72px;
-  left: 48px;
-  z-index: 2;
-  max-width: 520px;
-}
- 
-.hs-slide-num {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  color: rgba(255,255,255,0.45);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  display: block;
-}
- 
-.hs-slide-title {
-  font-family: var(--font);
-  font-size: clamp(22px, 3.8vw, 52px);
-  font-weight: 400;
-  font-style: italic;
-  color: #fff;
-  line-height: 1.15;
-  margin-bottom: 10px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
-}
- 
-.hs-slide-meta {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
-  margin-bottom: 20px;
-}
- 
-.hs-slide-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  border-bottom: 1px solid rgba(255,255,255,0.3);
-  padding-bottom: 3px;
-  transition: color 0.2s, border-color 0.2s;
-}
-.hs-slide:hover .hs-slide-cta {
-  color: #fff;
-  border-color: rgba(255,255,255,0.8);
-}
-.hs-slide-cta-arrow { transition: transform 0.2s; }
-.hs-slide:hover .hs-slide-cta-arrow { transform: translateX(4px); }
- 
-/* No-image placeholder */
-.hs-slide-ph {
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, #1a1a18, #232320, #181816);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hs-slide-ph::after {
-  content: "⊞";
-  font-size: 48px;
-  color: rgba(255,255,255,0.2);
-  font-family: var(--mono);
-}
- 
-/* ── Slide counter strip (right side) ── */
-.hs-counter {
-  position: absolute;
-  right: 36px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
+
+/* Left panel — name + nav */
+.home-left {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  align-items: center;
+  justify-content: flex-end;
+  padding: 0 40px 60px;
 }
-.hs-counter-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.28);
-  border: none;
+.home-name {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+.home-nav { display: flex; flex-direction: column; gap: 6px; }
+.home-nav a {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+  color: var(--mid);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.home-nav a:hover { color: var(--ink); }
+.home-lang {
+  margin-top: 20px;
+  display: flex; gap: 6px; align-items: center;
+}
+.home-ig {
+  margin-top: 16px;
+}
+.home-ig a {
+  display: inline-flex; align-items: center;
+  text-decoration: none; color: var(--dim);
+  transition: color 0.2s;
+}
+.home-ig a:hover { color: var(--ink); }
+.home-ig svg { width: 14px; height: 14px; }
+
+/* Right panel — image-only slideshow */
+.home-right {
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s, height 0.3s;
-  padding: 0;
+  background: #f5f5f5;
 }
-.hs-counter-dot.on {
-  background: #fff;
-  height: 20px;
-  border-radius: 2px;
-  transform: none;
-}
- 
-/* ── Prev/Next arrows ── */
-.hs-arrow {
+
+.hero-slide {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.7);
-  width: 44px;
-  height: 44px;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-slide.active { opacity: 1; }
+
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-slide-ph {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  font-family: var(--mono);
-  transition: background 0.2s, color 0.2s;
+  background: #f0f0f0;
 }
-.hs-arrow:hover { background: rgba(255,255,255,0.18); color: #fff; }
-.hs-arrow.prev { left: 24px; }
-.hs-arrow.next { right: 64px; }
- 
-/* ── Auto-progress bar at very bottom ── */
-.hs-progress {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: rgba(255,255,255,0.1);
-  z-index: 3;
-}
-.hs-progress-fill {
-  height: 100%;
-  background: rgba(255,255,255,0.55);
-  width: 0%;
-  transition: width linear;
-}
- 
-/* ══════════════════════════════════════════
-   RANDOM POEM BLOCK
-══════════════════════════════════════════ */
-#poem-block {
-  background: var(--ink);
-  color: #f0ece3;
-  padding: 0;
-}
- 
-.poem-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 72px 32px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-}
- 
-.poem-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: #555;
-  margin-bottom: 20px;
-}
- 
-.poem-title {
-  font-family: var(--font);
-  font-size: clamp(20px, 2.8vw, 34px);
-  font-weight: 400;
-  font-style: italic;
-  color: #f0ece3;
-  line-height: 1.2;
-  margin-bottom: 8px;
-}
- 
-.poem-year {
-  font-family: var(--mono);
+.hero-slide-ph span {
   font-size: 10px;
-  letter-spacing: 0.2em;
-  color: #444;
-  text-transform: uppercase;
-  margin-bottom: 32px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  color: var(--dim);
 }
- 
-.poem-read-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: 1px solid #333;
-  color: #888;
-  font-family: var(--font);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 11px 22px;
+
+/* Minimal dot nav */
+.hero-dots {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+.hero-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  border: none;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  padding: 0;
+  transition: background 0.3s;
 }
-.poem-read-btn:hover { border-color: #f0ece3; color: #f0ece3; }
- 
-.poem-excerpt {
-  font-family: var(--font);
-  font-size: clamp(15px, 1.8vw, 20px);
-  font-style: italic;
-  line-height: 2.1;
-  color: #888;
-  white-space: pre-line;
-  border-left: 1px solid #2a2a2a;
-  padding-left: 28px;
-}
- 
-/* ══════════════════════════════════════════
-   BOTTOM PREVIEW STRIP
-══════════════════════════════════════════ */
-.home-preview { background: var(--bg2); }
-.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
-.home-col-title {
-  font-size: 10px; letter-spacing: .28em; text-transform: uppercase;
-  color: var(--dim); margin-bottom: 16px; padding-bottom: 10px;
-  border-bottom: 1px solid var(--line); font-weight: 400;
-}
-.home-link-item {
-  display: block; padding: 12px 0;
-  border-bottom: 1px solid #e8e4de; text-decoration: none;
-  transition: padding-left .2s;
-}
-.home-link-item:hover { padding-left: 7px; }
-.hli-title { font-size: 14px; font-style: italic; color: var(--ink); transition: color .2s; margin-bottom: 2px; }
-.home-link-item:hover .hli-title { color: var(--red); }
-.hli-meta { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #bbb; font-family: var(--mono); }
-.view-all {
-  display: inline-block; margin-top: 18px;
-  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--mid); text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color .2s, border-color .2s;
-}
-.view-all:hover { color: var(--ink); border-bottom-color: var(--ink); }
- 
+.hero-dot.on { background: rgba(0,0,0,0.7); }
+
 /* ── Responsive ── */
-@media (max-width: 700px) {
-  .hs-slide-info { left: 24px; bottom: 60px; max-width: calc(100vw - 80px); }
-  .hs-slide-title { font-size: clamp(20px, 6vw, 32px); }
-  .hs-arrow.next { right: 52px; }
-  .poem-inner { grid-template-columns: 1fr; gap: 36px; }
-  .poem-excerpt { border-left: none; padding-left: 0; border-top: 1px solid #2a2a2a; padding-top: 28px; }
-  .home-grid { grid-template-columns: 1fr; gap: 40px; }
+@media (max-width: 800px) {
+  .home-wrap {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .home-right { min-height: 60vh; order: -1; }
+  .home-left {
+    padding: 32px 20px 40px;
+    justify-content: flex-start;
+  }
 }
 </style>
 </head>
 <body>
- 
-<div id="page-transition-mask"></div>
- 
-<!-- HEADER -->
-<header>
-  <div class="header-left">
-    <a href="index.html" class="header-name">tarık yiğit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener"
-       class="ig-btn" title="Instagram" data-no-transition>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-      </svg>
-    </a>
-  </div>
-  <nav>
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
-  </nav>
-  <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
-    <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
-  </div>
-</header>
- 
-<!-- ══════════════════ HERO ══════════════════ -->
-<section id="hero">
-  <div class="hs-track" id="hsTrack"></div>
- 
-  <button class="hs-arrow prev" id="hsPrev">&#8592;</button>
-  <button class="hs-arrow next" id="hsNext">&#8594;</button>
- 
-  <div class="hs-counter" id="hsCounter"></div>
- 
-  <div class="hs-progress"><div class="hs-progress-fill" id="hsProgressFill"></div></div>
-</section>
- 
-<!-- ══════════════════ RANDOM POEM ══════════════════ -->
-<section id="poem-block">
-  <div class="poem-inner">
-    <div>
-      <div class="poem-label" data-en="— poem of the day" data-tr="— günün şiiri">— poem of the day</div>
-      <div class="poem-title"  id="poemTitle"></div>
-      <div class="poem-year"   id="poemYear"></div>
-      <button class="poem-read-btn" id="poemBtn" data-en="Read poem →" data-tr="Şiiri oku →">Read poem →</button>
+
+<div id="page-transition-mask" style="position:fixed;inset:0;background:#fff;z-index:9000;"></div>
+
+<div class="home-wrap">
+  <!-- LEFT: name + nav -->
+  <div class="home-left">
+    <div class="home-name">tarık yiğit</div>
+    <div class="home-nav">
+      <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
+      <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+      <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+      <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
     </div>
-    <div class="poem-excerpt" id="poemExcerpt"></div>
-  </div>
-</section>
- 
-<!-- ══════════════════ BOTTOM STRIP ══════════════════ -->
-<section class="home-preview">
-  <div class="sec">
-    <div class="home-grid">
-      <div>
-        <div class="home-col-title" data-en="All Artworks" data-tr="Tüm Eserler">All Artworks</div>
-        <div id="homeArtworks"></div>
-        <a href="artworks.html" class="view-all"
-           data-en="View archive →" data-tr="Arşivi gör →">View archive →</a>
-      </div>
-      <div>
-        <div class="home-col-title" data-en="Writings" data-tr="Yazılar">Writings</div>
-        <div id="homeWritings"></div>
-        <a href="writings.html" class="view-all"
-           data-en="View all →" data-tr="Tümünü gör →">View all →</a>
-      </div>
+    <div class="home-lang">
+      <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
+      <span class="lang-sep">·</span>
+      <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
+    </div>
+    <div class="home-ig">
+      <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" data-no-transition>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
     </div>
   </div>
-</section>
- 
-<footer>
-  <span>tarık yiğit</span>
-  <span>veretrir.art</span>
-</footer>
- 
+
+  <!-- RIGHT: image-only slideshow -->
+  <div class="home-right" id="heroArea">
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+</div>
+
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
@@ -407,294 +170,91 @@
   <div class="reading-body" id="reading-body"></div>
 </div>
 <button id="back-fab" onclick="closeReading()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="15 18 9 12 15 6"/>
-  </svg>
-  <span data-en="Back" data-tr="Geri">Back</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <span data-en="back" data-tr="geri">back</span>
 </button>
- 
+
 <!-- 3D viewer -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
-    <button class="viewer-close" onclick="closeViewer()"
-            data-en="Close" data-tr="Kapat">Close</button>
+    <button class="viewer-close" onclick="closeViewer()" data-en="close" data-tr="kapat">close</button>
   </div>
-  <model-viewer id="model-viewer-el" camera-controls auto-rotate
-    shadow-intensity="1" exposure="0.75"
+  <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.75"
     style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
- 
-<script type="module"
-  src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════
-   UTILITIES
-═══════════════════════════════════════════════════ */
- 
-function getArtworkMainImage(aw) {
-  if (!aw.images || !aw.images.length) return null;
-  const main = aw.images.find(i => i.isMain);
-  return (main || aw.images[0]).path;
-}
- 
-function getArtworkDisplayImage(aw) {
-  return aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
-}
- 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
- 
-function pickRandom(arr, n) {
-  return shuffle(arr).slice(0, Math.min(n, arr.length));
-}
- 
-function firstLines(str, n) {
-  if (!str) return '';
-  return str.split('\n').filter(l => l.trim() !== '').slice(0, n).join('\n');
-}
- 
-/* ═══════════════════════════════════════════════════
-   HERO — random selection from featured artworks
-═══════════════════════════════════════════════════ */
-(function initHero() {
-  const track     = document.getElementById('hsTrack');
-  const counter   = document.getElementById('hsCounter');
-  const prevBtn   = document.getElementById('hsPrev');
-  const nextBtn   = document.getElementById('hsNext');
-  const fillEl    = document.getElementById('hsProgressFill');
+/* ═══ IMAGE-ONLY HERO SLIDESHOW ═══ */
+(function() {
+  const area = document.getElementById('heroArea');
+  const dotsEl = document.getElementById('heroDots');
 
-  // Get all artworks marked as featured
   const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
-  
-  // If no featured works, use all artworks as fallback
   const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
-  
-  // Pick 3 random artworks from the pool
-  const selectedWorks = pickRandom(pool, 3);
 
-  const TOTAL    = selectedWorks.length;
-  const INTERVAL = 5500;
-  let   cur      = 0;
-  let   timer, progressAnim;
+  // Pick up to 5 random works
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, Math.min(5, shuffled.length));
 
-  selectedWorks.forEach((aw, i) => {
+  if (!selected.length) return;
+
+  const INTERVAL = 5000;
+  let cur = 0, timer;
+
+  // Build slides — images only, no text
+  selected.forEach((aw, i) => {
     const slide = document.createElement('div');
-    slide.className = 'hs-slide' + (i === 0 ? ' active' : '');
+    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
 
-    const l     = currentLang;
-    const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-    const meta  = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
-
-    // Hero ALWAYS uses the marked Main Image (isMain:true), not displayImage
-    const heroImage = getArtworkMainImage(aw) || getArtworkDisplayImage(aw);
-    
-    const imgDiv = document.createElement('div');
-    imgDiv.className = 'hs-slide-img';
-    if (heroImage) {
-      imgDiv.style.backgroundImage = `url('${heroImage}')`;
-      imgDiv.style.backgroundSize = 'cover';
-      imgDiv.style.backgroundPosition = 'center';
-      imgDiv.style.backgroundColor = 'transparent';
+    const heroImg = _mainImg(aw) || _getDisplayImage(aw);
+    if (heroImg) {
+      const img = document.createElement('img');
+      img.src = heroImg;
+      img.alt = '';
+      slide.appendChild(img);
     } else {
-      imgDiv.classList.add('hs-slide-ph');
+      slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
-    slide.appendChild(imgDiv);
 
-    const grad = document.createElement('div');
-    grad.className = 'hs-slide-grad';
-    slide.appendChild(grad);
-
-    const info = document.createElement('div');
-    info.className = 'hs-slide-info';
-    info.innerHTML = `
-      <span class="hs-slide-num">0${i + 1} / 0${TOTAL}</span>
-      <div class="hs-slide-title">${_esc(title)}</div>
-      <div class="hs-slide-meta">${_esc(meta)}</div>
-      <span class="hs-slide-cta">
-        <span data-en="View work" data-tr="Esere bak">View work</span>
-        <span class="hs-slide-cta-arrow">→</span>
-      </span>`;
-    slide.appendChild(info);
-
+    // Click anywhere to open artwork
     const awIdx = SITE.artworks.findIndex(a => a.id === aw.id);
-    slide.addEventListener('click', (e) => {
-      if (e.target.closest('.hs-arrow')) return;
-      if (awIdx >= 0) openArtwork(awIdx);
-    });
+    slide.addEventListener('click', () => { if (awIdx >= 0) openArtwork(awIdx); });
 
-    track.appendChild(slide);
+    area.insertBefore(slide, dotsEl);
   });
 
-  for (let i = 0; i < TOTAL; i++) {
+  // Dots
+  selected.forEach((_, i) => {
     const dot = document.createElement('button');
-    dot.className = 'hs-counter-dot' + (i === 0 ? ' on' : '');
-    dot.addEventListener('click', () => goTo(i));
-    counter.appendChild(dot);
-  }
+    dot.className = 'hero-dot' + (i === 0 ? ' on' : '');
+    dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
+    dotsEl.appendChild(dot);
+  });
 
   function goTo(n) {
-    const slides = track.querySelectorAll('.hs-slide');
-    const dots   = counter.querySelectorAll('.hs-counter-dot');
-
-    if (slides[cur]) slides[cur].classList.remove('active');
-    cur = (n + TOTAL) % TOTAL;
-    if (slides[cur]) slides[cur].classList.add('active');
-
-    track.style.transform = `translateX(-${cur * 100}vw)`;
+    const slides = area.querySelectorAll('.hero-slide');
+    const dots = dotsEl.querySelectorAll('.hero-dot');
+    slides[cur]?.classList.remove('active');
+    cur = (n + selected.length) % selected.length;
+    slides[cur]?.classList.add('active');
     dots.forEach((d, i) => d.classList.toggle('on', i === cur));
-
-    startProgress();
-  }
-
-  function move(dir) {
     clearInterval(timer);
-    clearProgressAnim();
-    goTo(cur + dir);
-    timer = setInterval(() => move(1), INTERVAL);
+    timer = setInterval(() => goTo(cur + 1), INTERVAL);
   }
 
-  prevBtn.addEventListener('click', (e) => { e.stopPropagation(); move(-1); });
-  nextBtn.addEventListener('click', (e) => { e.stopPropagation(); move(1); });
+  timer = setInterval(() => goTo(cur + 1), INTERVAL);
 
-  let touchStartX = 0;
-  track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  track.addEventListener('touchend', e => {
-    const deltaX = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(deltaX) > 50) move(deltaX < 0 ? 1 : -1);
+  // Touch swipe
+  let tsx = 0;
+  area.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
+  area.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tsx;
+    if (Math.abs(dx) > 50) goTo(cur + (dx < 0 ? 1 : -1));
   });
-  
-  let mouseDownX = 0, dragging = false;
-  track.addEventListener('mousedown', e => { mouseDownX = e.clientX; dragging = true; });
-  track.addEventListener('mouseup', e => {
-    if (!dragging) return;
-    dragging = false;
-    const deltaX = e.clientX - mouseDownX;
-    if (Math.abs(deltaX) > 60) move(deltaX < 0 ? 1 : -1);
-  });
-
-  function startProgress() {
-    clearProgressAnim();
-    fillEl.style.transition = 'none';
-    fillEl.style.width = '0%';
-    fillEl.offsetWidth;
-    fillEl.style.transition = `width ${INTERVAL}ms linear`;
-    fillEl.style.width = '100%';
-    progressAnim = setTimeout(() => move(1), INTERVAL);
-  }
-
-  function clearProgressAnim() {
-    clearTimeout(progressAnim);
-    fillEl.style.transition = 'none';
-    fillEl.style.width = '0%';
-  }
-
-  if (TOTAL > 0) {
-    startProgress();
-    timer = setInterval(() => move(1), INTERVAL);
-  }
 })();
-
-/* ═══════════════════════════════════════════════════
-   RANDOM POEM BLOCK
-═══════════════════════════════════════════════════ */
-function refreshPoem() {
-  if (!SITE.poems || !SITE.poems.length) return;
-  const poem  = SITE.poems[Math.floor(Math.random() * SITE.poems.length)];
-  const pIdx  = SITE.poems.indexOf(poem);
-  const l     = currentLang;
-  const title = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
-  const body  = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
-  const excerpt = firstLines(body, 4);
-  document.getElementById('poemTitle').textContent = title;
-  document.getElementById('poemYear').textContent = poem.year || '';
-  document.getElementById('poemExcerpt').textContent = excerpt;
-  const btn = document.getElementById('poemBtn');
-  const newBtn = btn.cloneNode(true);
-  btn.parentNode.replaceChild(newBtn, btn);
-  newBtn.addEventListener('click', () => openPoem(pIdx));
-}
-
-/* ═══════════════════════════════════════════════════
-   BOTTOM PREVIEW STRIP
-═══════════════════════════════════════════════════ */
-function refreshPreviews() {
-  const l = currentLang;
-  const artEl = document.getElementById('homeArtworks');
-  if (artEl) {
-    artEl.innerHTML = '';
-    SITE.artworks.slice(0, 4).forEach(a => {
-      const div = document.createElement('a');
-      div.href = 'artworks.html';
-      div.className = 'home-link-item';
-      const title = l === 'tr' ? (a.titleTR || a.title) : a.title;
-      const medium = l === 'tr' ? (a.mediumTR || a.medium) : a.medium;
-      div.innerHTML = `<div class="hli-title">${_esc(title)}</div><div class="hli-meta">${a.year || ''}${medium ? ' · ' + _esc(medium) : ''}</div>`;
-      artEl.appendChild(div);
-    });
-  }
-  const wrEl = document.getElementById('homeWritings');
-  if (wrEl) {
-    wrEl.innerHTML = '';
-    const writings = [
-      ...SITE.poems.slice(0, 2).map(p => ({ ...p, _type: 'poem' })),
-      ...SITE.articles.slice(0, 2).map(a => ({ ...a, _type: 'article' })),
-    ];
-    writings.forEach(w => {
-      const div = document.createElement('a');
-      div.href = 'writings.html';
-      div.className = 'home-link-item';
-      const title = l === 'tr' ? (w.titleTR || w.title) : w.title;
-      const type = w.type ? (l === 'tr' ? (w.typeTR || w.type) : w.type) : '';
-      const meta = type ? `${w.year || ''} · ${_esc(type)}` : (w.year || '');
-      div.innerHTML = `<div class="hli-title">${_esc(title)}</div><div class="hli-meta">${meta}</div>`;
-      wrEl.appendChild(div);
-    });
-  }
-}
-
-/* ═══════════════════════════════════════════════════
-   LANGUAGE CHANGE HANDLER
-═══════════════════════════════════════════════════ */
-const originalSetLang = window.setLang;
-window.setLang = function(l) {
-  originalSetLang(l);
-  refreshPreviews();
-  refreshPoem();
-  
-  // Refresh hero slides to update text
-  const track = document.getElementById('hsTrack');
-  if (track) {
-    const slides = track.querySelectorAll('.hs-slide');
-    const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
-    const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
-    const selectedWorks = pickRandom(pool, 3);
-    
-    slides.forEach((slide, idx) => {
-      const titleEl = slide.querySelector('.hs-slide-title');
-      const metaEl = slide.querySelector('.hs-slide-meta');
-      if (titleEl && metaEl && selectedWorks[idx]) {
-        const aw = selectedWorks[idx];
-        const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-        const meta = `${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}`;
-        titleEl.textContent = title;
-        metaEl.textContent = meta;
-      }
-    });
-  }
-};
-
-refreshPreviews();
-refreshPoem();
 </script>
 </body>
 </html>
