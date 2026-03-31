@@ -3,19 +3,28 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Contact — tarık yiğit</title>
+<title>contact — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.contact-center { text-align:center; }
+.contact-center { text-align: center; padding-top: 40px; }
 .contact-email {
-  display:inline-block; margin-top:8px;
-  font-size:clamp(16px,2.5vw,28px); font-weight:500;
-  color:var(--ink); text-decoration:none;
-  border-bottom:2px solid var(--ink); padding-bottom:2px;
-  transition:color .2s,border-color .2s;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+  text-transform: lowercase;
 }
-.contact-email:hover { color:var(--red); border-color:var(--red); }
-.contact-note { margin-top:14px; font-style:italic; font-size:14px; color:#aaa; }
+.contact-email:hover { color: var(--mid); border-color: var(--mid); }
+.contact-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--dim);
+  text-transform: lowercase;
+}
 </style>
 </head>
 <body>
@@ -24,41 +33,41 @@
   <div class="header-left">
     <a href="index.html" class="header-name">tarık yiğit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim" class="active">Contact</a>
+    <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
+    <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+    <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+    <a href="contact.html" data-en="contact" data-tr="iletişim" class="active">contact</a>
   </nav>
   <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
     <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
   </div>
 </header>
 <div class="page-wrap">
   <div class="sec">
-    <div class="sec-title contact-center" data-en="Contact" data-tr="İletişim">Contact</div>
+    <div class="sec-title contact-center" data-en="contact" data-tr="iletişim">contact</div>
     <div class="contact-center">
-      <a href="/cdn-cgi/l/email-protection#0e666b6262614e786b7c6b7a7c677c206f7c7a" class="contact-email" data-no-transition><span class="__cf_email__" data-cfemail="b2dad7dededdf2c4d7c0d7c6c0dbc09cd3c0c6">[email&#160;protected]</span></a>
+      <a href="mailto:hello@veretrir.art" class="contact-email" data-no-transition>hello@veretrir.art</a>
       <p class="contact-note" id="contactNote"></p>
     </div>
   </div>
 </div>
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="data.js"></script><script src="common.js"></script>
+<script src="data.js"></script><script src="common.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   function renderNote() {
-    const l   = currentLang;
+    const l = currentLang;
     const txt = (SITE.texts || {});
-    const note = l === 'tr' ? (txt.contactNoteTR || txt.contactNote || '') : (txt.contactNote || 'Collaborations, exhibitions, publications.');
+    const note = l === 'tr' ? (txt.contactNoteTR || txt.contactNote || '') : (txt.contactNote || 'collaborations, exhibitions, publications.');
     const el = document.getElementById('contactNote');
     if (el) el.textContent = note;
   }
