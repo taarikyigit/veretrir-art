@@ -3,57 +3,126 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Artworks — tarık yiğit</title>
+<title>artworks — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
-.filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line);}
-.filter-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);font-family:var(--mono);white-space:nowrap;}
-.filter-select{background:var(--bg);border:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink);padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;}
-.filter-select:focus{border-color:var(--ink);}
-.filter-clear{background:none;border:1px solid var(--line);color:var(--mid);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;cursor:pointer;transition:border-color .2s,color .2s;}
-.filter-clear:hover{border-color:var(--ink);color:var(--ink);}
-.filter-count{font-size:10px;color:var(--dim);font-family:var(--mono);margin-left:auto;}
+/* ── GALLERY GRID — large images, generous whitespace ── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
 
-.artwork-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.artwork-thumb{position:relative;aspect-ratio:1;background:#e8e4de;overflow:hidden;cursor:pointer;}
-.artwork-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
-.artwork-thumb:hover img{transform:scale(1.04);}
-.artwork-thumb.hidden{display:none;}
+.gallery-item {
+  cursor: pointer;
+  position: relative;
+}
 
-.aw-ph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;transition:background .3s;}
-.artwork-thumb:hover .aw-ph{background:#dedad4;}
-.aw-ph-cross{width:20px;height:20px;position:relative;}
-.aw-ph-cross::before,.aw-ph-cross::after{content:'';position:absolute;background:#c8c4be;}
-.aw-ph-cross::before{width:1px;height:100%;left:50%;top:0;}
-.aw-ph-cross::after{width:100%;height:1px;top:50%;left:0;}
-.aw-ph-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;font-family:var(--mono);}
+.gallery-item-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #f5f5f5;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.aw-overlay{position:absolute;inset:0;background:rgba(0,0,0,.52);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;opacity:0;transition:opacity .3s;}
-.artwork-thumb:hover .aw-overlay{opacity:1;}
-.aw-ov-title{font-size:13px;font-style:italic;color:#fff;margin-bottom:2px;line-height:1.3;}
-.aw-ov-meta{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);font-family:var(--mono);}
+.gallery-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s;
+}
+.gallery-item:hover .gallery-item-img img {
+  opacity: 0.88;
+}
 
-.aw-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:rgba(255,255,255,.7);font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;pointer-events:none;}
-.type-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-family:var(--mono);font-size:8px;letter-spacing:.12em;padding:3px 7px;border-radius:2px;}
+/* placeholder */
+.gallery-item-ph {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+}
+.gallery-item-ph span {
+  font-size: 9px; letter-spacing: 0.12em;
+  text-transform: lowercase; color: var(--dim);
+}
 
-.no-results{grid-column:1/-1;padding:48px;text-align:center;font-style:italic;color:var(--dim);font-size:15px;}
+/* caption below image — very minimal */
+.gallery-item-info {
+  padding: 10px 0 0;
+}
+.gallery-item-title {
+  font-size: 12px;
+  color: var(--ink);
+  text-transform: lowercase;
+  margin-bottom: 2px;
+  transition: color 0.2s;
+}
+.gallery-item:hover .gallery-item-title { color: var(--mid); }
+.gallery-item-meta {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
 
-.project-card{display:grid;grid-template-columns:120px 1fr auto;gap:20px;align-items:start;padding:24px 0;border-bottom:1px solid #e8e4de;cursor:pointer;transition:padding-left .2s,background .2s;}
-.project-card:first-child{border-top:1px solid #e8e4de;}
-.project-card:hover{padding-left:10px;}
-.project-thumb{width:120px;height:90px;flex-shrink:0;background:#e8e4de;overflow:hidden;transition:transform .3s;}
-.project-card:hover .project-thumb{transform:scale(1.03);}
-.project-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.project-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#bbb;font-family:var(--mono);}
-.project-name{font-size:17px;font-weight:500;margin-bottom:6px;transition:color .2s;line-height:1.3;}
-.project-card:hover .project-name{color:var(--red);}
-.project-desc{font-size:14px;font-style:italic;color:var(--mid);line-height:1.6;max-width:460px;}
-.p-tag{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border:1px solid;white-space:nowrap;font-family:var(--mono);margin-top:4px;align-self:start;}
-.tag-on{color:var(--red);border-color:var(--red);}
-.tag-pl{color:#ccc;border-color:#ccc;}
+.gallery-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  color: var(--dim);
+  font-size: 12px;
+}
 
-@media(max-width:640px){.artwork-grid{grid-template-columns:repeat(2,1fr);}.project-card{grid-template-columns:80px 1fr auto;gap:14px;}.project-thumb{width:80px;height:60px;}}
+/* ── Project cards — refined minimal ── */
+.project-card {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: 16px;
+  align-items: start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: padding-left 0.2s;
+}
+.project-card:first-child { border-top: 1px solid var(--line); }
+.project-card:hover { padding-left: 8px; }
+
+.project-thumb {
+  width: 100px; height: 75px;
+  background: #f5f5f5; overflow: hidden;
+}
+.project-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.project-thumb-ph {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--dim); text-transform: lowercase;
+}
+.project-name {
+  font-size: 14px; font-weight: 400; margin-bottom: 4px;
+  text-transform: lowercase; transition: color 0.2s;
+}
+.project-card:hover .project-name { color: var(--mid); }
+.project-desc { font-size: 12px; color: var(--mid); }
+.p-tag {
+  font-size: 9px; letter-spacing: 0.08em; text-transform: lowercase;
+  padding: 3px 10px; border: 1px solid; white-space: nowrap;
+  align-self: start;
+}
+.tag-on { color: var(--ink); border-color: var(--ink); }
+.tag-pl { color: var(--dim); border-color: var(--dim); }
+
+@media (max-width: 640px) {
+  .gallery-grid { grid-template-columns: 1fr; gap: 20px; }
+  .project-card { grid-template-columns: 1fr auto; }
+  .project-thumb { display: none; }
+}
 </style>
 </head>
 <body>
@@ -62,45 +131,36 @@
   <div class="header-left">
     <a href="index.html" class="header-name">tarık yiğit</a>
     <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" data-no-transition>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
         <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </a>
   </div>
   <nav>
-    <a href="artworks.html" class="active" data-en="Artworks" data-tr="Eserler">Artworks</a>
-    <a href="writings.html" data-en="Writings"  data-tr="Yazılar">Writings</a>
-    <a href="about.html"    data-en="About"     data-tr="Hakkında">About</a>
-    <a href="contact.html"  data-en="Contact"   data-tr="İletişim">Contact</a>
+    <a href="artworks.html" class="active" data-en="artworks" data-tr="eserler">artworks</a>
+    <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+    <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+    <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
   </nav>
   <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">EN</button>
+    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
     <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">TR</button>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
   </div>
 </header>
 
 <div class="page-wrap">
-  <div class="sec">
-    <div class="sec-title" data-en="Artworks" data-tr="Eserler">Artworks</div>
+  <div class="sec" style="max-width:1000px;">
+    <div class="sec-title" data-en="artworks" data-tr="eserler">artworks</div>
+
     <div class="tabs">
-      <button class="tab-btn on" id="tab-works"    onclick="swTab('works')"    data-en="Works" data-tr="Eserler">Works</button>
-      <button class="tab-btn"    id="tab-projects" onclick="swTab('projects')" data-en="Ongoing &amp; Planned" data-tr="Devam &amp; Planlanan">Ongoing &amp; Planned</button>
+      <button class="tab-btn on" id="tab-works" onclick="swTab('works')" data-en="works" data-tr="eserler">works</button>
+      <button class="tab-btn" id="tab-projects" onclick="swTab('projects')" data-en="ongoing &amp; planned" data-tr="devam &amp; planlanan">ongoing &amp; planned</button>
     </div>
 
     <div class="tab-panel on" id="panel-works">
-      <div class="filter-bar">
-        <span class="filter-label" data-en="Filter by type:" data-tr="Türe göre filtrele:">Filter by type:</span>
-        <select class="filter-select" id="filterType" onchange="applyFilters()">
-          <option value="">All Works</option>
-          <option value="3d">3 Dimensional (Sculpture / Installation)</option>
-          <option value="2d">2 Dimensional (Painting / Print / Drawing)</option>
-        </select>
-        <button class="filter-clear" onclick="clearFilters()" data-en="Clear" data-tr="Temizle">Clear</button>
-        <span class="filter-count" id="filterCount"></span>
-      </div>
-      <div class="artwork-grid" id="artworkGrid"></div>
+      <div class="gallery-grid" id="artworkGrid"></div>
     </div>
 
     <div class="tab-panel" id="panel-projects">
@@ -120,13 +180,13 @@
 </div>
 <button id="back-fab" onclick="closeReading()">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  <span data-en="Back" data-tr="Geri">Back</span>
+  <span data-en="back" data-tr="geri">back</span>
 </button>
 
 <div id="viewer-overlay">
   <div class="viewer-topbar">
     <span class="viewer-title" id="viewer-title-el"></span>
-    <button class="viewer-close" onclick="closeViewer()" data-en="Close" data-tr="Kapat">Close</button>
+    <button class="viewer-close" onclick="closeViewer()" data-en="close" data-tr="kapat">close</button>
   </div>
   <model-viewer id="model-viewer-el" camera-controls auto-rotate autoplay shadow-intensity="1" exposure="0.85"
     style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
@@ -142,86 +202,55 @@ function swTab(t) {
   });
 }
 
-function _mainImg(aw) {
-  if (!aw.images||!aw.images.length) return null;
-  const m = aw.images.find(i=>i.isMain); return (m||aw.images[0]).path;
-}
-
-function _getDisplayImage(aw) {
-  return aw.displayImage || _mainImg(aw);
-}
-
-function buildFilters() {
-  const l = currentLang;
-  const typeEl = document.getElementById('filterType');
-  // Type options are static, no need to rebuild
-}
-
-function applyFilters() {
-  const type = document.getElementById('filterType').value;
-  const thumbs = document.querySelectorAll('.artwork-thumb');
-  let vis = 0;
-  thumbs.forEach(th => {
-    const show = (!type || th.dataset.type === type);
-    th.classList.toggle('hidden', !show); 
-    if(show) vis++;
-  });
-  const grid = document.getElementById('artworkGrid');
-  let nr = grid.querySelector('.no-results');
-  if(vis === 0){
-    if(!nr){nr=document.createElement('div');nr.className='no-results';grid.appendChild(nr);}
-    nr.textContent = currentLang === 'tr' ? 'Eser bulunamadı.' : 'No works match the selected filter.';
-  } else { if(nr) nr.remove(); }
-  document.getElementById('filterCount').textContent = vis + ' / ' + SITE.artworks.length + (currentLang === 'tr' ? ' eser' : ' works');
-}
-
-function clearFilters() {
-  document.getElementById('filterType').value = '';
-  applyFilters();
-}
-
 function buildPage() {
   const l = currentLang;
   const grid = document.getElementById('artworkGrid');
   grid.innerHTML = '';
+
   SITE.artworks.forEach((aw, idx) => {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+    const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
+    const displaySrc = _getDisplayImage(aw) || _mainImg(aw);
+
     const div = document.createElement('div');
-    div.className = 'artwork-thumb';
-    div.dataset.type = aw.workType || '3d';
+    div.className = 'gallery-item';
     div.addEventListener('click', () => openArtwork(idx));
-    
-    const displaySrc = _getDisplayImage(aw);
-    const typeLabel = (aw.workType === '2d') ? (l === 'tr' ? '2B' : '2D') : (l === 'tr' ? '3B' : '3D');
-    
-    div.innerHTML = (displaySrc ? `<img src="${displaySrc}" alt="${title}">` : `<div class="aw-ph"><div class="aw-ph-cross"></div><span class="aw-ph-lbl">${l === 'tr' ? 'görsel' : 'image'}</span></div>`)
-      + `<div class="aw-overlay"><div class="aw-ov-title">${title}</div><div class="aw-ov-meta">${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}</div></div>`
-      + `<span class="type-badge">${typeLabel}</span>`;
-    
-    const hasMats = aw.materials && aw.materials.length;
-    const has3d = hasMats && aw.materials.some(m => m.type === '3d');
-    if(has3d) div.innerHTML += `<span class="aw-badge">3D</span>`;
+
+    div.innerHTML = `
+      <div class="gallery-item-img">
+        ${displaySrc
+          ? `<img src="${displaySrc}" alt="${_esc(title)}">`
+          : `<div class="gallery-item-ph"><span>—</span></div>`}
+      </div>
+      <div class="gallery-item-info">
+        <div class="gallery-item-title">${_esc(title)}</div>
+        <div class="gallery-item-meta">${aw.year || ''}${medium ? ' · ' + _esc(medium) : ''}</div>
+      </div>`;
+
     grid.appendChild(div);
   });
 
-  buildFilters(); 
-  applyFilters();
+  if (!SITE.artworks.length) {
+    grid.innerHTML = '<div class="gallery-empty">—</div>';
+  }
 
+  // Projects
   const pl = document.getElementById('projectsList');
   pl.innerHTML = '';
   SITE.projects.forEach((p, idx) => {
     const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
     const desc = l === 'tr' ? (p.descTR || p.desc) : p.desc;
-    const status = p.status === 'ongoing' ? (l === 'tr' ? 'Devam Ediyor' : 'Ongoing') : (l === 'tr' ? 'Planlandı' : 'Planned');
+    const status = p.status === 'ongoing' ? (l === 'tr' ? 'devam ediyor' : 'ongoing') : (l === 'tr' ? 'planlandı' : 'planned');
     const displaySrc = _getDisplayImage(p);
+
     const div = document.createElement('div');
     div.className = 'project-card';
     div.addEventListener('click', () => openProject(idx));
     div.innerHTML = `
-      <div class="project-thumb">${displaySrc ? `<img src="${displaySrc}" alt="${name}">` : `<div class="project-thumb-ph">${l === 'tr' ? 'görsel' : 'img'}</div>`}</div>
+      <div class="project-thumb">${displaySrc ? `<img src="${displaySrc}" alt="${_esc(name)}">` : `<div class="project-thumb-ph">—</div>`}</div>
       <div>
-        <div class="project-name">${name}</div>
-        <div class="project-desc">${desc || ''}</div>
+        <div class="project-name">${_esc(name)}</div>
+        <div class="project-desc">${_esc(desc || '')}</div>
       </div>
       <span class="p-tag ${p.status === 'ongoing' ? 'tag-on' : 'tag-pl'}">${status}</span>`;
     pl.appendChild(div);
@@ -229,12 +258,8 @@ function buildPage() {
 }
 
 const _base = window.setLang;
-window.setLang = function(l){_base(l);buildPage();};
-document.addEventListener('DOMContentLoaded', () => {
-  buildPage();
-  document.getElementById('b-en').addEventListener('click', () => buildPage());
-  document.getElementById('b-tr').addEventListener('click', () => buildPage());
-});
+window.setLang = function(l) { _base(l); buildPage(); };
+document.addEventListener('DOMContentLoaded', () => { buildPage(); });
 </script>
 </body>
 </html>
