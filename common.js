@@ -4,7 +4,7 @@
    Minimal gallery redesign · v3
    ================================================================ */
 
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 
 /* ── CONTENT LAYER ─────────────────────────────────────────────── */
 let SITE;
@@ -29,7 +29,12 @@ let SITE;
         if (item.displayImage === undefined) item.displayImage = null;
         if (item.featured    === undefined) item.featured     = false;
         if (item.workType    === undefined) item.workType     = '3d';
+        if (item.category    === undefined) item.category     = '';
       });
+    });
+    // Poems: add poemOfDay field
+    (SITE.poems || []).forEach(p => {
+      if (p.poemOfDay === undefined) p.poemOfDay = false;
     });
     localStorage.setItem('veretrir_data_v', String(DATA_VERSION));
   } catch(e) {
@@ -230,16 +235,21 @@ function _renderWork(aw, badgeLabel) {
     <div class="reading-meta">${_esc(aw.year || '')}${medium ? ' · ' + _esc(medium) : ''}</div>
   </div>`;
 
+  // Masonry gallery with hover overlays
   let galleryHTML = '';
   const allImgs = aw.images || [];
   if (allImgs.length > 1) {
     const thumbs = allImgs.map((img, i) =>
-      `<div class="rw-gallery-item" data-lb-idx="${i}">
+      `<div class="rw-masonry-item" data-lb-idx="${i}">
          <img src="${img.path}" alt="${_esc(img.caption || '')}">
-         ${img.isMain ? '<span class="rw-gallery-main">★</span>' : ''}
+         <div class="rw-masonry-overlay">
+           <div class="rw-masonry-overlay-title">${_esc(title)}</div>
+           <div class="rw-masonry-overlay-meta">${medium ? _esc(medium) : ''}</div>
+         </div>
+         ${img.isMain ? '<span class="rw-masonry-main">★</span>' : ''}
        </div>`).join('');
     galleryHTML = `<div class="reading-sec-label">${l === 'tr' ? 'görseller' : 'images'}</div>
-      <div class="rw-gallery-grid" id="rw-thumbstrip">${thumbs}</div>`;
+      <div class="rw-masonry-grid" id="rw-thumbstrip">${thumbs}</div>`;
   }
 
   let matsHTML = '';
@@ -253,10 +263,13 @@ function _renderWork(aw, badgeLabel) {
       } else if (mat.type === 'image-gallery' || mat.type === 'gif') {
         const imgs = mat.images || [];
         const thumbs = imgs.map((img, j) =>
-          `<div class="rw-gallery-item rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
+          `<div class="rw-masonry-item rw-mat-thumb" data-mat-idx="${mi}" data-img-idx="${j}">
              <img src="${img.path}" alt="${_esc(img.caption || '')}">
+             <div class="rw-masonry-overlay">
+               <div class="rw-masonry-overlay-title">${_esc(mat.label || '')}</div>
+             </div>
            </div>`).join('');
-        matsHTML += lbl + `<div class="rw-gallery-grid rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
+        matsHTML += lbl + `<div class="rw-masonry-grid rw-mat-strip" data-mat="${mi}">${thumbs}</div>`;
       } else if (mat.type === '3d') {
         const safeTitle = _esc(title).replace(/'/g, "\\'");
         const safePath = (mat.path || '').replace(/'/g, "\\'");
@@ -296,7 +309,7 @@ function _attachGalleryLightbox(aw) {
   }
   const strip = document.getElementById('rw-thumbstrip');
   if (strip) {
-    strip.querySelectorAll('.rw-gallery-item').forEach(th => {
+    strip.querySelectorAll('.rw-masonry-item').forEach(th => {
       th.addEventListener('click', () => openLightbox(allImgs, parseInt(th.dataset.lbIdx, 10)));
     });
   }
