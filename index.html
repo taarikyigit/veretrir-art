@@ -208,6 +208,7 @@
   selected.forEach((aw, i) => {
     const slide = document.createElement('div');
     slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    slide.dataset.awId = aw.id;
 
     const heroImg = _mainImg(aw) || _getDisplayImage(aw);
     if (heroImg) {
@@ -219,15 +220,25 @@
       slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
 
-    // FIX: Store artwork ID directly on slide, lookup index on click
-    slide.dataset.awId = aw.id;
-    slide.addEventListener('click', function() {
-      const clickedId = this.dataset.awId;
-      const idx = SITE.artworks.findIndex(a => a.id === clickedId);
-      if (idx >= 0) openArtwork(idx);
-    });
-
     area.insertBefore(slide, dotsEl);
+  });
+
+  // Single click handler on the container - opens the CURRENT slide's artwork
+  area.addEventListener('click', function(e) {
+    // Don't trigger if clicking on dots
+    if (e.target.closest('.hero-dots')) return;
+    
+    // Get the currently active slide
+    const activeSlide = area.querySelector('.hero-slide.active');
+    if (!activeSlide) return;
+    
+    // Get the artwork ID from the active slide
+    const awId = activeSlide.dataset.awId;
+    if (!awId) return;
+    
+    // Find the index and open
+    const idx = SITE.artworks.findIndex(a => a.id === awId);
+    if (idx >= 0) openArtwork(idx);
   });
 
   // Dots
