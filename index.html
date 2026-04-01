@@ -13,7 +13,7 @@
   grid-template-columns: 280px 1fr;
   min-height: 100vh;
 }
- 
+
 /* Left panel — name + nav */
 .home-left {
   display: flex;
@@ -53,15 +53,14 @@
 }
 .home-ig a:hover { color: var(--ink); }
 .home-ig svg { width: 14px; height: 14px; }
- 
-/* Right panel — image-only slideshow */
+
+/* Right panel — image slideshow with overlay */
 .home-right {
   position: relative;
   overflow: hidden;
-  cursor: pointer;
   background: #f5f5f5;
 }
- 
+
 .hero-slide {
   position: absolute;
   inset: 0;
@@ -69,14 +68,14 @@
   transition: opacity 0.8s ease;
 }
 .hero-slide.active { opacity: 1; }
- 
+
 .hero-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
- 
+
 .hero-slide-ph {
   width: 100%;
   height: 100%;
@@ -91,7 +90,51 @@
   text-transform: lowercase;
   color: var(--dim);
 }
- 
+
+/* Hero overlay with artwork info */
+.hero-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.hero-slide.active .hero-overlay { opacity: 1; }
+
+.hero-overlay-title {
+  font-size: 18px;
+  color: #fff;
+  text-transform: lowercase;
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+.hero-overlay-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+.hero-overlay-link {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.5);
+  padding: 8px 16px;
+  transition: all 0.2s;
+}
+.hero-overlay-link:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
 /* Minimal dot nav */
 .hero-dots {
   position: absolute;
@@ -104,14 +147,14 @@
 .hero-dot {
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.4);
   border: none;
   cursor: pointer;
   padding: 0;
   transition: background 0.3s;
 }
-.hero-dot.on { background: rgba(0,0,0,0.7); }
- 
+.hero-dot.on { background: rgba(255,255,255,0.9); }
+
 /* ── Responsive ── */
 @media (max-width: 800px) {
   .home-wrap {
@@ -123,13 +166,15 @@
     padding: 32px 20px 40px;
     justify-content: flex-start;
   }
+  .hero-overlay { padding: 24px; }
+  .hero-overlay-title { font-size: 16px; }
 }
 </style>
 </head>
 <body>
- 
+
 <div id="page-transition-mask" style="position:fixed;inset:0;background:#fff;z-index:9000;"></div>
- 
+
 <div class="home-wrap">
   <!-- LEFT: name + nav -->
   <div class="home-left">
@@ -154,13 +199,13 @@
       </a>
     </div>
   </div>
- 
-  <!-- RIGHT: image-only slideshow -->
+
+  <!-- RIGHT: image slideshow with artwork info -->
   <div class="home-right" id="heroArea">
     <div class="hero-dots" id="heroDots"></div>
   </div>
 </div>
- 
+
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
@@ -173,7 +218,7 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   <span data-en="back" data-tr="geri">back</span>
 </button>
- 
+
 <!-- 3D viewer -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
@@ -183,64 +228,76 @@
   <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.75"
     style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
- 
+
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ═══ IMAGE-ONLY HERO SLIDESHOW ═══ */
+/* ═══ HERO SLIDESHOW WITH ARTWORK INFO ═══ */
 (function() {
   const area = document.getElementById('heroArea');
   const dotsEl = document.getElementById('heroDots');
- 
+  const l = currentLang;
+
   const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
   const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
- 
+
   // Pick up to 5 random works
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, Math.min(5, shuffled.length));
- 
+
   if (!selected.length) return;
- 
+
   const INTERVAL = 5000;
   let cur = 0, timer;
- 
-  // Build slides — images only, no text
+
+  // Build slides with artwork info overlay
   selected.forEach((aw, i) => {
+    // Find the CORRECT index in SITE.artworks for this artwork
+    const correctIdx = SITE.artworks.findIndex(a => a.id === aw.id);
+    
     const slide = document.createElement('div');
     slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
     slide.dataset.awId = aw.id;
- 
+    slide.dataset.awIdx = correctIdx;
+
     const heroImg = _mainImg(aw) || _getDisplayImage(aw);
+    const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+    const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
+    const seeText = l === 'tr' ? 'eseri gör' : 'see artwork';
+
     if (heroImg) {
-      const img = document.createElement('img');
-      img.src = heroImg;
-      img.alt = '';
-      slide.appendChild(img);
+      slide.innerHTML = `
+        <img src="${heroImg}" alt="${_esc(title)}">
+        <div class="hero-overlay">
+          <div class="hero-overlay-title">${_esc(title)}</div>
+          <div class="hero-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
+          <a href="#" class="hero-overlay-link" data-aw-idx="${correctIdx}">${seeText}</a>
+        </div>`;
     } else {
       slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
- 
+
     area.insertBefore(slide, dotsEl);
   });
- 
-  // Single click handler on the container - opens the CURRENT slide's artwork
+
+  // Handle "see artwork" link clicks
   area.addEventListener('click', function(e) {
-    // Don't trigger if clicking on dots
-    if (e.target.closest('.hero-dots')) return;
+    const link = e.target.closest('.hero-overlay-link');
+    if (link) {
+      e.preventDefault();
+      const idx = parseInt(link.dataset.awIdx, 10);
+      if (idx >= 0) openArtwork(idx);
+      return;
+    }
     
-    // Get the currently active slide
-    const activeSlide = area.querySelector('.hero-slide.active');
-    if (!activeSlide) return;
-    
-    // Get the artwork ID from the active slide
-    const awId = activeSlide.dataset.awId;
-    if (!awId) return;
-    
-    // Find the index and open
-    const idx = SITE.artworks.findIndex(a => a.id === awId);
-    if (idx >= 0) openArtwork(idx);
+    // Clicking on slide image (not the overlay link) also opens artwork
+    const slide = e.target.closest('.hero-slide');
+    if (slide && !e.target.closest('.hero-overlay')) {
+      const idx = parseInt(slide.dataset.awIdx, 10);
+      if (idx >= 0) openArtwork(idx);
+    }
   });
- 
+
   // Dots
   selected.forEach((_, i) => {
     const dot = document.createElement('button');
@@ -248,7 +305,7 @@
     dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
     dotsEl.appendChild(dot);
   });
- 
+
   function goTo(n) {
     const slides = area.querySelectorAll('.hero-slide');
     const dots = dotsEl.querySelectorAll('.hero-dot');
@@ -259,9 +316,9 @@
     clearInterval(timer);
     timer = setInterval(() => goTo(cur + 1), INTERVAL);
   }
- 
+
   timer = setInterval(() => goTo(cur + 1), INTERVAL);
- 
+
   // Touch swipe
   let tsx = 0;
   area.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
