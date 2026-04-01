@@ -4,7 +4,7 @@
    Minimal gallery redesign · v3
    ================================================================ */
 
-const DATA_VERSION = 3;
+const DATA_VERSION = 4;
 
 /* ── CONTENT LAYER ─────────────────────────────────────────────── */
 let SITE;
@@ -233,14 +233,13 @@ function _renderWork(aw, badgeLabel) {
   let galleryHTML = '';
   const allImgs = aw.images || [];
   if (allImgs.length > 1) {
-    // MASONRY LAYOUT for gallery images
     const thumbs = allImgs.map((img, i) =>
-      `<div class="rw-masonry-item" data-lb-idx="${i}">
+      `<div class="rw-gallery-item" data-lb-idx="${i}">
          <img src="${img.path}" alt="${_esc(img.caption || '')}">
-         ${img.isMain ? '<span class="rw-masonry-main">★</span>' : ''}
+         ${img.isMain ? '<span class="rw-gallery-main">★</span>' : ''}
        </div>`).join('');
     galleryHTML = `<div class="reading-sec-label">${l === 'tr' ? 'görseller' : 'images'}</div>
-      <div class="rw-masonry-grid" id="rw-thumbstrip">${thumbs}</div>`;
+      <div class="rw-gallery-grid" id="rw-thumbstrip">${thumbs}</div>`;
   }
 
   let matsHTML = '';
@@ -295,10 +294,9 @@ function _attachGalleryLightbox(aw) {
       openLightbox(allImgs, mainIdx >= 0 ? mainIdx : 0);
     });
   }
-  // Support both old grid class and new masonry class
   const strip = document.getElementById('rw-thumbstrip');
   if (strip) {
-    strip.querySelectorAll('.rw-gallery-item, .rw-masonry-item').forEach(th => {
+    strip.querySelectorAll('.rw-gallery-item').forEach(th => {
       th.addEventListener('click', () => openLightbox(allImgs, parseInt(th.dataset.lbIdx, 10)));
     });
   }
