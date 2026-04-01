@@ -8,7 +8,45 @@
 <style>
 .writings-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; }
 @media(max-width:640px){ .writings-grid{ grid-template-columns:1fr; gap:32px; } }
- 
+
+/* ══════════════════════════════
+   POEM OF THE DAY
+══════════════════════════════ */
+.potd-wrap {
+  padding: 32px;
+  background: #fafaf8;
+  border-left: 3px solid var(--ink);
+  margin-bottom: 20px;
+}
+.potd-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 16px;
+}
+.potd-title {
+  font-size: 18px;
+  color: var(--ink);
+  text-transform: lowercase;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+.potd-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+  white-space: pre-line;
+  font-family: var(--font);
+}
+.potd-date {
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 20px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+
 /* ── book list ── */
 .book-item {
   display:flex; align-items:center; gap:20px;
@@ -203,6 +241,16 @@
   <div class="sec">
     <div class="sec-title" data-en="writings" data-tr="yazılar">writings</div>
  
+    <!-- Poem of the Day -->
+    <div id="poemOfDaySection" style="display:none; margin-bottom: 48px;">
+      <div class="potd-wrap">
+        <div class="potd-label" data-en="poem of the day" data-tr="günün şiiri">poem of the day</div>
+        <div class="potd-title" id="potdTitle"></div>
+        <div class="potd-text" id="potdText"></div>
+        <div class="potd-date" id="potdDate"></div>
+      </div>
+    </div>
+
     <div class="tabs">
       <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="all"      data-tr="tümü">all</button>
       <button class="tab-btn"    id="tab-books"    onclick="swTab('books')"    data-en="books"    data-tr="kitaplar">books</button>
@@ -367,6 +415,47 @@ function buildLists() {
     SITE.articles.forEach((a,i)=>el.appendChild(makeWritingItem('article',i,
       l==='tr'?a.titleTR:a.title, `${a.year} · ${l==='tr'?a.typeTR:a.type}`)));
   });
+  
+  // Poem of the Day
+  buildPoemOfDay();
+}
+
+function buildPoemOfDay() {
+  const l = currentLang;
+  const section = document.getElementById('poemOfDaySection');
+  
+  // Get poems marked as poemOfDay
+  const eligiblePoems = (SITE.poems || []).filter(p => p.poemOfDay === true);
+  
+  if (!eligiblePoems.length) {
+    section.style.display = 'none';
+    return;
+  }
+  
+  // Determine which poem to show based on day
+  // Use day of year to rotate through eligible poems
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 0);
+  const diff = now - startOfYear;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const poemIndex = dayOfYear % eligiblePoems.length;
+  const poem = eligiblePoems[poemIndex];
+  
+  const title = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
+  const body = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
+  
+  // Format today's date
+  const dateStr = now.toLocaleDateString(l === 'tr' ? 'tr-TR' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  document.getElementById('potdTitle').textContent = title;
+  document.getElementById('potdText').textContent = body;
+  document.getElementById('potdDate').textContent = dateStr;
+  
+  section.style.display = '';
 }
  
 function swTab(t) {
