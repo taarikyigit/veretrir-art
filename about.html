@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -7,141 +6,47 @@
 <title>about — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
-/* ══════════════════════════════════════════════════════════════
-   CONSISTENT LEFT-CENTER LAYOUT — matches homepage exactly
-══════════════════════════════════════════════════════════════ */
-html, body { height: 100%; margin: 0; }
-
-.page-layout {
-display: grid;
-grid-template-columns: 280px 1fr;
-min-height: 100vh;
-}
-
-/* Left panel — vertically centered, same as homepage */
-.page-left {
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: flex-start;
-padding: 0 40px;
-position: sticky;
-top: 0;
-height: 100vh;
-}
-.page-name {
-font-size: 15px;
-font-weight: 400;
-letter-spacing: 0.04em;
-text-transform: lowercase;
-margin-bottom: 24px;
-line-height: 1.4;
-text-decoration: none;
-color: var(–ink);
-}
-.page-nav { display: flex; flex-direction: column; gap: 6px; }
-.page-nav a {
-font-size: 11px;
-letter-spacing: 0.05em;
-text-transform: lowercase;
-color: var(–mid);
-text-decoration: none;
-transition: color 0.2s;
-}
-.page-nav a:hover, .page-nav a.active { color: var(–ink); }
-.page-lang {
-margin-top: 20px;
-display: flex; gap: 6px; align-items: center;
-}
-.page-ig {
-margin-top: 16px;
-}
-.page-ig a {
-display: inline-flex; align-items: center;
-text-decoration: none; color: var(–dim);
-transition: color 0.2s;
-}
-.page-ig a:hover { color: var(–ink); }
-.page-ig svg { width: 14px; height: 14px; }
-
-/* Right panel — scrollable content */
-.page-right {
-display: flex;
-flex-direction: column;
-justify-content: center;
-padding: 60px 60px 80px;
-min-height: 100vh;
-}
-
 .about-text {
-max-width: 560px;
-font-size: 14px;
-line-height: 2.0;
-color: #444;
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 2.0;
+  color: #444;
 }
 .about-text p + p { margin-top: 16px; }
-
-/* ══════════════════════════════════════════════════════════════
-RESPONSIVE
-══════════════════════════════════════════════════════════════ */
-@media (max-width: 800px) {
-.page-layout {
-grid-template-columns: 1fr;
-}
-.page-left {
-position: relative;
-height: auto;
-padding: 40px 20px 30px;
-justify-content: flex-start;
-}
-.page-right {
-padding: 20px 20px 60px;
-justify-content: flex-start;
-min-height: auto;
-}
-}
 </style>
-
 </head>
 <body>
 <div id="page-transition-mask"></div>
-
-<div class="page-layout">
-  <!-- LEFT: consistent nav — vertically centered like homepage -->
-  <div class="page-left">
-    <a href="index.html" class="page-name">tarık yiğit</a>
-    <div class="page-nav">
-      <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="about.html" class="active" data-en="about" data-tr="hakkında">about</a>
-      <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
-    </div>
-    <div class="page-lang">
-      <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
-      <span class="lang-sep">·</span>
-      <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
-    </div>
-    <div class="page-ig">
-      <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" data-no-transition>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-        </svg>
-      </a>
-    </div>
+<header>
+  <div class="header-left">
+    <a href="index.html" class="header-name">tarık yiğit</a>
+    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    </a>
   </div>
-
-  <!-- RIGHT: content -->
-
-  <div class="page-right">
+  <nav>
+    <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
+    <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+    <a href="about.html" data-en="about" data-tr="hakkında" class="active">about</a>
+    <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
+  </nav>
+  <div class="header-right">
+    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
+    <span class="lang-sep">·</span>
+    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
+  </div>
+</header>
+<div class="page-wrap">
+  <div class="sec">
+    <div class="sec-title" data-en="about" data-tr="hakkında">about</div>
     <div class="about-text" id="aboutText"></div>
   </div>
 </div>
-
-<script src="data.js"></script>
-
-<script src="common.js"></script>
-
+<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
+<script src="data.js"></script><script src="common.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   function renderAbout() {
@@ -160,6 +65,5 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('b-tr').addEventListener('click', renderAbout);
 });
 </script>
-
 </body>
 </html>
