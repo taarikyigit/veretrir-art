@@ -426,9 +426,9 @@ function closeForm() {
 function defaultItem(type) {
   const base = { id: type.slice(0,2) + '-' + Date.now(), title: '', titleTR: '', year: '', desc: '', descTR: '' };
   if (type === 'artworks' || type === 'projects') {
-    return { ...base, medium: '', mediumTR: '', images: [], materials: [], displayImage: null, featured: false, workType: '3d', status: (type === 'projects') ? 'ongoing' : undefined };
+    return { ...base, medium: '', mediumTR: '', images: [], materials: [], displayImage: null, featured: false, workType: '3d', category: '', status: (type === 'projects') ? 'ongoing' : undefined };
   }
-  if (type === 'poems') return { ...base, body: '', bodyTR: '' };
+  if (type === 'poems') return { ...base, body: '', bodyTR: '', poemOfDay: false };
   if (type === 'articles') return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '' };
   if (type === 'books') return { ...base, pdf: '', cover: null, allowDownload: true };
   return base;
@@ -460,6 +460,10 @@ function buildFormHTML() {
         <option value="3d" ${currentFormData.workType === '3d' ? 'selected' : ''}>3 Dimensional / Sculpture / Installation</option>
         <option value="2d" ${currentFormData.workType === '2d' ? 'selected' : ''}>2 Dimensional / Painting / Print / Drawing</option>
       </select>
+    </div>`;
+    h += `<div class="fg"><label class="fl">Category / Class</label>
+      <input class="fi" id="ff-category" value="${ea(currentFormData.category || '')}" placeholder="e.g. paintings, sculptures, prints, digital...">
+      <div class="fnote">Free text category for grouping artworks</div>
     </div>`;
   }
   h += `</div>`;
@@ -523,6 +527,13 @@ function buildFormHTML() {
   }
 
   else if (currentFormType === 'poems') {
+    h += `<div class="fg">
+      <label class="fl" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <input type="checkbox" id="ff-poemOfDay" ${currentFormData.poemOfDay ? 'checked' : ''} style="width:18px;height:18px;"> 
+        ★ Can be "Poem of the Day"
+      </label>
+      <div class="fnote">Marked poems will rotate daily in the Poem of the Day feature</div>
+    </div>`;
     h += `<div class="f2col">
       <div class="fg"><label class="fl">🇬🇧 Poem Text</label><textarea class="ft poem" id="ff-body">${eh(currentFormData.body || '')}</textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Şiir Metni</label><textarea class="ft poem" id="ff-bodyTR">${eh(currentFormData.bodyTR || '')}</textarea></div>
@@ -756,6 +767,8 @@ function saveForm() {
     if (featuredEl) currentFormData.featured = featuredEl.checked;
     const workTypeEl = document.getElementById('ff-workType');
     if (workTypeEl) currentFormData.workType = workTypeEl.value;
+    const categoryEl = document.getElementById('ff-category');
+    if (categoryEl) currentFormData.category = categoryEl.value.trim();
     if (currentFormType === 'projects') {
       const statusEl = document.getElementById('ff-status');
       if (statusEl) currentFormData.status = statusEl.value;
@@ -764,6 +777,8 @@ function saveForm() {
   else if (currentFormType === 'poems') {
     currentFormData.body = getText('ff-body');
     currentFormData.bodyTR = getText('ff-bodyTR');
+    const poemOfDayEl = document.getElementById('ff-poemOfDay');
+    if (poemOfDayEl) currentFormData.poemOfDay = poemOfDayEl.checked;
   }
   else if (currentFormType === 'articles') {
     currentFormData.type = getVal('ff-type');
