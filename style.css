@@ -339,35 +339,6 @@ nav a:hover, nav a.active { color: var(--ink); }
   gap: 4px;
   margin-top: 8px;
 }
-
-/* ── MASONRY GALLERY for artwork detail ── */
-.rw-masonry-grid {
-  column-count: 3;
-  column-gap: 8px;
-  margin-top: 8px;
-}
-.rw-masonry-item {
-  break-inside: avoid;
-  margin-bottom: 8px;
-  position: relative;
-  overflow: hidden;
-  background: #f5f5f5;
-  cursor: zoom-in;
-}
-.rw-masonry-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: opacity 0.3s;
-}
-.rw-masonry-item:hover img { opacity: 0.85; }
-.rw-masonry-main {
-  position: absolute; bottom: 4px; right: 6px;
-  font-size: 10px; color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  pointer-events: none;
-}
-
 .rw-gallery-item {
   position: relative;
   aspect-ratio: 1;
@@ -543,7 +514,6 @@ footer {
   .reading-body { padding: 32px var(--page-pad) 100px; }
   #back-fab { bottom: 16px; left: 16px; }
   .rw-gallery-grid { grid-template-columns: repeat(2, 1fr); }
-  .rw-masonry-grid { column-count: 2; }
   .rw-hero-wrap { max-height: 50vh; }
   .rw-hero-img { max-height: 50vh; }
   header { padding: 0 var(--page-pad); }
