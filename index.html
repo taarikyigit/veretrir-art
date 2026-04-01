@@ -219,9 +219,13 @@
       slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
 
-    // Click anywhere to open artwork
-    const awIdx = SITE.artworks.findIndex(a => a.id === aw.id);
-    slide.addEventListener('click', () => { if (awIdx >= 0) openArtwork(awIdx); });
+    // FIX: Store artwork ID directly on slide, lookup index on click
+    slide.dataset.awId = aw.id;
+    slide.addEventListener('click', function() {
+      const clickedId = this.dataset.awId;
+      const idx = SITE.artworks.findIndex(a => a.id === clickedId);
+      if (idx >= 0) openArtwork(idx);
+    });
 
     area.insertBefore(slide, dotsEl);
   });
