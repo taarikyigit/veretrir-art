@@ -13,7 +13,7 @@
   grid-template-columns: 280px 1fr;
   min-height: 100vh;
 }
-
+ 
 /* Left panel — name + nav */
 .home-left {
   display: flex;
@@ -53,7 +53,7 @@
 }
 .home-ig a:hover { color: var(--ink); }
 .home-ig svg { width: 14px; height: 14px; }
-
+ 
 /* Right panel — image-only slideshow */
 .home-right {
   position: relative;
@@ -61,7 +61,7 @@
   cursor: pointer;
   background: #f5f5f5;
 }
-
+ 
 .hero-slide {
   position: absolute;
   inset: 0;
@@ -69,14 +69,14 @@
   transition: opacity 0.8s ease;
 }
 .hero-slide.active { opacity: 1; }
-
+ 
 .hero-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
+ 
 .hero-slide-ph {
   width: 100%;
   height: 100%;
@@ -91,7 +91,7 @@
   text-transform: lowercase;
   color: var(--dim);
 }
-
+ 
 /* Minimal dot nav */
 .hero-dots {
   position: absolute;
@@ -111,7 +111,7 @@
   transition: background 0.3s;
 }
 .hero-dot.on { background: rgba(0,0,0,0.7); }
-
+ 
 /* ── Responsive ── */
 @media (max-width: 800px) {
   .home-wrap {
@@ -127,9 +127,9 @@
 </style>
 </head>
 <body>
-
+ 
 <div id="page-transition-mask" style="position:fixed;inset:0;background:#fff;z-index:9000;"></div>
-
+ 
 <div class="home-wrap">
   <!-- LEFT: name + nav -->
   <div class="home-left">
@@ -154,13 +154,13 @@
       </a>
     </div>
   </div>
-
+ 
   <!-- RIGHT: image-only slideshow -->
   <div class="home-right" id="heroArea">
     <div class="hero-dots" id="heroDots"></div>
   </div>
 </div>
-
+ 
 <!-- READING OVERLAY -->
 <div id="reading-overlay">
   <div class="reading-topbar">
@@ -173,7 +173,7 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   <span data-en="back" data-tr="geri">back</span>
 </button>
-
+ 
 <!-- 3D viewer -->
 <div id="viewer-overlay">
   <div class="viewer-topbar">
@@ -183,7 +183,7 @@
   <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.75"
     style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
 </div>
-
+ 
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
@@ -191,25 +191,25 @@
 (function() {
   const area = document.getElementById('heroArea');
   const dotsEl = document.getElementById('heroDots');
-
+ 
   const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
   const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
-
+ 
   // Pick up to 5 random works
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   const selected = shuffled.slice(0, Math.min(5, shuffled.length));
-
+ 
   if (!selected.length) return;
-
+ 
   const INTERVAL = 5000;
   let cur = 0, timer;
-
+ 
   // Build slides — images only, no text
   selected.forEach((aw, i) => {
     const slide = document.createElement('div');
     slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
     slide.dataset.awId = aw.id;
-
+ 
     const heroImg = _mainImg(aw) || _getDisplayImage(aw);
     if (heroImg) {
       const img = document.createElement('img');
@@ -219,10 +219,10 @@
     } else {
       slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
     }
-
+ 
     area.insertBefore(slide, dotsEl);
   });
-
+ 
   // Single click handler on the container - opens the CURRENT slide's artwork
   area.addEventListener('click', function(e) {
     // Don't trigger if clicking on dots
@@ -240,7 +240,7 @@
     const idx = SITE.artworks.findIndex(a => a.id === awId);
     if (idx >= 0) openArtwork(idx);
   });
-
+ 
   // Dots
   selected.forEach((_, i) => {
     const dot = document.createElement('button');
@@ -248,7 +248,7 @@
     dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
     dotsEl.appendChild(dot);
   });
-
+ 
   function goTo(n) {
     const slides = area.querySelectorAll('.hero-slide');
     const dots = dotsEl.querySelectorAll('.hero-dot');
@@ -259,9 +259,9 @@
     clearInterval(timer);
     timer = setInterval(() => goTo(cur + 1), INTERVAL);
   }
-
+ 
   timer = setInterval(() => goTo(cur + 1), INTERVAL);
-
+ 
   // Touch swipe
   let tsx = 0;
   area.addEventListener('touchstart', e => { tsx = e.touches[0].clientX; }, { passive: true });
