@@ -387,3 +387,173 @@ document.addEventListener('keydown', e => {
   if (v && v.classList.contains('open')) { closeViewer(); return; }
   closeReading();
 });
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN ENHANCEMENTS
+   - Custom cursor
+   - Scroll reveal animations
+   - Back to top button
+   - Scroll progress bar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CUSTOM CURSOR ─────────────────────────────────────────────── */
+(function() {
+  // Only on desktop
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+  
+  const cursor = document.createElement('div');
+  cursor.className = 'cursor';
+  document.body.appendChild(cursor);
+  
+  const follower = document.createElement('div');
+  follower.className = 'cursor-follower';
+  document.body.appendChild(follower);
+  
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+  let followerX = 0, followerY = 0;
+  
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+  
+  function animate() {
+    // Cursor follows immediately
+    cursorX = mouseX;
+    cursorY = mouseY;
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    
+    // Follower has smooth lag
+    followerX += (mouseX - followerX) * 0.15;
+    followerY += (mouseY - followerY) * 0.15;
+    follower.style.left = followerX + 'px';
+    follower.style.top = followerY + 'px';
+    
+    requestAnimationFrame(animate);
+  }
+  animate();
+  
+  // Hover effects for clickable elements
+  const hoverTargets = 'a, button, .gallery-item, .masonry-item, .hero-slide, .book-item, .writing-item, .project-card, [onclick]';
+  
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(hoverTargets)) {
+      cursor.classList.add('hover');
+      follower.classList.add('hover');
+    }
+  });
+  
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(hoverTargets)) {
+      cursor.classList.remove('hover');
+      follower.classList.remove('hover');
+    }
+  });
+  
+  // Hide cursor when leaving window
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    follower.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+    follower.style.opacity = '0.4';
+  });
+})();
+
+/* ── SCROLL REVEAL ANIMATIONS ──────────────────────────────────── */
+(function() {
+  const revealElements = () => {
+    const reveals = document.querySelectorAll('.reveal:not(.active)');
+    const windowHeight = window.innerHeight;
+    
+    reveals.forEach((el, i) => {
+      const elementTop = el.getBoundingClientRect().top;
+      const revealPoint = 100;
+      
+      if (elementTop < windowHeight - revealPoint) {
+        // Add staggered delay based on visible order
+        el.style.animationDelay = (i * 0.1) + 's';
+        el.classList.add('active');
+      }
+    });
+  };
+  
+  // Initial reveal for elements already in view
+  window.addEventListener('load', () => {
+    setTimeout(revealElements, 100);
+  });
+  
+  // Reveal on scroll
+  window.addEventListener('scroll', revealElements, { passive: true });
+})();
+
+/* ── BACK TO TOP BUTTON ────────────────────────────────────────── */
+(function() {
+  // Create button if it doesn't exist
+  if (document.getElementById('back-to-top')) return;
+  
+  const btn = document.createElement('button');
+  btn.id = 'back-to-top';
+  btn.setAttribute('aria-label', 'Back to top');
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>`;
+  document.body.appendChild(btn);
+  
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+})();
+
+/* ── SCROLL PROGRESS BAR ───────────────────────────────────────── */
+(function() {
+  if (document.getElementById('scroll-progress')) return;
+  
+  const progress = document.createElement('div');
+  progress.id = 'scroll-progress';
+  document.body.appendChild(progress);
+  
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    progress.style.width = scrollPercent + '%';
+  }, { passive: true });
+})();
+
+/* ── LAZY LOADING IMAGES ───────────────────────────────────────── */
+(function() {
+  if (!('IntersectionObserver' in window)) return;
+  
+  const lazyImages = document.querySelectorAll('img[data-src]');
+  
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        img.classList.add('lazy-img');
+        
+        img.onload = () => {
+          img.classList.add('loaded');
+        };
+        
+        observer.unobserve(img);
+      }
+    });
+  }, { rootMargin: '50px 0px' });
+  
+  lazyImages.forEach(img => imageObserver.observe(img));
+})();
