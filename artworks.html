@@ -209,16 +209,16 @@
 
 <div class="page-wrap">
   <div class="sec" style="max-width:1100px;">
-    <div class="sec-title" data-en="artworks" data-tr="eserler">artworks</div>
+    <div class="sec-title reveal" data-en="artworks" data-tr="eserler">artworks</div>
 
     <!-- Category navigation -->
-    <div class="category-nav" id="categoryNav"></div>
+    <div class="category-nav reveal reveal-delay-1" id="categoryNav"></div>
 
     <!-- Masonry grid -->
     <div class="masonry-grid" id="artworkGrid"></div>
 
     <!-- Projects section — always at bottom -->
-    <div class="projects-section" id="projectsSection">
+    <div class="projects-section reveal" id="projectsSection">
       <div class="projects-section-title" data-en="ongoing & planned projects" data-tr="devam eden & planlanan projeler">ongoing & planned projects</div>
       <div id="projectsList"></div>
     </div>
@@ -323,13 +323,14 @@ function buildPage() {
     const originalIdx = SITE.artworks.findIndex(a => a.id === aw.id);
 
     const div = document.createElement('div');
-    div.className = 'masonry-item';
+    div.className = 'masonry-item reveal img-zoom-hover';
+    div.style.animationDelay = (idx * 0.08) + 's';
     div.addEventListener('click', () => openArtwork(originalIdx));
 
     if (displaySrc) {
       div.innerHTML = `
         <div class="masonry-img">
-          <img src="${displaySrc}" alt="${_esc(title)}">
+          <img src="${displaySrc}" alt="${_esc(title)}" class="lazy-img loaded">
           <div class="masonry-overlay">
             <div class="masonry-overlay-title">${_esc(title)}</div>
             <div class="masonry-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
@@ -383,8 +384,20 @@ function buildPage() {
 }
 
 const _base = window.setLang;
-window.setLang = function(l) { _base(l); buildPage(); };
-document.addEventListener('DOMContentLoaded', () => { buildPage(); });
+window.setLang = function(l) { _base(l); buildPage(); triggerReveals(); };
+document.addEventListener('DOMContentLoaded', () => { 
+  buildPage(); 
+  setTimeout(triggerReveals, 100);
+});
+
+function triggerReveals() {
+  document.querySelectorAll('.reveal:not(.active)').forEach((el, i) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 50) {
+      el.classList.add('active');
+    }
+  });
+}
 </script>
 </body>
 </html>
