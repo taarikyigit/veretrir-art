@@ -260,64 +260,94 @@
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ═══ HERO SLIDESHOW WITH ARTWORK INFO ═══ */
+/* ═══ HERO SLIDESHOW — Uses heroSlider settings from admin panel ═══ */
 (function() {
   const area = document.getElementById('heroArea');
   const dotsEl = document.getElementById('heroDots');
   const l = currentLang;
 
-  const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
-  const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+  // Get hero slider settings
+  const heroSettings = SITE.heroSlider || {};
+  const heroImages = heroSettings.images || [];
+  const slideCount = heroSettings.slideCount || 5;
+  const shouldRandomize = heroSettings.randomize !== false;
 
-  // Pick up to 5 random works
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  const selected = shuffled.slice(0, Math.min(5, shuffled.length));
+  // Build slides from selected hero images
+  let slides = [];
+  
+  if (heroImages.length > 0) {
+    // Use admin-selected images
+    heroImages.forEach(hi => {
+      const aw = SITE.artworks.find(a => a.id === hi.artworkId);
+      if (aw) {
+        slides.push({
+          imagePath: hi.path,
+          artwork: aw,
+          artworkIdx: SITE.artworks.findIndex(a => a.id === hi.artworkId)
+        });
+      }
+    });
+  } else {
+    // Fallback: use featured artworks or all artworks
+    const featuredWorks = SITE.artworks.filter(aw => aw.featured === true);
+    const pool = featuredWorks.length >= 3 ? featuredWorks : SITE.artworks;
+    pool.forEach(aw => {
+      const img = _mainImg(aw) || _getDisplayImage(aw);
+      if (img) {
+        slides.push({
+          imagePath: img,
+          artwork: aw,
+          artworkIdx: SITE.artworks.findIndex(a => a.id === aw.id)
+        });
+      }
+    });
+  }
 
-  if (!selected.length) return;
+  // Randomize if enabled
+  if (shouldRandomize) {
+    slides = slides.sort(() => Math.random() - 0.5);
+  }
+
+  // Limit to slideCount
+  slides = slides.slice(0, slideCount);
+
+  if (!slides.length) return;
 
   const INTERVAL = 5000;
   let cur = 0, timer;
 
-  // Build slides with artwork info overlay
-  selected.forEach((aw, i) => {
-    // Find the CORRECT index in SITE.artworks for this artwork
-    const correctIdx = SITE.artworks.findIndex(a => a.id === aw.id);
-    
-    const slide = document.createElement('div');
-    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
-    slide.dataset.awId = aw.id;
-    slide.dataset.awIdx = correctIdx;
-
-    const heroImg = _mainImg(aw) || _getDisplayImage(aw);
+  // Build slide elements
+  slides.forEach((sl, i) => {
+    const aw = sl.artwork;
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
     const seeText = l === 'tr' ? 'eseri gör' : 'see artwork';
 
-    if (heroImg) {
-      slide.innerHTML = `
-        <img src="${heroImg}" alt="${_esc(title)}">
-        <div class="hero-overlay">
-          <div class="hero-overlay-title">${_esc(title)}</div>
-          <div class="hero-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
-          <a href="#" class="hero-overlay-link" data-aw-idx="${correctIdx}">${seeText}</a>
-        </div>`;
-    } else {
-      slide.innerHTML = '<div class="hero-slide-ph"><span>—</span></div>';
-    }
+    const slide = document.createElement('div');
+    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    slide.dataset.awId = aw.id;
+    slide.dataset.awIdx = sl.artworkIdx;
+
+    slide.innerHTML = `
+      <img src="${sl.imagePath}" alt="${_esc(title)}">
+      <div class="hero-overlay">
+        <div class="hero-overlay-title">${_esc(title)}</div>
+        <div class="hero-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
+        <a href="#" class="hero-overlay-link">${seeText}</a>
+      </div>`;
 
     area.insertBefore(slide, dotsEl);
   });
 
-  // Handle "see artwork" link clicks
-  // Only active slide receives clicks due to pointer-events CSS
+  // Handle clicks - only active slide receives clicks (pointer-events CSS)
   area.addEventListener('click', function(e) {
-    // Ignore dot clicks
     if (e.target.closest('.hero-dot')) return;
     
     const link = e.target.closest('.hero-overlay-link');
     if (link) {
       e.preventDefault();
-      const awId = link.closest('.hero-slide').dataset.awId;
+      const slide = link.closest('.hero-slide');
+      const awId = slide.dataset.awId;
       if (awId) {
         const idx = SITE.artworks.findIndex(a => a.id === awId);
         if (idx >= 0) openArtwork(idx);
@@ -325,7 +355,7 @@
       return;
     }
     
-    // Clicking on slide image (not the overlay) also opens artwork
+    // Clicking on slide image also opens artwork
     const slide = e.target.closest('.hero-slide');
     if (slide && !e.target.closest('.hero-overlay')) {
       const awId = slide.dataset.awId;
