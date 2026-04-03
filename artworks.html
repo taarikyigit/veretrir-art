@@ -373,8 +373,7 @@ function buildPage() {
     const originalIdx = SITE.artworks.findIndex(a => a.id === aw.id);
 
     const div = document.createElement('div');
-    div.className = 'masonry-item reveal img-zoom-hover';
-    div.style.animationDelay = (idx * 0.08) + 's';
+    div.className = 'masonry-item img-zoom-hover';
     div.addEventListener('click', () => openArtwork(originalIdx));
 
     if (displaySrc) {
