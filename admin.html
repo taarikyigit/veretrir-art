@@ -164,7 +164,9 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   <div class="topbar">
     <span class="topbar-left">tarık yiğit — admin</span>
     <div class="topbar-right">
-      <button class="t-btn green" onclick="exportData()">⬇ Export data.js</button>
+      <button class="t-btn" id="saveStatus" style="display:none;border-color:var(--accent);color:var(--accent);">✓ Saved</button>
+      <button class="t-btn green" onclick="saveToWebsite()" id="btnSaveWebsite" title="Save directly to website">💾 Save to Website</button>
+      <button class="t-btn" onclick="exportData()">⬇ Download</button>
       <a class="t-btn" href="index.html" target="_blank" rel="noopener">View Site ↗</a>
       <button class="t-btn danger" onclick="doLogout()">Sign out</button>
     </div>
@@ -900,6 +902,56 @@ function exportData() {
   a.click();
   URL.revokeObjectURL(url);
   toast('data.js downloaded!','ok');
+}
+
+async function saveToWebsite() {
+  const btn = document.getElementById('btnSaveWebsite');
+  const statusEl = document.getElementById('saveStatus');
+  
+  // Show loading state
+  btn.disabled = true;
+  btn.textContent = '⏳ Saving...';
+  btn.style.opacity = '0.6';
+  
+  try {
+    const dataJsContent = buildDataJS();
+    
+    const response = await fetch('save-data.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': AUTH.pass  // Use admin password as auth token
+      },
+      body: JSON.stringify({ content: dataJsContent })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok && result.success) {
+      toast('✓ Saved to website! Changes are now live.', 'ok');
+      
+      // Show success status briefly
+      statusEl.style.display = 'inline-block';
+      statusEl.textContent = '✓ Saved';
+      setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+    } else {
+      throw new Error(result.error || 'Failed to save');
+    }
+  } catch (err) {
+    console.error('Save error:', err);
+    
+    // Check if it's a network/PHP error
+    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      toast('⚠ Could not connect to server. Make sure save-data.php is uploaded.', 'err');
+    } else {
+      toast('⚠ ' + err.message, 'err');
+    }
+  } finally {
+    // Reset button
+    btn.disabled = false;
+    btn.textContent = '💾 Save to Website';
+    btn.style.opacity = '1';
+  }
 }
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
