@@ -6,8 +6,22 @@
 <title>about — tarık yiğit</title>
 <link rel="stylesheet" href="style.css"/>
 <style>
+.about-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  max-width: 800px;
+}
+
+@media (min-width: 700px) {
+  .about-container {
+    grid-template-columns: 280px 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+}
+
 .about-text {
-  max-width: 560px;
   font-size: 14px;
   line-height: 2.0;
   color: #444;
@@ -42,7 +56,21 @@
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title reveal" data-en="about" data-tr="hakkında">about</div>
-    <div class="about-text reveal reveal-delay-1" id="aboutText"></div>
+    
+    <div class="about-container">
+      <!-- Profile Photo -->
+      <div class="about-photo-wrap reveal reveal-delay-1">
+        <img 
+          src="images/profile.jpg" 
+          alt="tarık yiğit" 
+          class="about-photo lazy-img"
+          onerror="this.parentElement.innerHTML='<div class=\'about-photo-placeholder\'>photo</div>'"
+        >
+      </div>
+      
+      <!-- About Text -->
+      <div class="about-text reveal reveal-delay-2" id="aboutText"></div>
+    </div>
   </div>
 </div>
 <footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
