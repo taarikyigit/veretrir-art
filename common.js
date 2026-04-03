@@ -301,18 +301,43 @@ function _renderWork(aw, badgeLabel) {
       } else if (mat.type === 'youtube') {
         // Extract YouTube video ID from URL or use as-is
         let videoId = mat.path || '';
-        if (videoId.includes('youtube.com') || videoId.includes('youtu.be')) {
+        let isShort = false;
+        
+        if (videoId.includes('youtube.com/shorts/')) {
+          // YouTube Shorts URL
+          const match = videoId.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/);
+          if (match) {
+            videoId = match[1];
+            isShort = true;
+          }
+        } else if (videoId.includes('youtube.com') || videoId.includes('youtu.be')) {
+          // Regular YouTube URL
           const match = videoId.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
           if (match) videoId = match[1];
         }
+        
         if (videoId) {
-          matsHTML += lbl + `<div class="rw-youtube-container" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-top:8px;border-radius:4px;">
-            <iframe src="https://www.youtube.com/embed/${videoId}" 
-              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowfullscreen>
-            </iframe>
-          </div>`;
+          if (isShort) {
+            // Shorts: vertical aspect ratio (9:16)
+            matsHTML += lbl + `<div class="rw-youtube-container rw-youtube-short" style="position:relative;width:100%;max-width:350px;margin:8px auto 0;">
+              <div style="position:relative;padding-bottom:177.78%;height:0;overflow:hidden;border-radius:8px;">
+                <iframe src="https://www.youtube.com/embed/${videoId}" 
+                  style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>`;
+          } else {
+            // Regular: horizontal aspect ratio (16:9)
+            matsHTML += lbl + `<div class="rw-youtube-container" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-top:8px;border-radius:4px;">
+              <iframe src="https://www.youtube.com/embed/${videoId}" 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>`;
+          }
         }
       }
     });
