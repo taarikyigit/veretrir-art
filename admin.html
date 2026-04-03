@@ -199,6 +199,10 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>
       Categories
     </div>
+    <div class="sb-item" data-panel="series" onclick="go('series')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><line x1="10" y1="6.5" x2="14" y2="6.5"/><line x1="10" y1="17.5" x2="14" y2="17.5"/></svg>
+      Series
+    </div>
     <div class="sb-item" data-panel="texts" onclick="go('texts')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Site Texts
@@ -276,6 +280,35 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <div class="fg">
         <label class="fl">Existing Categories</label>
         <div id="categories-list" style="background:var(--raised);border:1px solid var(--border);padding:12px;min-height:60px;"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-series">
+      <div class="ptitle">Series of Works</div>
+      <div class="pdesc">Define series to group related artworks. Series will appear as a filter tab in the artworks page.</div>
+      
+      <div class="form-drawer" style="margin-bottom:20px;">
+        <div class="form-drawer-title">Add New Series</div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">🇬🇧 English Name</label>
+            <input class="fi" id="series-new-en" placeholder="e.g. hayat döner"/>
+          </div>
+          <div class="fg">
+            <label class="fl">🇹🇷 Turkish Name</label>
+            <input class="fi" id="series-new-tr" placeholder="e.g. hayat döner"/>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Description (optional)</label>
+          <input class="fi" id="series-new-desc" placeholder="Brief description of the series"/>
+        </div>
+        <button class="btn-save" onclick="addSeries()" style="margin-top:12px;">+ Add Series</button>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Existing Series</label>
+        <div id="series-list" style="background:var(--raised);border:1px solid var(--border);padding:12px;min-height:60px;"></div>
       </div>
     </div>
 
@@ -425,6 +458,7 @@ function renderPanel(name) {
   else if(name==='articles') renderList('articles');
   else if(name==='books') renderList('books');
   else if(name==='categories') renderCategoriesList();
+  else if(name==='series') renderSeriesList();
   else if(name==='texts') loadTexts();
   else if(name==='hero') buildHeroPanel();
   else if(name==='export') buildExportPreview();
@@ -536,10 +570,18 @@ function buildFormHTML() {
       </select>
       <div class="fnote">Define categories in <a href="#" onclick="go('categories');return false;" style="color:var(--accent);">Categories</a> panel</div>
     </div>`;
-    // Set selected category after rendering
+    h += `<div class="fg"><label class="fl">Series / Seri</label>
+      <select class="fsel" id="ff-series">
+        ${getSeriesOptions()}
+      </select>
+      <div class="fnote">Group related works. Define series in <a href="#" onclick="go('series');return false;" style="color:var(--accent);">Series</a> panel</div>
+    </div>`;
+    // Set selected category and series after rendering
     setTimeout(() => {
-      const sel = document.getElementById('ff-category');
-      if (sel && currentFormData.category) sel.value = currentFormData.category;
+      const catSel = document.getElementById('ff-category');
+      if (catSel && currentFormData.category) catSel.value = currentFormData.category;
+      const serSel = document.getElementById('ff-series');
+      if (serSel && currentFormData.series) serSel.value = currentFormData.series;
     }, 10);
   }
   h += `</div>`;
@@ -599,6 +641,7 @@ function buildFormHTML() {
       <button class="mat-type-btn" onclick="addMat('3d')">+ 3D Model</button>
       <button class="mat-type-btn" onclick="addMat('pdf')">+ PDF</button>
       <button class="mat-type-btn" onclick="addMat('video')">+ Video</button>
+      <button class="mat-type-btn" onclick="addMat('youtube')">+ YouTube</button>
     </div>`;
   }
 
@@ -716,7 +759,7 @@ function buildMatBlocks() {
 
 function buildMatBlock(m,i) {
   let inner = '';
-  const typeLabel = { text: 'Text', 'image-gallery': 'Image Gallery', gif: 'GIF', '3d': '3D Model', pdf: 'PDF', video: 'Video' }[m.type] || m.type;
+  const typeLabel = { text: 'Text', 'image-gallery': 'Image Gallery', gif: 'GIF', '3d': '3D Model', pdf: 'PDF', video: 'Video', youtube: 'YouTube' }[m.type] || m.type;
   
   if(m.type === 'text') {
     inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
@@ -752,6 +795,11 @@ function buildMatBlock(m,i) {
   else if (m.type === 'video') {
     inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
     <div class="fg"><label class="fl">Video Path (.mp4)</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="videos/clip.mp4"></div>`;
+  }
+  else if (m.type === 'youtube') {
+    inner = `<div class="fg"><label class="fl">Label / Title</label><input class="fi" id="mat-label-${i}" value="${ea(m.label || '')}" onchange="updateMatField(${i},'label',this.value)"></div>
+    <div class="fg"><label class="fl">YouTube URL or Video ID</label><input class="fi" id="mat-path-${i}" value="${ea(m.path || '')}" onchange="updateMatField(${i},'path',this.value)" placeholder="https://youtube.com/watch?v=xxxxx or just xxxxx"></div>
+    <div class="fnote">Paste full YouTube URL or just the video ID</div>`;
   }
   
   return `<div class="mat-block">
@@ -845,6 +893,8 @@ function saveForm() {
     if (workTypeEl) currentFormData.workType = workTypeEl.value;
     const categoryEl = document.getElementById('ff-category');
     if (categoryEl) currentFormData.category = categoryEl.value.trim();
+    const seriesEl = document.getElementById('ff-series');
+    if (seriesEl) currentFormData.series = seriesEl.value.trim();
     if (currentFormType === 'projects') {
       const statusEl = document.getElementById('ff-status');
       if (statusEl) currentFormData.status = statusEl.value;
@@ -1046,6 +1096,100 @@ function getCategoryOptions() {
   }
   return '<option value="">— select category —</option>' + 
     D.categories.map(c => `<option value="${ea(c.en)}">${esc(c.en)} / ${esc(c.tr)}</option>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SERIES OF WORKS MANAGEMENT
+   ═══════════════════════════════════════════════════════════════ */
+
+function renderSeriesList() {
+  if (!D.series) D.series = [];
+  
+  const container = document.getElementById('series-list');
+  if (!container) return;
+  
+  if (D.series.length === 0) {
+    container.innerHTML = '<span style="color:var(--faint);font-size:11px;">No series yet. Add one above.</span>';
+    return;
+  }
+  
+  // Count artworks in each series
+  const counts = {};
+  (D.artworks || []).forEach(aw => {
+    if (aw.series) {
+      counts[aw.series] = (counts[aw.series] || 0) + 1;
+    }
+  });
+  
+  container.innerHTML = D.series.map((s, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
+      <div>
+        <span style="color:var(--text);">🇬🇧 ${esc(s.en)}</span>
+        <span style="color:var(--faint);margin:0 8px;">|</span>
+        <span style="color:var(--text);">🇹🇷 ${esc(s.tr)}</span>
+        <span style="color:var(--dim);margin-left:12px;font-size:10px;">(${counts[s.en] || 0} works)</span>
+      </div>
+      <button onclick="deleteSeries(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+    </div>
+  `).join('');
+}
+
+function addSeries() {
+  const enInput = document.getElementById('series-new-en');
+  const trInput = document.getElementById('series-new-tr');
+  const descInput = document.getElementById('series-new-desc');
+  
+  const en = enInput.value.trim().toLowerCase();
+  const tr = trInput.value.trim().toLowerCase();
+  const desc = descInput ? descInput.value.trim() : '';
+  
+  if (!en || !tr) {
+    toast('Please enter both English and Turkish names', 'err');
+    return;
+  }
+  
+  if (!D.series) D.series = [];
+  
+  if (D.series.some(s => s.en === en)) {
+    toast('Series already exists', 'err');
+    return;
+  }
+  
+  D.series.push({ en, tr, desc });
+  saveD();
+  
+  enInput.value = '';
+  trInput.value = '';
+  if (descInput) descInput.value = '';
+  
+  renderSeriesList();
+  toast('Series added!', 'ok');
+}
+
+function deleteSeries(idx) {
+  if (!D.series) return;
+  const s = D.series[idx];
+  if (!confirm(`Delete series "${s.en} / ${s.tr}"? Artworks in this series will be unassigned.`)) return;
+  
+  // Remove series from artworks
+  (D.artworks || []).forEach(aw => {
+    if (aw.series === s.en) {
+      aw.series = '';
+    }
+  });
+  
+  D.series.splice(idx, 1);
+  saveD();
+  renderSeriesList();
+  toast('Series deleted', 'ok');
+}
+
+function getSeriesOptions() {
+  if (!D.series || D.series.length === 0) {
+    return '<option value="">— no series defined —</option>';
+  }
+  return '<option value="">— not in a series —</option>' + 
+    D.series.map(s => `<option value="${ea(s.en)}">${esc(s.en)} / ${esc(s.tr)}</option>`).join('');
 }
 
 /* ═══════════════════════════════════════════════════════════════
