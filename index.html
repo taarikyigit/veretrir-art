@@ -66,8 +66,12 @@
   inset: 0;
   opacity: 0;
   transition: opacity 0.8s ease;
+  pointer-events: none; /* Disable clicks on inactive slides */
 }
-.hero-slide.active { opacity: 1; }
+.hero-slide.active { 
+  opacity: 1; 
+  pointer-events: auto; /* Enable clicks only on active slide */
+}
 
 .hero-slide img {
   width: 100%;
@@ -305,14 +309,15 @@
   });
 
   // Handle "see artwork" link clicks
+  // Only active slide receives clicks due to pointer-events CSS
   area.addEventListener('click', function(e) {
+    // Ignore dot clicks
+    if (e.target.closest('.hero-dot')) return;
+    
     const link = e.target.closest('.hero-overlay-link');
     if (link) {
       e.preventDefault();
-      e.stopPropagation();
-      // Get the artwork ID directly from the link's parent slide
-      const parentSlide = link.closest('.hero-slide');
-      const awId = parentSlide ? parentSlide.dataset.awId : null;
+      const awId = link.closest('.hero-slide').dataset.awId;
       if (awId) {
         const idx = SITE.artworks.findIndex(a => a.id === awId);
         if (idx >= 0) openArtwork(idx);
@@ -320,11 +325,10 @@
       return;
     }
     
-    // Clicking on slide image (not the overlay link) also opens artwork
-    // Use the ACTIVE slide, not the clicked element's parent
-    const activeSlide = area.querySelector('.hero-slide.active');
-    if (activeSlide && !e.target.closest('.hero-overlay') && !e.target.closest('.hero-dot')) {
-      const awId = activeSlide.dataset.awId;
+    // Clicking on slide image (not the overlay) also opens artwork
+    const slide = e.target.closest('.hero-slide');
+    if (slide && !e.target.closest('.hero-overlay')) {
+      const awId = slide.dataset.awId;
       if (awId) {
         const idx = SITE.artworks.findIndex(a => a.id === awId);
         if (idx >= 0) openArtwork(idx);
