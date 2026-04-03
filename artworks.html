@@ -260,24 +260,27 @@ function buildCategoryNav() {
   const nav = document.getElementById('categoryNav');
   nav.innerHTML = '';
 
-  // Collect unique categories
-  const categories = new Set();
+  // Collect unique categories from artworks
+  const usedCategories = new Set();
   SITE.artworks.forEach(aw => {
     if (aw.category && aw.category.trim()) {
-      categories.add(aw.category.trim().toLowerCase());
+      usedCategories.add(aw.category.trim().toLowerCase());
     }
   });
 
-  // Sort categories, but keep "ongoing" and "planned" at the end
-  const sortedCats = Array.from(categories).sort((a, b) => {
-    const aLower = a.toLowerCase();
-    const bLower = b.toLowerCase();
-    const aIsProject = aLower.includes('ongoing') || aLower.includes('planned');
-    const bIsProject = bLower.includes('ongoing') || bLower.includes('planned');
-    if (aIsProject && !bIsProject) return 1;
-    if (!aIsProject && bIsProject) return -1;
-    return a.localeCompare(b);
-  });
+  // Get category definitions for translation
+  const categoryDefs = SITE.categories || [];
+  
+  function getCategoryLabel(catKey) {
+    const def = categoryDefs.find(c => c.en === catKey);
+    if (def) {
+      return l === 'tr' ? def.tr : def.en;
+    }
+    return catKey; // fallback to key if no definition
+  }
+
+  // Sort categories
+  const sortedCats = Array.from(usedCategories).sort((a, b) => a.localeCompare(b));
 
   // Add "All" button
   const allBtn = document.createElement('button');
@@ -286,11 +289,11 @@ function buildCategoryNav() {
   allBtn.addEventListener('click', () => { currentCategory = 'all'; buildPage(); });
   nav.appendChild(allBtn);
 
-  // Add category buttons
+  // Add category buttons with translated labels
   sortedCats.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'cat-btn' + (currentCategory === cat ? ' on' : '');
-    btn.textContent = cat;
+    btn.textContent = getCategoryLabel(cat);
     btn.addEventListener('click', () => { currentCategory = cat; buildPage(); });
     nav.appendChild(btn);
   });
@@ -330,7 +333,7 @@ function buildPage() {
     if (displaySrc) {
       div.innerHTML = `
         <div class="masonry-img">
-          <img src="${displaySrc}" alt="${_esc(title)}" class="lazy-img loaded">
+          <img src="${displaySrc}" alt="${_esc(title)}" class="lazy-img">
           <div class="masonry-overlay">
             <div class="masonry-overlay-title">${_esc(title)}</div>
             <div class="masonry-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
