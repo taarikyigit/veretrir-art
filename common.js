@@ -298,6 +298,22 @@ function _renderWork(aw, badgeLabel) {
         </div>`;
       } else if (mat.type === 'video') {
         matsHTML += lbl + `<video controls style="width:100%;max-width:100%;margin-top:8px;" src="${mat.path}"></video>`;
+      } else if (mat.type === 'youtube') {
+        // Extract YouTube video ID from URL or use as-is
+        let videoId = mat.path || '';
+        if (videoId.includes('youtube.com') || videoId.includes('youtu.be')) {
+          const match = videoId.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+          if (match) videoId = match[1];
+        }
+        if (videoId) {
+          matsHTML += lbl + `<div class="rw-youtube-container" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-top:8px;border-radius:4px;">
+            <iframe src="https://www.youtube.com/embed/${videoId}" 
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          </div>`;
+        }
       }
     });
   }
@@ -305,11 +321,29 @@ function _renderWork(aw, badgeLabel) {
   const descParas = (desc || '').split(/\n\n+/).filter(p => p.trim())
     .map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
 
+  // Series link
+  let seriesHTML = '';
+  if (aw.series && aw.series.trim()) {
+    const seriesDefs = SITE.series || [];
+    const serDef = seriesDefs.find(s => s.en === aw.series);
+    const seriesName = serDef ? (l === 'tr' ? serDef.tr : serDef.en) : aw.series;
+    const seriesCount = SITE.artworks.filter(a => a.series === aw.series && a.id !== aw.id).length;
+    if (seriesCount > 0) {
+      seriesHTML = `<div class="rw-series-link" style="margin-top:24px;padding:16px;background:#f9f9f9;border:1px solid var(--line);border-radius:4px;">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:6px;">${l === 'tr' ? 'bu seri' : 'this series'}</div>
+        <div style="font-size:14px;color:var(--ink);margin-bottom:8px;">${_esc(seriesName)}</div>
+        <a href="artworks.html#ser:${_esc(aw.series)}" class="rw-series-btn" style="display:inline-block;font-size:11px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px;">
+          ${l === 'tr' ? `bu serinin ${seriesCount} diğer eserini gör →` : `see ${seriesCount} other work${seriesCount > 1 ? 's' : ''} in this series →`}
+        </a>
+      </div>`;
+    }
+  }
+
   openReading(`
     ${heroHTML}${infoHTML}
     <div class="reading-sec-label">${l === 'tr' ? 'açıklama' : 'about this work'}</div>
     <div class="reading-desc">${descParas || `<p>${_esc(desc || '')}</p>`}</div>
-    ${galleryHTML}${matsHTML}
+    ${seriesHTML}${galleryHTML}${matsHTML}
   `, badgeLabel, title);
 
   requestAnimationFrame(() => _attachGalleryLightbox(aw));
