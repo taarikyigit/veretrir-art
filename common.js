@@ -481,28 +481,68 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
-/* ── LAZY LOADING IMAGES ───────────────────────────────────────── */
+/* ── LAZY LOADING IMAGES WITH BLUR ────────────────────────────────── */
 (function() {
-  if (!('IntersectionObserver' in window)) return;
-  
-  const lazyImages = document.querySelectorAll('img[data-src]');
-  
-  const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.removeAttribute('data-src');
+  // Apply to all images in content areas
+  function initLazyImages() {
+    const images = document.querySelectorAll('.masonry-item img, .rw-masonry-item img, .rw-hero-img, .gallery-item img, .about-photo');
+    
+    images.forEach(img => {
+      if (img.classList.contains('lazy-initialized')) return;
+      img.classList.add('lazy-initialized');
+      
+      // If image not loaded yet, add lazy class
+      if (!img.complete) {
         img.classList.add('lazy-img');
-        
         img.onload = () => {
           img.classList.add('loaded');
         };
-        
-        observer.unobserve(img);
+      } else {
+        img.classList.add('lazy-img', 'loaded');
       }
     });
-  }, { rootMargin: '50px 0px' });
+  }
   
-  lazyImages.forEach(img => imageObserver.observe(img));
+  // Run on load and observe for dynamic content
+  document.addEventListener('DOMContentLoaded', initLazyImages);
+  
+  // Also run when reading overlay opens (for dynamically added images)
+  const observer = new MutationObserver(initLazyImages);
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+
+/* ── SMOOTH PAGE TRANSITIONS ──────────────────────────────────────── */
+(function() {
+  // Intercept internal link clicks
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (!link) return;
+    
+    const href = link.getAttribute('href');
+    if (!href) return;
+    
+    // Skip external links, anchors, and special links
+    if (href.startsWith('http') || 
+        href.startsWith('#') || 
+        href.startsWith('mailto:') || 
+        href.startsWith('tel:') ||
+        link.target === '_blank' ||
+        link.hasAttribute('download')) {
+      return;
+    }
+    
+    // Skip if it's the current page
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    if (href === currentPage) return;
+    
+    e.preventDefault();
+    
+    // Add exit animation
+    document.body.classList.add('page-exit');
+    
+    // Navigate after animation
+    setTimeout(() => {
+      window.location.href = href;
+    }, 250);
+  });
 })();
