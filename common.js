@@ -273,12 +273,29 @@ function _renderWork(aw, badgeLabel) {
       } else if (mat.type === '3d') {
         const safeTitle = _esc(title).replace(/'/g, "\\'");
         const safePath = (mat.path || '').replace(/'/g, "\\'");
-        matsHTML += lbl + `<button class="btn-3d" onclick="openViewer('${safePath}','${safeTitle}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l9 4.5v9L12 20l-9-4.5v-9L12 2z"/><polyline points="12 2 12 20"/><polyline points="3 6.5 12 11 21 6.5"/>
-          </svg>${l === 'tr' ? '3d görüntüle' : 'view 3d'}</button>`;
+        // Auto-open 3D viewer inline
+        matsHTML += lbl + `<div class="rw-3d-container" data-model-path="${safePath}" data-model-title="${safeTitle}">
+          <model-viewer 
+            src="${mat.path}" 
+            alt="${_esc(title)}"
+            camera-controls 
+            auto-rotate 
+            shadow-intensity="1" 
+            exposure="0.85"
+            style="width:100%;height:400px;background:#f5f5f5;border-radius:4px;">
+          </model-viewer>
+        </div>`;
       } else if (mat.type === 'pdf') {
-        matsHTML += lbl + `<a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;">↓ ${l === 'tr' ? 'pdf indir' : 'download pdf'}</a>`;
+        // Inline PDF viewer
+        matsHTML += lbl + `<div class="rw-pdf-container">
+          <iframe src="${mat.path}#toolbar=1&navpanes=0" 
+            style="width:100%;height:600px;border:1px solid var(--line);border-radius:4px;" 
+            title="${l === 'tr' ? 'PDF Görüntüleyici' : 'PDF Viewer'}">
+          </iframe>
+          <a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;margin-top:12px;display:inline-flex;">
+            ↓ ${l === 'tr' ? 'pdf indir' : 'download pdf'}
+          </a>
+        </div>`;
       } else if (mat.type === 'video') {
         matsHTML += lbl + `<video controls style="width:100%;max-width:100%;margin-top:8px;" src="${mat.path}"></video>`;
       }
@@ -390,78 +407,10 @@ document.addEventListener('keydown', e => {
 
 /* ═══════════════════════════════════════════════════════════════
    DESIGN ENHANCEMENTS
-   - Custom cursor
    - Scroll reveal animations
    - Back to top button
    - Scroll progress bar
    ═══════════════════════════════════════════════════════════════ */
-
-/* ── CUSTOM CURSOR ─────────────────────────────────────────────── */
-(function() {
-  // Only on desktop
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
-  
-  const cursor = document.createElement('div');
-  cursor.className = 'cursor';
-  document.body.appendChild(cursor);
-  
-  const follower = document.createElement('div');
-  follower.className = 'cursor-follower';
-  document.body.appendChild(follower);
-  
-  let mouseX = 0, mouseY = 0;
-  let cursorX = 0, cursorY = 0;
-  let followerX = 0, followerY = 0;
-  
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-  
-  function animate() {
-    // Cursor follows immediately
-    cursorX = mouseX;
-    cursorY = mouseY;
-    cursor.style.left = cursorX + 'px';
-    cursor.style.top = cursorY + 'px';
-    
-    // Follower has smooth lag
-    followerX += (mouseX - followerX) * 0.15;
-    followerY += (mouseY - followerY) * 0.15;
-    follower.style.left = followerX + 'px';
-    follower.style.top = followerY + 'px';
-    
-    requestAnimationFrame(animate);
-  }
-  animate();
-  
-  // Hover effects for clickable elements
-  const hoverTargets = 'a, button, .gallery-item, .masonry-item, .hero-slide, .book-item, .writing-item, .project-card, [onclick]';
-  
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest(hoverTargets)) {
-      cursor.classList.add('hover');
-      follower.classList.add('hover');
-    }
-  });
-  
-  document.addEventListener('mouseout', e => {
-    if (e.target.closest(hoverTargets)) {
-      cursor.classList.remove('hover');
-      follower.classList.remove('hover');
-    }
-  });
-  
-  // Hide cursor when leaving window
-  document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-    follower.style.opacity = '0';
-  });
-  document.addEventListener('mouseenter', () => {
-    cursor.style.opacity = '1';
-    follower.style.opacity = '0.4';
-  });
-})();
 
 /* ── SCROLL REVEAL ANIMATIONS ──────────────────────────────────── */
 (function() {
