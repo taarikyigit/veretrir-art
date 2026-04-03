@@ -195,6 +195,10 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       Books
     </div>
     <div class="sb-sec">Site</div>
+    <div class="sb-item" data-panel="categories" onclick="go('categories')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>
+      Categories
+    </div>
     <div class="sb-item" data-panel="texts" onclick="go('texts')">
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Site Texts
@@ -248,6 +252,31 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
       <div id="form-books"></div>
       <div class="item-list" id="list-books"></div>
+    </div>
+
+    <div class="panel" id="panel-categories">
+      <div class="ptitle">Categories</div>
+      <div class="pdesc">Define artwork categories with English and Turkish names. These will appear as dropdown options when editing artworks.</div>
+      
+      <div class="form-drawer" style="margin-bottom:20px;">
+        <div class="form-drawer-title">Add New Category</div>
+        <div class="frow">
+          <div class="fg">
+            <label class="fl">🇬🇧 English Name</label>
+            <input class="fi" id="cat-new-en" placeholder="e.g. print"/>
+          </div>
+          <div class="fg">
+            <label class="fl">🇹🇷 Turkish Name</label>
+            <input class="fi" id="cat-new-tr" placeholder="e.g. baskı"/>
+          </div>
+        </div>
+        <button class="btn-save" onclick="addCategory()" style="margin-top:12px;">+ Add Category</button>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Existing Categories</label>
+        <div id="categories-list" style="background:var(--raised);border:1px solid var(--border);padding:12px;min-height:60px;"></div>
+      </div>
     </div>
 
     <div class="panel" id="panel-texts">
@@ -395,6 +424,7 @@ function renderPanel(name) {
   else if(name==='poems') renderList('poems');
   else if(name==='articles') renderList('articles');
   else if(name==='books') renderList('books');
+  else if(name==='categories') renderCategoriesList();
   else if(name==='texts') loadTexts();
   else if(name==='hero') buildHeroPanel();
   else if(name==='export') buildExportPreview();
@@ -500,10 +530,17 @@ function buildFormHTML() {
         <option value="2d" ${currentFormData.workType === '2d' ? 'selected' : ''}>2 Dimensional / Painting / Print / Drawing</option>
       </select>
     </div>`;
-    h += `<div class="fg"><label class="fl">Category / Class</label>
-      <input class="fi" id="ff-category" value="${ea(currentFormData.category || '')}" placeholder="e.g. paintings, sculptures, prints, digital...">
-      <div class="fnote">Free text category for grouping artworks</div>
+    h += `<div class="fg"><label class="fl">Category / Kategori</label>
+      <select class="fsel" id="ff-category">
+        ${getCategoryOptions()}
+      </select>
+      <div class="fnote">Define categories in <a href="#" onclick="go('categories');return false;" style="color:var(--accent);">Categories</a> panel</div>
     </div>`;
+    // Set selected category after rendering
+    setTimeout(() => {
+      const sel = document.getElementById('ff-category');
+      if (sel && currentFormData.category) sel.value = currentFormData.category;
+    }, 10);
   }
   h += `</div>`;
 
@@ -933,6 +970,82 @@ function toast(msg,type) {
   t.className = 'show ' + (type||'ok');
   clearTimeout(t._t); 
   t._t = setTimeout(()=>t.className='',2500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORIES MANAGEMENT
+   ═══════════════════════════════════════════════════════════════ */
+
+function renderCategoriesList() {
+  if (!D.categories) D.categories = [];
+  
+  const container = document.getElementById('categories-list');
+  if (!container) return;
+  
+  if (D.categories.length === 0) {
+    container.innerHTML = '<span style="color:var(--faint);font-size:11px;">No categories yet. Add one above.</span>';
+    return;
+  }
+  
+  container.innerHTML = D.categories.map((cat, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
+      <div>
+        <span style="color:var(--text);">🇬🇧 ${esc(cat.en)}</span>
+        <span style="color:var(--faint);margin:0 8px;">|</span>
+        <span style="color:var(--text);">🇹🇷 ${esc(cat.tr)}</span>
+      </div>
+      <button onclick="deleteCategory(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+    </div>
+  `).join('');
+}
+
+function addCategory() {
+  const enInput = document.getElementById('cat-new-en');
+  const trInput = document.getElementById('cat-new-tr');
+  
+  const en = enInput.value.trim().toLowerCase();
+  const tr = trInput.value.trim().toLowerCase();
+  
+  if (!en || !tr) {
+    toast('Please enter both English and Turkish names', 'err');
+    return;
+  }
+  
+  if (!D.categories) D.categories = [];
+  
+  // Check if already exists
+  if (D.categories.some(c => c.en === en)) {
+    toast('Category already exists', 'err');
+    return;
+  }
+  
+  D.categories.push({ en, tr });
+  saveD();
+  
+  enInput.value = '';
+  trInput.value = '';
+  
+  renderCategoriesList();
+  toast('Category added!', 'ok');
+}
+
+function deleteCategory(idx) {
+  if (!D.categories) return;
+  const cat = D.categories[idx];
+  if (!confirm(`Delete category "${cat.en} / ${cat.tr}"?`)) return;
+  
+  D.categories.splice(idx, 1);
+  saveD();
+  renderCategoriesList();
+  toast('Category deleted', 'ok');
+}
+
+function getCategoryOptions() {
+  if (!D.categories || D.categories.length === 0) {
+    return '<option value="">— no categories defined —</option>';
+  }
+  return '<option value="">— select category —</option>' + 
+    D.categories.map(c => `<option value="${ea(c.en)}">${esc(c.en)} / ${esc(c.tr)}</option>`).join('');
 }
 
 /* ═══════════════════════════════════════════════════════════════
