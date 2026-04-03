@@ -309,16 +309,26 @@
     const link = e.target.closest('.hero-overlay-link');
     if (link) {
       e.preventDefault();
-      const idx = parseInt(link.dataset.awIdx, 10);
-      if (idx >= 0) openArtwork(idx);
+      e.stopPropagation();
+      // Get the artwork ID directly from the link's parent slide
+      const parentSlide = link.closest('.hero-slide');
+      const awId = parentSlide ? parentSlide.dataset.awId : null;
+      if (awId) {
+        const idx = SITE.artworks.findIndex(a => a.id === awId);
+        if (idx >= 0) openArtwork(idx);
+      }
       return;
     }
     
     // Clicking on slide image (not the overlay link) also opens artwork
-    const slide = e.target.closest('.hero-slide');
-    if (slide && !e.target.closest('.hero-overlay')) {
-      const idx = parseInt(slide.dataset.awIdx, 10);
-      if (idx >= 0) openArtwork(idx);
+    // Use the ACTIVE slide, not the clicked element's parent
+    const activeSlide = area.querySelector('.hero-slide.active');
+    if (activeSlide && !e.target.closest('.hero-overlay') && !e.target.closest('.hero-dot')) {
+      const awId = activeSlide.dataset.awId;
+      if (awId) {
+        const idx = SITE.artworks.findIndex(a => a.id === awId);
+        if (idx >= 0) openArtwork(idx);
+      }
     }
   });
 
