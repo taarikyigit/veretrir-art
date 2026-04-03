@@ -515,36 +515,6 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 })();
 
-/* ── LAZY LOADING IMAGES WITH BLUR ────────────────────────────────── */
-(function() {
-  // Apply to all images in content areas
-  function initLazyImages() {
-    const images = document.querySelectorAll('.masonry-item img, .rw-masonry-item img, .rw-hero-img, .gallery-item img, .about-photo');
-    
-    images.forEach(img => {
-      if (img.classList.contains('lazy-initialized')) return;
-      img.classList.add('lazy-initialized');
-      
-      // If image not loaded yet, add lazy class
-      if (!img.complete) {
-        img.classList.add('lazy-img');
-        img.onload = () => {
-          img.classList.add('loaded');
-        };
-      } else {
-        img.classList.add('lazy-img', 'loaded');
-      }
-    });
-  }
-  
-  // Run on load and observe for dynamic content
-  document.addEventListener('DOMContentLoaded', initLazyImages);
-  
-  // Also run when reading overlay opens (for dynamically added images)
-  const observer = new MutationObserver(initLazyImages);
-  observer.observe(document.body, { childList: true, subtree: true });
-})();
-
 /* ── SMOOTH PAGE TRANSITIONS ──────────────────────────────────────── */
 (function() {
   // Intercept internal link clicks
