@@ -262,25 +262,35 @@ function buildCategoryNav() {
 
   // Collect unique categories from artworks
   const usedCategories = new Set();
+  const usedSeries = new Set();
   SITE.artworks.forEach(aw => {
     if (aw.category && aw.category.trim()) {
       usedCategories.add(aw.category.trim().toLowerCase());
     }
+    if (aw.series && aw.series.trim()) {
+      usedSeries.add(aw.series.trim().toLowerCase());
+    }
   });
 
-  // Get category definitions for translation
+  // Get definitions for translation
   const categoryDefs = SITE.categories || [];
+  const seriesDefs = SITE.series || [];
   
   function getCategoryLabel(catKey) {
     const def = categoryDefs.find(c => c.en === catKey);
-    if (def) {
-      return l === 'tr' ? def.tr : def.en;
-    }
-    return catKey; // fallback to key if no definition
+    if (def) return l === 'tr' ? def.tr : def.en;
+    return catKey;
+  }
+  
+  function getSeriesLabel(serKey) {
+    const def = seriesDefs.find(s => s.en === serKey);
+    if (def) return l === 'tr' ? def.tr : def.en;
+    return serKey;
   }
 
-  // Sort categories
+  // Sort
   const sortedCats = Array.from(usedCategories).sort((a, b) => a.localeCompare(b));
+  const sortedSeries = Array.from(usedSeries).sort((a, b) => a.localeCompare(b));
 
   // Add "All" button
   const allBtn = document.createElement('button');
@@ -289,14 +299,38 @@ function buildCategoryNav() {
   allBtn.addEventListener('click', () => { currentCategory = 'all'; buildPage(); });
   nav.appendChild(allBtn);
 
-  // Add category buttons with translated labels
+  // Add category buttons
   sortedCats.forEach(cat => {
     const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (currentCategory === cat ? ' on' : '');
+    btn.className = 'cat-btn' + (currentCategory === 'cat:' + cat ? ' on' : '');
     btn.textContent = getCategoryLabel(cat);
-    btn.addEventListener('click', () => { currentCategory = cat; buildPage(); });
+    btn.addEventListener('click', () => { currentCategory = 'cat:' + cat; buildPage(); });
     nav.appendChild(btn);
   });
+
+  // Add series buttons (if any)
+  if (sortedSeries.length > 0) {
+    // Add separator
+    const sep = document.createElement('span');
+    sep.className = 'cat-sep';
+    sep.textContent = '|';
+    sep.style.cssText = 'color:var(--dim);margin:0 8px;';
+    nav.appendChild(sep);
+    
+    // Add "series" label
+    const seriesLabel = document.createElement('span');
+    seriesLabel.style.cssText = 'font-size:9px;letter-spacing:0.1em;color:var(--dim);margin-right:8px;text-transform:uppercase;';
+    seriesLabel.textContent = l === 'tr' ? 'seriler' : 'series';
+    nav.appendChild(seriesLabel);
+
+    sortedSeries.forEach(ser => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn' + (currentCategory === 'ser:' + ser ? ' on' : '');
+      btn.textContent = getSeriesLabel(ser);
+      btn.addEventListener('click', () => { currentCategory = 'ser:' + ser; buildPage(); });
+      nav.appendChild(btn);
+    });
+  }
 }
 
 function buildPage() {
@@ -308,9 +342,22 @@ function buildPage() {
   // Filter artworks
   let filtered = SITE.artworks;
   if (currentCategory !== 'all') {
-    filtered = SITE.artworks.filter(aw => 
-      aw.category && aw.category.trim().toLowerCase() === currentCategory
-    );
+    if (currentCategory.startsWith('cat:')) {
+      const cat = currentCategory.slice(4);
+      filtered = SITE.artworks.filter(aw => 
+        aw.category && aw.category.trim().toLowerCase() === cat
+      );
+    } else if (currentCategory.startsWith('ser:')) {
+      const ser = currentCategory.slice(4);
+      filtered = SITE.artworks.filter(aw => 
+        aw.series && aw.series.trim().toLowerCase() === ser
+      );
+    } else {
+      // Legacy support for old category format
+      filtered = SITE.artworks.filter(aw => 
+        aw.category && aw.category.trim().toLowerCase() === currentCategory
+      );
+    }
   }
 
   // Build masonry grid
@@ -333,7 +380,7 @@ function buildPage() {
     if (displaySrc) {
       div.innerHTML = `
         <div class="masonry-img">
-          <img src="${displaySrc}" alt="${_esc(title)}" class="lazy-img">
+          <img src="${displaySrc}" alt="${_esc(title)}">
           <div class="masonry-overlay">
             <div class="masonry-overlay-title">${_esc(title)}</div>
             <div class="masonry-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
@@ -349,17 +396,6 @@ function buildPage() {
   if (!filtered.length) {
     grid.innerHTML = '<div class="masonry-empty">—</div>';
   }
-
-  // Initialize lazy images immediately after building
-  requestAnimationFrame(() => {
-    grid.querySelectorAll('img.lazy-img').forEach(img => {
-      if (img.complete) {
-        img.classList.add('loaded');
-      } else {
-        img.onload = () => img.classList.add('loaded');
-      }
-    });
-  });
 
   // Build projects list
   const pl = document.getElementById('projectsList');
@@ -401,7 +437,27 @@ const _base = window.setLang;
 window.setLang = function(l) { _base(l); buildPage(); triggerReveals(); };
 document.addEventListener('DOMContentLoaded', () => { 
   buildPage(); 
+  // Check URL hash for category/series filter
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
+      currentCategory = hash;
+    }
+  }
+  
+  buildPage(); 
   setTimeout(triggerReveals, 100);
+});
+
+// Handle hash changes
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
+      currentCategory = hash;
+      buildPage();
+    }
+  }
 });
 
 function triggerReveals() {
