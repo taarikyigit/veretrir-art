@@ -60,9 +60,10 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .item-title{font-size:14px;font-family:var(--font);font-style:italic;color:var(--text);margin-bottom:2px;}
 .item-meta{font-size:10px;color:var(--faint);letter-spacing:.1em;}
 .item-acts{display:flex;gap:6px;flex-shrink:0;}
-.btn-e,.btn-d{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
+.btn-e,.btn-d,.btn-dup{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
 .btn-e:hover{border-color:#aaa;color:#aaa;}
 .btn-d:hover{border-color:var(--red);color:var(--red);}
+.btn-dup:hover{border-color:var(--accent);color:var(--accent);}
 .add-btn{width:100%;background:none;border:1px dashed var(--border);color:var(--faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
 .add-btn:hover{border-color:var(--dim);color:var(--dim);}
 
@@ -495,6 +496,7 @@ function renderList(type) {
         <div class="item-meta">${meta}</div>
       </div>
       <div class="item-acts">
+        <button class="btn-dup" onclick="duplicateItem('${type}',${i})">Duplicate</button>
         <button class="btn-e" onclick="openForm('${type}',${i})">Edit</button>
         <button class="btn-d" onclick="delItem('${type}',${i})">Delete</button>
       </div>`;
@@ -941,6 +943,38 @@ function delItem(type,idx) {
   saveD(); 
   renderList(type); 
   toast('Deleted','ok');
+}
+
+function duplicateItem(type, idx) {
+  if (!D[type] || !D[type][idx]) return;
+  
+  // Deep clone the item
+  const original = D[type][idx];
+  const duplicate = JSON.parse(JSON.stringify(original));
+  
+  // Generate new unique ID
+  duplicate.id = type.slice(0,2) + '-' + Date.now();
+  
+  // Append "(copy)" to title
+  if (duplicate.title) {
+    duplicate.title = duplicate.title + ' (copy)';
+  }
+  if (duplicate.titleTR) {
+    duplicate.titleTR = duplicate.titleTR + ' (kopya)';
+  }
+  
+  // Remove featured flag from duplicate
+  duplicate.featured = false;
+  
+  // Insert after original
+  D[type].splice(idx + 1, 0, duplicate);
+  
+  saveD();
+  renderList(type);
+  toast('Duplicated! Opening for edit...', 'ok');
+  
+  // Open the duplicate for editing
+  setTimeout(() => openForm(type, idx + 1), 300);
 }
 
 function loadTexts() {
