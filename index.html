@@ -261,63 +261,67 @@
 <script src="common.js"></script>
 <script>
 /* ═══ HERO SLIDESHOW ═══ */
-(function() {
+let heroTimer = null;
+let heroSlideData = [];
+let heroCur = 0;
+
+function buildHeroSlider() {
   const area = document.getElementById('heroArea');
   const dotsEl = document.getElementById('heroDots');
   if (!area || !dotsEl) return;
   
   const l = currentLang;
 
-  // Collect slides: use heroSlider settings if available, otherwise featured/all artworks
-  const heroSettings = SITE.heroSlider || {};
-  const heroImages = heroSettings.images || [];
-  const maxSlides = heroSettings.slideCount || 5;
-  const shouldRandomize = heroSettings.randomize !== false;
+  // Clear existing slides and dots (keep dotsEl)
+  area.querySelectorAll('.hero-slide').forEach(s => s.remove());
+  dotsEl.innerHTML = '';
+  if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
 
-  let slideData = [];
-  
-  if (heroImages.length > 0) {
-    // Use admin-selected images
-    heroImages.forEach(hi => {
-      const aw = SITE.artworks.find(a => a.id === hi.artworkId);
-      if (aw && hi.path) {
-        slideData.push({ img: hi.path, aw: aw });
-      }
-    });
-  }
-  
-  // Fallback if no hero images selected
-  if (slideData.length === 0) {
-    const featured = SITE.artworks.filter(a => a.featured === true);
-    const pool = featured.length >= 2 ? featured : SITE.artworks;
-    pool.forEach(aw => {
-      const img = _mainImg(aw) || _getDisplayImage(aw);
-      if (img) slideData.push({ img: img, aw: aw });
-    });
-  }
+  // Collect slides on first run only
+  if (heroSlideData.length === 0) {
+    const heroSettings = SITE.heroSlider || {};
+    const heroImages = heroSettings.images || [];
+    const maxSlides = heroSettings.slideCount || 5;
+    const shouldRandomize = heroSettings.randomize !== false;
 
-  // Randomize
-  if (shouldRandomize && slideData.length > 1) {
-    for (let i = slideData.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [slideData[i], slideData[j]] = [slideData[j], slideData[i]];
+    if (heroImages.length > 0) {
+      heroImages.forEach(hi => {
+        const aw = SITE.artworks.find(a => a.id === hi.artworkId);
+        if (aw && hi.path) {
+          heroSlideData.push({ img: hi.path, aw: aw });
+        }
+      });
     }
-  }
+    
+    if (heroSlideData.length === 0) {
+      const featured = SITE.artworks.filter(a => a.featured === true);
+      const pool = featured.length >= 2 ? featured : SITE.artworks;
+      pool.forEach(aw => {
+        const img = _mainImg(aw) || _getDisplayImage(aw);
+        if (img) heroSlideData.push({ img: img, aw: aw });
+      });
+    }
 
-  // Limit
-  slideData = slideData.slice(0, maxSlides);
+    if (shouldRandomize && heroSlideData.length > 1) {
+      for (let i = heroSlideData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [heroSlideData[i], heroSlideData[j]] = [heroSlideData[j], heroSlideData[i]];
+      }
+    }
+
+    heroSlideData = heroSlideData.slice(0, maxSlides);
+  }
   
-  if (slideData.length === 0) {
+  if (heroSlideData.length === 0) {
     area.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;">No artworks yet</div>';
     return;
   }
 
   const INTERVAL = 5000;
-  let cur = 0;
-  let timer = null;
+  heroCur = 0;
 
-  // Create slides
-  slideData.forEach((sd, i) => {
+  // Create slides with current language
+  heroSlideData.forEach((sd, i) => {
     const aw = sd.aw;
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
@@ -335,17 +339,15 @@
       </div>`;
     area.insertBefore(div, dotsEl);
 
-    // Create dot
     const dot = document.createElement('button');
     dot.className = 'hero-dot' + (i === 0 ? ' on' : '');
-    dot.onclick = (e) => { e.stopPropagation(); goTo(i); };
+    dot.onclick = (e) => { e.stopPropagation(); heroGoTo(i); };
     dotsEl.appendChild(dot);
   });
 
   const allSlides = area.querySelectorAll('.hero-slide');
   const allDots = dotsEl.querySelectorAll('.hero-dot');
 
-  // Click handler
   area.onclick = function(e) {
     if (e.target.closest('.hero-dot')) return;
     const link = e.target.closest('.hero-overlay-link');
@@ -359,33 +361,41 @@
     }
   };
 
-  function goTo(n) {
-    allSlides[cur]?.classList.remove('active');
-    allDots[cur]?.classList.remove('on');
-    cur = ((n % slideData.length) + slideData.length) % slideData.length;
-    allSlides[cur]?.classList.add('active');
-    allDots[cur]?.classList.add('on');
-    resetTimer();
+  function heroGoTo(n) {
+    allSlides[heroCur]?.classList.remove('active');
+    allDots[heroCur]?.classList.remove('on');
+    heroCur = ((n % heroSlideData.length) + heroSlideData.length) % heroSlideData.length;
+    allSlides[heroCur]?.classList.add('active');
+    allDots[heroCur]?.classList.add('on');
+    resetHeroTimer();
   }
 
-  function resetTimer() {
-    clearInterval(timer);
-    timer = setInterval(() => goTo(cur + 1), INTERVAL);
+  function resetHeroTimer() {
+    clearInterval(heroTimer);
+    heroTimer = setInterval(() => heroGoTo(heroCur + 1), INTERVAL);
   }
 
-  // Start auto-advance
-  if (slideData.length > 1) {
-    timer = setInterval(() => goTo(cur + 1), INTERVAL);
+  if (heroSlideData.length > 1) {
+    heroTimer = setInterval(() => heroGoTo(heroCur + 1), INTERVAL);
   }
 
-  // Swipe support
   let startX = 0;
   area.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
   area.addEventListener('touchend', e => {
     const diff = e.changedTouches[0].clientX - startX;
-    if (Math.abs(diff) > 50) goTo(cur + (diff < 0 ? 1 : -1));
+    if (Math.abs(diff) > 50) heroGoTo(heroCur + (diff < 0 ? 1 : -1));
   });
-})();
+}
+
+// Build on load
+buildHeroSlider();
+
+// Rebuild on language change
+const _origSetLang = window.setLang;
+window.setLang = function(l) {
+  _origSetLang(l);
+  buildHeroSlider();
+};
 </script>
 </body>
 </html>
