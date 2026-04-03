@@ -367,7 +367,7 @@
   });
 
   // Dots
-  selected.forEach((_, i) => {
+  slides.forEach((_, i) => {
     const dot = document.createElement('button');
     dot.className = 'hero-dot' + (i === 0 ? ' on' : '');
     dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); });
@@ -386,11 +386,11 @@
   }
 
   function goTo(n) {
-    const slides = area.querySelectorAll('.hero-slide');
+    const slideEls = area.querySelectorAll('.hero-slide');
     const dots = dotsEl.querySelectorAll('.hero-dot');
-    slides[cur]?.classList.remove('active');
-    cur = (n + selected.length) % selected.length;
-    slides[cur]?.classList.add('active');
+    slideEls[cur]?.classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slideEls[cur]?.classList.add('active');
     dots.forEach((d, i) => d.classList.toggle('on', i === cur));
     clearInterval(timer);
     timer = setInterval(() => goTo(cur + 1), INTERVAL);
