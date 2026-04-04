@@ -53,7 +53,16 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .pdesc{font-size:12px;color:var(--faint);margin-bottom:28px;}
 
 .item-list{margin-top:4px;}
-.item-row{background:var(--surface);border:1px solid var(--border);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;cursor:default;}
+.item-row{background:var(--surface);border:1px solid var(--border);margin-bottom:8px;display:grid;grid-template-columns:auto auto auto 1fr auto;gap:10px;align-items:center;padding:14px 16px;cursor:default;transition:transform 0.15s, box-shadow 0.15s, border-color 0.15s;}
+.item-row.dragging{opacity:0.5;transform:scale(0.98);}
+.item-row.drag-over{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.drag-handle{cursor:grab;color:var(--dim);font-size:14px;letter-spacing:-2px;padding:4px;user-select:none;}
+.drag-handle:hover{color:var(--text);}
+.drag-handle:active{cursor:grabbing;}
+.order-btns{display:flex;flex-direction:column;gap:2px;}
+.order-btn{background:none;border:1px solid var(--border);color:var(--dim);width:22px;height:18px;padding:0;cursor:pointer;font-size:10px;line-height:1;transition:all .15s;}
+.order-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.order-btn:disabled{opacity:0.3;cursor:not-allowed;}
 .item-thumb{width:52px;height:52px;object-fit:cover;background:var(--raised);flex-shrink:0;border:1px solid var(--border);}
 .item-thumb-ph{width:52px;height:52px;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:18px;flex-shrink:0;}
 .item-info{}
@@ -495,6 +504,9 @@ function renderList(type) {
   items.forEach((item,i)=>{
     const row=document.createElement('div');
     row.className='item-row';
+    row.draggable = true;
+    row.dataset.index = i;
+    row.dataset.type = type;
     const thumbSrc = item.displayImage || (item.images && item.images[0] ? item.images[0].path : null);
     const thumbHTML=thumbSrc ? `<img class="item-thumb" src="${thumbSrc}" alt="">` : `<div class="item-thumb-ph">⊞</div>`;
     let meta=(item.year||'')+(item.medium?' · '+item.medium:'');
@@ -504,6 +516,11 @@ function renderList(type) {
     const featuredBadge = item.featured ? '<span class="featured-badge">★ Hero</span>' : '';
     const typeBadge = item.workType === '2d' ? '<span class="type-badge-2d">2D</span>' : (item.workType === '3d' ? '<span class="type-badge-3d">3D</span>' : '');
     row.innerHTML=`
+      <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+      <div class="order-btns">
+        <button class="order-btn" onclick="moveItem('${type}',${i},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="order-btn" onclick="moveItem('${type}',${i},1)" ${i===items.length-1?'disabled':''}>↓</button>
+      </div>
       ${thumbHTML}
       <div class="item-info">
         <div class="item-title">${esc(item.title||item.id||'—')} ${typeBadge} ${featuredBadge}</div>
@@ -514,8 +531,69 @@ function renderList(type) {
         <button class="btn-e" onclick="openForm('${type}',${i})">Edit</button>
         <button class="btn-d" onclick="delItem('${type}',${i})">Delete</button>
       </div>`;
+    
+    // Drag events
+    row.addEventListener('dragstart', handleDragStart);
+    row.addEventListener('dragover', handleDragOver);
+    row.addEventListener('drop', handleDrop);
+    row.addEventListener('dragend', handleDragEnd);
+    
     el.appendChild(row);
   });
+}
+
+// Drag and drop reordering
+let draggedItem = null;
+
+function handleDragStart(e) {
+  draggedItem = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const target = e.target.closest('.item-row');
+  if (target && target !== draggedItem) {
+    target.classList.add('drag-over');
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const target = e.target.closest('.item-row');
+  if (!target || target === draggedItem) return;
+  
+  const type = draggedItem.dataset.type;
+  const fromIdx = parseInt(draggedItem.dataset.index);
+  const toIdx = parseInt(target.dataset.index);
+  
+  if (type && !isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
+    const items = D[type];
+    const [moved] = items.splice(fromIdx, 1);
+    items.splice(toIdx, 0, moved);
+    saveD();
+    renderList(type);
+    toast('Reordered!', 'ok');
+  }
+}
+
+function handleDragEnd() {
+  this.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  draggedItem = null;
+}
+
+function moveItem(type, idx, dir) {
+  const items = D[type];
+  if (!items) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= items.length) return;
+  
+  [items[idx], items[newIdx]] = [items[newIdx], items[idx]];
+  saveD();
+  renderList(type);
 }
 
 let currentFormType = null;
@@ -1108,8 +1186,12 @@ function renderCategoriesList() {
   }
   
   container.innerHTML = D.categories.map((cat, i) => `
-    <div class="editable-item" id="cat-item-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
-      <div class="editable-item-display">
+    <div class="editable-item" id="cat-item-${i}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
+      <div class="mini-order-btns" style="display:flex;flex-direction:column;gap:2px;">
+        <button onclick="moveCategoryItem(${i},-1)" style="background:none;border:1px solid var(--border);color:var(--dim);width:20px;height:16px;padding:0;cursor:pointer;font-size:9px;${i===0?'opacity:0.3;cursor:not-allowed;':''}">↑</button>
+        <button onclick="moveCategoryItem(${i},1)" style="background:none;border:1px solid var(--border);color:var(--dim);width:20px;height:16px;padding:0;cursor:pointer;font-size:9px;${i===D.categories.length-1?'opacity:0.3;cursor:not-allowed;':''}">↓</button>
+      </div>
+      <div class="editable-item-display" style="flex:1;">
         <span style="color:var(--text);">🇬🇧 ${esc(cat.en)}</span>
         <span style="color:var(--faint);margin:0 8px;">|</span>
         <span style="color:var(--text);">🇹🇷 ${esc(cat.tr)}</span>
@@ -1118,13 +1200,22 @@ function renderCategoriesList() {
         <input type="text" id="cat-edit-en-${i}" value="${ea(cat.en)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="English">
         <input type="text" id="cat-edit-tr-${i}" value="${ea(cat.tr)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Turkish">
       </div>
-      <div style="display:flex;gap:6px;margin-left:12px;">
+      <div style="display:flex;gap:6px;">
         <button onclick="toggleEditCategory(${i})" class="cat-edit-btn" style="background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Edit</button>
         <button onclick="saveEditCategory(${i})" class="cat-save-btn" style="display:none;background:var(--accent);border:none;color:#fff;padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Save</button>
         <button onclick="deleteCategory(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
       </div>
     </div>
   `).join('');
+}
+
+function moveCategoryItem(idx, dir) {
+  if (!D.categories) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= D.categories.length) return;
+  [D.categories[idx], D.categories[newIdx]] = [D.categories[newIdx], D.categories[idx]];
+  saveD();
+  renderCategoriesList();
 }
 
 function toggleEditCategory(idx) {
@@ -1248,8 +1339,12 @@ function renderSeriesList() {
   });
   
   container.innerHTML = D.series.map((s, i) => `
-    <div id="ser-item-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;flex-wrap:wrap;gap:8px;">
-      <div class="ser-display">
+    <div id="ser-item-${i}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;flex-wrap:wrap;">
+      <div class="mini-order-btns" style="display:flex;flex-direction:column;gap:2px;">
+        <button onclick="moveSeriesItem(${i},-1)" style="background:none;border:1px solid var(--border);color:var(--dim);width:20px;height:16px;padding:0;cursor:pointer;font-size:9px;${i===0?'opacity:0.3;cursor:not-allowed;':''}">↑</button>
+        <button onclick="moveSeriesItem(${i},1)" style="background:none;border:1px solid var(--border);color:var(--dim);width:20px;height:16px;padding:0;cursor:pointer;font-size:9px;${i===D.series.length-1?'opacity:0.3;cursor:not-allowed;':''}">↓</button>
+      </div>
+      <div class="ser-display" style="flex:1;">
         <span style="color:var(--text);">🇬🇧 ${esc(s.en)}</span>
         <span style="color:var(--faint);margin:0 8px;">|</span>
         <span style="color:var(--text);">🇹🇷 ${esc(s.tr)}</span>
@@ -1266,6 +1361,15 @@ function renderSeriesList() {
       </div>
     </div>
   `).join('');
+}
+
+function moveSeriesItem(idx, dir) {
+  if (!D.series) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= D.series.length) return;
+  [D.series[idx], D.series[newIdx]] = [D.series[newIdx], D.series[idx]];
+  saveD();
+  renderSeriesList();
 }
 
 function toggleEditSeries(idx) {
