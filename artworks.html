@@ -435,9 +435,8 @@ function buildPage() {
 const _base = window.setLang;
 window.setLang = function(l) { _base(l); buildPage(); triggerReveals(); };
 document.addEventListener('DOMContentLoaded', () => { 
-  buildPage(); 
   // Check URL hash for category/series filter
-  const hash = window.location.hash.slice(1);
+  const hash = decodeURIComponent(window.location.hash.slice(1));
   if (hash) {
     if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
       currentCategory = hash;
@@ -450,7 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Handle hash changes
 window.addEventListener('hashchange', () => {
-  const hash = window.location.hash.slice(1);
+  const hash = decodeURIComponent(window.location.hash.slice(1));
   if (hash) {
     if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
       currentCategory = hash;
