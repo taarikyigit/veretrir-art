@@ -316,6 +316,20 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
     <div class="panel" id="panel-texts">
       <div class="ptitle">Site Texts</div>
       <div class="pdesc">Edit static text content.</div>
+      
+      <div class="fg" style="margin-bottom:20px;">
+        <label class="fl">Profile Photo (About Page)</label>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div id="profile-photo-preview" style="width:100px;height:100px;border:1px solid var(--border);background:#f5f5f5;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <span style="color:var(--faint);font-size:10px;">no photo</span>
+          </div>
+          <div style="flex:1;">
+            <input class="fi" id="txt-profilePhoto" placeholder="images/profile.jpg" style="margin-bottom:6px;">
+            <div class="fnote">Enter path to your profile photo (1000x1000 recommended). Leave empty for no photo.</div>
+          </div>
+        </div>
+      </div>
+      
       <div class="sdiv"></div>
       <div class="fg"><label class="fl">🇬🇧 About Page (English)</label><textarea class="ft" id="txt-aboutEN" style="min-height:120px;"></textarea></div>
       <div class="fg"><label class="fl">🇹🇷 Hakkında Sayfası (Türkçe)</label><textarea class="ft" id="txt-aboutTR" style="min-height:120px;"></textarea></div>
@@ -979,16 +993,38 @@ function duplicateItem(type, idx) {
 
 function loadTexts() {
   const t = D.texts || {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','profilePhoto'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) el.value = t[k] || '';
   });
+  
+  // Update profile photo preview
+  updateProfilePhotoPreview();
+  
+  // Listen for changes to update preview
+  const photoInput = document.getElementById('txt-profilePhoto');
+  if (photoInput) {
+    photoInput.addEventListener('input', updateProfilePhotoPreview);
+  }
+}
+
+function updateProfilePhotoPreview() {
+  const photoInput = document.getElementById('txt-profilePhoto');
+  const preview = document.getElementById('profile-photo-preview');
+  if (!preview) return;
+  
+  const path = photoInput ? photoInput.value.trim() : '';
+  if (path) {
+    preview.innerHTML = `<img src="${path}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--red);font-size:9px;\\'>not found</span>'">`;
+  } else {
+    preview.innerHTML = '<span style="color:var(--faint);font-size:10px;">no photo</span>';
+  }
 }
 
 function saveTexts() {
   if(!D.texts) D.texts = {};
-  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR'];
+  const fields = ['aboutEN','aboutTR','contactNote','contactNoteTR','profilePhoto'];
   fields.forEach(k=>{
     const el = document.getElementById('txt-'+k);
     if (el) D.texts[k] = el.value;
@@ -1072,15 +1108,71 @@ function renderCategoriesList() {
   }
   
   container.innerHTML = D.categories.map((cat, i) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
-      <div>
+    <div class="editable-item" id="cat-item-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
+      <div class="editable-item-display">
         <span style="color:var(--text);">🇬🇧 ${esc(cat.en)}</span>
         <span style="color:var(--faint);margin:0 8px;">|</span>
         <span style="color:var(--text);">🇹🇷 ${esc(cat.tr)}</span>
       </div>
-      <button onclick="deleteCategory(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+      <div class="editable-item-edit" style="display:none;flex:1;gap:8px;">
+        <input type="text" id="cat-edit-en-${i}" value="${ea(cat.en)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="English">
+        <input type="text" id="cat-edit-tr-${i}" value="${ea(cat.tr)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Turkish">
+      </div>
+      <div style="display:flex;gap:6px;margin-left:12px;">
+        <button onclick="toggleEditCategory(${i})" class="cat-edit-btn" style="background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Edit</button>
+        <button onclick="saveEditCategory(${i})" class="cat-save-btn" style="display:none;background:var(--accent);border:none;color:#fff;padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Save</button>
+        <button onclick="deleteCategory(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+      </div>
     </div>
   `).join('');
+}
+
+function toggleEditCategory(idx) {
+  const item = document.getElementById('cat-item-' + idx);
+  if (!item) return;
+  const display = item.querySelector('.editable-item-display');
+  const edit = item.querySelector('.editable-item-edit');
+  const editBtn = item.querySelector('.cat-edit-btn');
+  const saveBtn = item.querySelector('.cat-save-btn');
+  
+  if (edit.style.display === 'none') {
+    display.style.display = 'none';
+    edit.style.display = 'flex';
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'block';
+  } else {
+    display.style.display = 'block';
+    edit.style.display = 'none';
+    editBtn.style.display = 'block';
+    saveBtn.style.display = 'none';
+  }
+}
+
+function saveEditCategory(idx) {
+  const enInput = document.getElementById('cat-edit-en-' + idx);
+  const trInput = document.getElementById('cat-edit-tr-' + idx);
+  
+  const en = enInput.value.trim().toLowerCase();
+  const tr = trInput.value.trim().toLowerCase();
+  
+  if (!en || !tr) {
+    toast('Both fields required', 'err');
+    return;
+  }
+  
+  const oldEn = D.categories[idx].en;
+  
+  // Update artworks that use this category
+  if (oldEn !== en) {
+    (D.artworks || []).forEach(aw => {
+      if (aw.category === oldEn) aw.category = en;
+    });
+  }
+  
+  D.categories[idx] = { en, tr };
+  saveD();
+  renderCategoriesList();
+  toast('Category updated!', 'ok');
 }
 
 function addCategory() {
@@ -1156,16 +1248,72 @@ function renderSeriesList() {
   });
   
   container.innerHTML = D.series.map((s, i) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;">
-      <div>
+    <div id="ser-item-${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;border-radius:4px;flex-wrap:wrap;gap:8px;">
+      <div class="ser-display">
         <span style="color:var(--text);">🇬🇧 ${esc(s.en)}</span>
         <span style="color:var(--faint);margin:0 8px;">|</span>
         <span style="color:var(--text);">🇹🇷 ${esc(s.tr)}</span>
         <span style="color:var(--dim);margin-left:12px;font-size:10px;">(${counts[s.en] || 0} works)</span>
       </div>
-      <button onclick="deleteSeries(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+      <div class="ser-edit-fields" id="ser-edit-${i}" style="display:none;flex:1;gap:8px;margin:0 12px;">
+        <input type="text" id="ser-edit-en-${i}" value="${ea(s.en)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="English">
+        <input type="text" id="ser-edit-tr-${i}" value="${ea(s.tr)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Turkish">
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="toggleEditSeries(${i})" class="ser-edit-btn-${i}" style="background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Edit</button>
+        <button onclick="saveEditSeries(${i})" class="ser-save-btn-${i}" style="display:none;background:var(--accent);border:none;color:#fff;padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Save</button>
+        <button onclick="deleteSeries(${i})" style="background:none;border:1px solid var(--border);color:var(--red);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Delete</button>
+      </div>
     </div>
   `).join('');
+}
+
+function toggleEditSeries(idx) {
+  const item = document.getElementById('ser-item-' + idx);
+  const display = item.querySelector('.ser-display');
+  const edit = document.getElementById('ser-edit-' + idx);
+  const editBtn = item.querySelector('.ser-edit-btn-' + idx);
+  const saveBtn = item.querySelector('.ser-save-btn-' + idx);
+  
+  if (edit.style.display === 'none') {
+    display.style.display = 'none';
+    edit.style.display = 'flex';
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'block';
+  } else {
+    display.style.display = 'block';
+    edit.style.display = 'none';
+    editBtn.style.display = 'block';
+    saveBtn.style.display = 'none';
+  }
+}
+
+function saveEditSeries(idx) {
+  const enInput = document.getElementById('ser-edit-en-' + idx);
+  const trInput = document.getElementById('ser-edit-tr-' + idx);
+  
+  const en = enInput.value.trim().toLowerCase();
+  const tr = trInput.value.trim().toLowerCase();
+  
+  if (!en || !tr) {
+    toast('Both fields required', 'err');
+    return;
+  }
+  
+  const oldEn = D.series[idx].en;
+  
+  // Update artworks that use this series
+  if (oldEn !== en) {
+    (D.artworks || []).forEach(aw => {
+      if (aw.series === oldEn) aw.series = en;
+    });
+  }
+  
+  D.series[idx].en = en;
+  D.series[idx].tr = tr;
+  saveD();
+  renderSeriesList();
+  toast('Series updated!', 'ok');
 }
 
 function addSeries() {
