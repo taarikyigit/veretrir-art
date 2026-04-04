@@ -59,14 +59,7 @@
     
     <div class="about-container">
       <!-- Profile Photo -->
-      <div class="about-photo-wrap reveal reveal-delay-1">
-        <img 
-          src="images/profile.jpg" 
-          alt="tarık yiğit" 
-          class="about-photo lazy-img"
-          onerror="this.parentElement.innerHTML='<div class=\'about-photo-placeholder\'>photo</div>'"
-        >
-      </div>
+      <div class="about-photo-wrap reveal reveal-delay-1" id="profilePhotoWrap"></div>
       
       <!-- About Text -->
       <div class="about-text reveal reveal-delay-2" id="aboutText"></div>
@@ -88,7 +81,29 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
       .join('');
   }
+  
+  function renderProfilePhoto() {
+    const txt = (SITE.texts || {});
+    const photoPath = txt.profilePhoto || '';
+    const wrap = document.getElementById('profilePhotoWrap');
+    if (!wrap) return;
+    
+    if (photoPath) {
+      wrap.innerHTML = `<img 
+        src="${photoPath}" 
+        alt="tarık yiğit" 
+        class="about-photo"
+        onerror="this.parentElement.innerHTML='<div class=\\'about-photo-placeholder\\'>photo</div>'"
+      >`;
+      wrap.style.display = '';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+  
   renderAbout();
+  renderProfilePhoto();
+  
   document.getElementById('b-en').addEventListener('click', renderAbout);
   document.getElementById('b-tr').addEventListener('click', renderAbout);
   
