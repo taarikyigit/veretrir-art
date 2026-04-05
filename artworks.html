@@ -8,13 +8,22 @@
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════
-   CATEGORY NAV
+   FILTER BAR (Category nav + Search)
 ══════════════════════════════════════════════════════════════ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
 .category-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 32px;
+  flex: 1;
 }
 .cat-btn {
   background: none;
@@ -30,6 +39,73 @@
 }
 .cat-btn:hover { border-color: var(--ink); color: var(--ink); }
 .cat-btn.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* Search */
+.search-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.search-input {
+  width: 180px;
+  padding: 7px 30px 7px 12px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, width 0.3s;
+}
+.search-input:focus {
+  border-color: var(--ink);
+  width: 220px;
+}
+.search-input::placeholder {
+  color: var(--dim);
+}
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  line-height: 1;
+}
+.search-clear:hover {
+  color: var(--ink);
+}
+.search-info {
+  font-size: 11px;
+  color: var(--mid);
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  border-left: 2px solid var(--ink);
+}
+.search-highlight {
+  background: rgba(0,0,0,0.08);
+  padding: 1px 2px;
+}
+
+@media (max-width: 600px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+  .search-wrap {
+    width: 100%;
+  }
+  .search-input {
+    width: 100%;
+  }
+  .search-input:focus {
+    width: 100%;
+  }
+}
 
 /* ══════════════════════════════════════════════════════════════
    MASONRY GRID — Pinterest-style, no cropping
@@ -211,8 +287,17 @@
   <div class="sec" style="max-width:1100px;">
     <div class="sec-title reveal" data-en="artworks" data-tr="eserler">artworks</div>
 
-    <!-- Category navigation -->
-    <div class="category-nav reveal reveal-delay-1" id="categoryNav"></div>
+    <!-- Filter bar: Category nav + Search -->
+    <div class="filter-bar reveal reveal-delay-1">
+      <div class="category-nav" id="categoryNav"></div>
+      <div class="search-wrap">
+        <input type="text" id="searchInput" class="search-input" placeholder="search..." data-placeholder-en="search..." data-placeholder-tr="ara...">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none;">✕</button>
+      </div>
+    </div>
+
+    <!-- Search results info -->
+    <div class="search-info" id="searchInfo" style="display:none;"></div>
 
     <!-- Masonry grid -->
     <div class="masonry-grid" id="artworkGrid"></div>
@@ -254,6 +339,74 @@
 <script src="common.js"></script>
 <script>
 let currentCategory = 'all';
+let searchQuery = '';
+
+// Search functionality
+function initSearch() {
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('searchClear');
+  
+  if (!input) return;
+  
+  // Update placeholder based on language
+  function updatePlaceholder() {
+    const ph = currentLang === 'tr' ? 'ara...' : 'search...';
+    input.placeholder = ph;
+  }
+  updatePlaceholder();
+  
+  // Debounced search
+  let searchTimeout;
+  input.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      searchQuery = input.value.trim().toLowerCase();
+      clearBtn.style.display = searchQuery ? 'block' : 'none';
+      buildPage();
+    }, 200);
+  });
+  
+  // Clear on Escape
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      clearSearch();
+    }
+  });
+  
+  // Update placeholder on language change
+  const origSetLang = window.setLang;
+  window.setLang = function(l) {
+    origSetLang(l);
+    updatePlaceholder();
+  };
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('searchClear');
+  if (input) input.value = '';
+  if (clearBtn) clearBtn.style.display = 'none';
+  searchQuery = '';
+  buildPage();
+}
+
+function matchesSearch(aw, query) {
+  if (!query) return true;
+  
+  const l = currentLang;
+  const title = (l === 'tr' ? (aw.titleTR || aw.title) : aw.title) || '';
+  const desc = (l === 'tr' ? (aw.descTR || aw.desc) : aw.desc) || '';
+  const medium = (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) || '';
+  const year = aw.year || '';
+  const category = aw.category || '';
+  const series = aw.series || '';
+  
+  const searchText = `${title} ${desc} ${medium} ${year} ${category} ${series}`.toLowerCase();
+  
+  // Support multiple words (AND search)
+  const words = query.split(/\s+/).filter(w => w.length > 0);
+  return words.every(word => searchText.includes(word));
+}
 
 function buildCategoryNav() {
   const l = currentLang;
@@ -343,14 +496,15 @@ function buildPage() {
   let filtered = SITE.artworks;
   if (currentCategory !== 'all') {
     if (currentCategory.startsWith('cat:')) {
-      const cat = currentCategory.slice(4);
+      const cat = currentCategory.slice(4).toLowerCase();
       filtered = SITE.artworks.filter(aw => 
         aw.category && aw.category.trim().toLowerCase() === cat
       );
     } else if (currentCategory.startsWith('ser:')) {
       const ser = currentCategory.slice(4);
+      // Compare with exact match (series values are already lowercase in data)
       filtered = SITE.artworks.filter(aw => 
-        aw.series && aw.series.trim().toLowerCase() === ser
+        aw.series && aw.series.trim() === ser
       );
     } else {
       // Legacy support for old category format
@@ -359,6 +513,33 @@ function buildPage() {
       );
     }
   }
+
+  // Apply search filter
+  if (searchQuery) {
+    filtered = filtered.filter(aw => matchesSearch(aw, searchQuery));
+  }
+
+  // Update search info
+  const searchInfo = document.getElementById('searchInfo');
+  if (searchQuery) {
+    const totalInCategory = currentCategory === 'all' ? SITE.artworks.length : 
+      SITE.artworks.filter(aw => {
+        if (currentCategory.startsWith('cat:')) return aw.category && aw.category.trim().toLowerCase() === currentCategory.slice(4).toLowerCase();
+        if (currentCategory.startsWith('ser:')) return aw.series && aw.series.trim() === currentCategory.slice(4);
+        return true;
+      }).length;
+    
+    const infoText = l === 'tr' 
+      ? `"${searchQuery}" için ${filtered.length} sonuç bulundu`
+      : `Found ${filtered.length} result${filtered.length !== 1 ? 's' : ''} for "${searchQuery}"`;
+    searchInfo.innerHTML = infoText + (filtered.length < totalInCategory ? ` <a href="#" onclick="clearSearch();return false;" style="margin-left:8px;color:var(--ink);">${l === 'tr' ? 'temizle' : 'clear'}</a>` : '');
+    searchInfo.style.display = 'block';
+  } else {
+    searchInfo.style.display = 'none';
+  }
+
+  // Debug: log filter results
+  console.log('Filter:', currentCategory, 'Search:', searchQuery, 'Found:', filtered.length);
 
   // Build masonry grid
   const grid = document.getElementById('artworkGrid');
@@ -443,6 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
+  initSearch();
   buildPage(); 
   setTimeout(triggerReveals, 100);
 });
