@@ -286,15 +286,29 @@ function _renderWork(aw, badgeLabel) {
           </model-viewer>
         </div>`;
       } else if (mat.type === 'pdf') {
-        // Inline PDF viewer
-        matsHTML += lbl + `<div class="rw-pdf-container">
-          <iframe src="${mat.path}#toolbar=1&navpanes=0" 
-            style="width:100%;height:600px;border:1px solid var(--line);border-radius:4px;" 
-            title="${l === 'tr' ? 'PDF Görüntüleyici' : 'PDF Viewer'}">
-          </iframe>
-          <a href="${mat.path}" target="_blank" rel="noopener" class="btn-3d" style="text-decoration:none;margin-top:12px;display:inline-flex;">
-            ↓ ${l === 'tr' ? 'pdf indir' : 'download pdf'}
-          </a>
+        // Secure PDF viewer - no download, no select
+        const pdfId = 'pdf-' + Math.random().toString(36).substr(2, 9);
+        matsHTML += lbl + `<div class="rw-pdf-container rw-pdf-secure" data-pdf-path="${mat.path}" data-pdf-id="${pdfId}">
+          <div class="pdf-viewer-wrap" id="${pdfId}" 
+            oncontextmenu="return false;" 
+            onselectstart="return false;"
+            ondragstart="return false;"
+            style="user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;">
+            <div class="pdf-controls">
+              <button onclick="pdfPrevPage('${pdfId}')" class="pdf-ctrl-btn">◀ ${l === 'tr' ? 'önceki' : 'prev'}</button>
+              <span class="pdf-page-info" id="${pdfId}-info">1 / 1</span>
+              <button onclick="pdfNextPage('${pdfId}')" class="pdf-ctrl-btn">${l === 'tr' ? 'sonraki' : 'next'} ▶</button>
+              <button onclick="pdfZoomOut('${pdfId}')" class="pdf-ctrl-btn">−</button>
+              <span class="pdf-zoom-info" id="${pdfId}-zoom">100%</span>
+              <button onclick="pdfZoomIn('${pdfId}')" class="pdf-ctrl-btn">+</button>
+            </div>
+            <div class="pdf-canvas-wrap" id="${pdfId}-wrap" style="overflow:auto;max-height:600px;background:#f5f5f5;border:1px solid var(--line);border-radius:4px;">
+              <canvas id="${pdfId}-canvas" style="display:block;margin:0 auto;"></canvas>
+            </div>
+            <div class="pdf-loading" id="${pdfId}-loading" style="text-align:center;padding:40px;color:var(--mid);">
+              ${l === 'tr' ? 'PDF yükleniyor...' : 'Loading PDF...'}
+            </div>
+          </div>
         </div>`;
       } else if (mat.type === 'video') {
         matsHTML += lbl + `<video controls style="width:100%;max-width:100%;margin-top:8px;" src="${mat.path}"></video>`;
@@ -576,3 +590,150 @@ document.addEventListener('keydown', e => {
     }, 250);
   });
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   SECURE PDF VIEWER - No download, no select, no copy
+   Uses PDF.js to render PDF as canvas images
+   ══════════════════════════════════════════════════════════════════════ */
+
+// PDF viewer state storage
+const pdfViewers = {};
+
+// Load PDF.js library dynamically
+function loadPdfJs() {
+  return new Promise((resolve, reject) => {
+    if (window.pdfjsLib) {
+      resolve(window.pdfjsLib);
+      return;
+    }
+    
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    script.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+// Initialize PDF viewers after content loads
+function initSecurePdfViewers() {
+  const containers = document.querySelectorAll('.rw-pdf-secure');
+  containers.forEach(container => {
+    const pdfPath = container.dataset.pdfPath;
+    const pdfId = container.dataset.pdfId;
+    if (pdfPath && pdfId && !pdfViewers[pdfId]) {
+      loadAndRenderPdf(pdfId, pdfPath);
+    }
+  });
+}
+
+async function loadAndRenderPdf(pdfId, pdfPath) {
+  try {
+    const pdfjsLib = await loadPdfJs();
+    const loadingEl = document.getElementById(pdfId + '-loading');
+    const canvasEl = document.getElementById(pdfId + '-canvas');
+    
+    if (!canvasEl) return;
+    
+    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
+    
+    pdfViewers[pdfId] = {
+      pdf: pdf,
+      currentPage: 1,
+      totalPages: pdf.numPages,
+      scale: 1.0
+    };
+    
+    if (loadingEl) loadingEl.style.display = 'none';
+    
+    renderPdfPage(pdfId);
+    updatePdfInfo(pdfId);
+  } catch (err) {
+    console.error('PDF load error:', err);
+    const loadingEl = document.getElementById(pdfId + '-loading');
+    if (loadingEl) {
+      loadingEl.textContent = 'PDF yüklenemedi / Could not load PDF';
+      loadingEl.style.color = '#c00';
+    }
+  }
+}
+
+async function renderPdfPage(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer) return;
+  
+  const page = await viewer.pdf.getPage(viewer.currentPage);
+  const canvas = document.getElementById(pdfId + '-canvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const viewport = page.getViewport({ scale: viewer.scale * 1.5 }); // Higher res for clarity
+  
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  canvas.style.width = (viewport.width / 1.5) + 'px';
+  canvas.style.height = (viewport.height / 1.5) + 'px';
+  
+  await page.render({
+    canvasContext: ctx,
+    viewport: viewport
+  }).promise;
+}
+
+function updatePdfInfo(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer) return;
+  
+  const infoEl = document.getElementById(pdfId + '-info');
+  const zoomEl = document.getElementById(pdfId + '-zoom');
+  
+  if (infoEl) infoEl.textContent = `${viewer.currentPage} / ${viewer.totalPages}`;
+  if (zoomEl) zoomEl.textContent = Math.round(viewer.scale * 100) + '%';
+}
+
+function pdfPrevPage(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer || viewer.currentPage <= 1) return;
+  viewer.currentPage--;
+  renderPdfPage(pdfId);
+  updatePdfInfo(pdfId);
+}
+
+function pdfNextPage(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer || viewer.currentPage >= viewer.totalPages) return;
+  viewer.currentPage++;
+  renderPdfPage(pdfId);
+  updatePdfInfo(pdfId);
+}
+
+function pdfZoomIn(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer || viewer.scale >= 3) return;
+  viewer.scale += 0.25;
+  renderPdfPage(pdfId);
+  updatePdfInfo(pdfId);
+}
+
+function pdfZoomOut(pdfId) {
+  const viewer = pdfViewers[pdfId];
+  if (!viewer || viewer.scale <= 0.5) return;
+  viewer.scale -= 0.25;
+  renderPdfPage(pdfId);
+  updatePdfInfo(pdfId);
+}
+
+// Auto-init PDF viewers when reading overlay content changes
+const pdfObserver = new MutationObserver(() => {
+  setTimeout(initSecurePdfViewers, 100);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const readingBody = document.getElementById('reading-body');
+  if (readingBody) {
+    pdfObserver.observe(readingBody, { childList: true, subtree: true });
+  }
+});
