@@ -8,103 +8,118 @@
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 /* ══════════════════════════════════════════════════════════════
-   FILTER BAR (Category nav + Search)
+   ARTWORKS LAYOUT - Sidebar + Grid
 ══════════════════════════════════════════════════════════════ */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 32px;
+.artworks-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 40px;
+  min-height: calc(100vh - 120px);
 }
 
-.category-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex: 1;
+/* Left Sidebar */
+.artworks-sidebar {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  padding-right: 20px;
+  border-right: 1px solid var(--line);
 }
-.cat-btn {
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-link {
   background: none;
-  border: 1px solid var(--line);
+  border: none;
   font-family: var(--font);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: 11px;
   text-transform: lowercase;
   color: var(--mid);
-  padding: 6px 14px;
+  padding: 4px 0;
   cursor: pointer;
-  transition: all 0.2s;
+  text-align: left;
+  transition: color 0.2s;
+  letter-spacing: 0.02em;
 }
-.cat-btn:hover { border-color: var(--ink); color: var(--ink); }
-.cat-btn.on { background: var(--ink); border-color: var(--ink); color: #fff; }
 
-/* Search */
-.search-wrap {
-  position: relative;
-  flex-shrink: 0;
+.sidebar-link:hover {
+  color: var(--ink);
 }
+
+.sidebar-link.on {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Search in sidebar */
+.sidebar-search {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
 .search-input {
-  width: 180px;
-  padding: 7px 30px 7px 12px;
+  width: 100%;
+  padding: 8px 10px;
   border: 1px solid var(--line);
   background: transparent;
   font-family: var(--font);
   font-size: 11px;
   color: var(--ink);
   outline: none;
-  transition: border-color 0.2s, width 0.3s;
+  transition: border-color 0.2s;
 }
+
 .search-input:focus {
   border-color: var(--ink);
-  width: 220px;
 }
+
 .search-input::placeholder {
   color: var(--dim);
 }
+
 .search-clear {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
+  display: none;
+  margin-top: 6px;
   background: none;
   border: none;
-  color: var(--dim);
+  font-size: 10px;
+  color: var(--mid);
   cursor: pointer;
-  font-size: 12px;
-  padding: 4px;
-  line-height: 1;
+  padding: 0;
 }
+
 .search-clear:hover {
   color: var(--ink);
 }
+
 .search-info {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--mid);
-  margin-bottom: 20px;
-  padding: 8px 12px;
-  background: #f9f9f9;
-  border-left: 2px solid var(--ink);
-}
-.search-highlight {
-  background: rgba(0,0,0,0.08);
-  padding: 1px 2px;
+  margin-top: 8px;
+  line-height: 1.4;
 }
 
-@media (max-width: 600px) {
-  .filter-bar {
-    flex-direction: column;
-  }
-  .search-wrap {
-    width: 100%;
-  }
-  .search-input {
-    width: 100%;
-  }
-  .search-input:focus {
-    width: 100%;
-  }
+/* Main content area */
+.artworks-main {
+  padding-top: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -248,9 +263,44 @@
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .masonry-grid { column-count: 2; }
 }
+
+@media (max-width: 768px) {
+  .artworks-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .artworks-sidebar {
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding-right: 0;
+    padding-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .sidebar-section {
+    margin-bottom: 0;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+  
+  .sidebar-search {
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+}
+
 @media (max-width: 500px) {
   .masonry-grid { column-count: 1; }
   .project-card { grid-template-columns: 1fr auto; }
@@ -284,29 +334,40 @@
 </header>
 
 <div class="page-wrap">
-  <div class="sec" style="max-width:1100px;">
-    <div class="sec-title reveal" data-en="artworks" data-tr="eserler">artworks</div>
-
-    <!-- Filter bar: Category nav + Search -->
-    <div class="filter-bar reveal reveal-delay-1">
-      <div class="category-nav" id="categoryNav"></div>
-      <div class="search-wrap">
-        <input type="text" id="searchInput" class="search-input" placeholder="search..." data-placeholder-en="search..." data-placeholder-tr="ara...">
-        <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none;">✕</button>
-      </div>
+  <div class="sec" style="max-width:1200px;padding-top:20px;">
+    
+    <div class="artworks-layout">
+      <!-- Left Sidebar -->
+      <aside class="artworks-sidebar">
+        <div class="sidebar-section" id="categorySection">
+          <div class="sidebar-label" data-en="categories" data-tr="kategoriler">categories</div>
+          <div class="sidebar-nav" id="categoryNav"></div>
+        </div>
+        
+        <div class="sidebar-section" id="seriesSection" style="display:none;">
+          <div class="sidebar-label" data-en="series" data-tr="seriler">series</div>
+          <div class="sidebar-nav" id="seriesNav"></div>
+        </div>
+        
+        <div class="sidebar-search">
+          <input type="text" id="searchInput" class="search-input" placeholder="search..." data-placeholder-en="search..." data-placeholder-tr="ara...">
+          <button class="search-clear" id="searchClear" onclick="clearSearch()">✕ clear</button>
+          <div class="search-info" id="searchInfo" style="display:none;"></div>
+        </div>
+      </aside>
+      
+      <!-- Main Content -->
+      <main class="artworks-main">
+        <div class="masonry-grid" id="artworkGrid"></div>
+        
+        <!-- Projects section — always at bottom -->
+        <div class="projects-section reveal" id="projectsSection">
+          <div class="projects-section-title" data-en="ongoing & planned projects" data-tr="devam eden & planlanan projeler">ongoing & planned projects</div>
+          <div id="projectsList"></div>
+        </div>
+      </main>
     </div>
-
-    <!-- Search results info -->
-    <div class="search-info" id="searchInfo" style="display:none;"></div>
-
-    <!-- Masonry grid -->
-    <div class="masonry-grid" id="artworkGrid"></div>
-
-    <!-- Projects section — always at bottom -->
-    <div class="projects-section reveal" id="projectsSection">
-      <div class="projects-section-title" data-en="ongoing & planned projects" data-tr="devam eden & planlanan projeler">ongoing & planned projects</div>
-      <div id="projectsList"></div>
-    </div>
+    
   </div>
 </div>
 
@@ -410,8 +471,12 @@ function matchesSearch(aw, query) {
 
 function buildCategoryNav() {
   const l = currentLang;
-  const nav = document.getElementById('categoryNav');
-  nav.innerHTML = '';
+  const catNav = document.getElementById('categoryNav');
+  const serNav = document.getElementById('seriesNav');
+  const serSection = document.getElementById('seriesSection');
+  
+  catNav.innerHTML = '';
+  serNav.innerHTML = '';
 
   // Collect unique categories from artworks
   const usedCategories = new Set();
@@ -445,45 +510,43 @@ function buildCategoryNav() {
   const sortedCats = Array.from(usedCategories).sort((a, b) => a.localeCompare(b));
   const sortedSeries = Array.from(usedSeries).sort((a, b) => a.localeCompare(b));
 
-  // Add "All" button
-  const allBtn = document.createElement('button');
-  allBtn.className = 'cat-btn' + (currentCategory === 'all' ? ' on' : '');
-  allBtn.textContent = l === 'tr' ? 'tümü' : 'all';
-  allBtn.addEventListener('click', () => { currentCategory = 'all'; buildPage(); });
-  nav.appendChild(allBtn);
+  // Add "All" link
+  const allLink = document.createElement('button');
+  allLink.className = 'sidebar-link' + (currentCategory === 'all' ? ' on' : '');
+  allLink.textContent = l === 'tr' ? 'tümü' : 'all';
+  allLink.addEventListener('click', () => { currentCategory = 'all'; buildPage(); });
+  catNav.appendChild(allLink);
 
-  // Add category buttons
+  // Add category links
   sortedCats.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (currentCategory === 'cat:' + cat ? ' on' : '');
-    btn.textContent = getCategoryLabel(cat);
-    btn.addEventListener('click', () => { currentCategory = 'cat:' + cat; buildPage(); });
-    nav.appendChild(btn);
+    const link = document.createElement('button');
+    link.className = 'sidebar-link' + (currentCategory === 'cat:' + cat ? ' on' : '');
+    link.textContent = getCategoryLabel(cat);
+    link.addEventListener('click', () => { currentCategory = 'cat:' + cat; buildPage(); });
+    catNav.appendChild(link);
   });
 
-  // Add series buttons (if any)
+  // Add series links (if any)
   if (sortedSeries.length > 0) {
-    // Add separator
-    const sep = document.createElement('span');
-    sep.className = 'cat-sep';
-    sep.textContent = '|';
-    sep.style.cssText = 'color:var(--dim);margin:0 8px;';
-    nav.appendChild(sep);
+    serSection.style.display = '';
     
-    // Add "series" label
-    const seriesLabel = document.createElement('span');
-    seriesLabel.style.cssText = 'font-size:9px;letter-spacing:0.1em;color:var(--dim);margin-right:8px;text-transform:uppercase;';
-    seriesLabel.textContent = l === 'tr' ? 'seriler' : 'series';
-    nav.appendChild(seriesLabel);
-
     sortedSeries.forEach(ser => {
-      const btn = document.createElement('button');
-      btn.className = 'cat-btn' + (currentCategory === 'ser:' + ser ? ' on' : '');
-      btn.textContent = getSeriesLabel(ser);
-      btn.addEventListener('click', () => { currentCategory = 'ser:' + ser; buildPage(); });
-      nav.appendChild(btn);
+      const link = document.createElement('button');
+      link.className = 'sidebar-link' + (currentCategory === 'ser:' + ser ? ' on' : '');
+      link.textContent = getSeriesLabel(ser);
+      link.addEventListener('click', () => { currentCategory = 'ser:' + ser; buildPage(); });
+      serNav.appendChild(link);
     });
+  } else {
+    serSection.style.display = 'none';
   }
+  
+  // Update sidebar labels for language
+  document.querySelectorAll('.sidebar-label').forEach(el => {
+    if (el.dataset.en && el.dataset.tr) {
+      el.textContent = l === 'tr' ? el.dataset.tr : el.dataset.en;
+    }
+  });
 }
 
 function buildPage() {
