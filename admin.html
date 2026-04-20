@@ -630,7 +630,7 @@ function defaultItem(type) {
     return { ...base, medium: '', mediumTR: '', images: [], materials: [], displayImage: null, featured: false, workType: '3d', category: '', status: (type === 'projects') ? 'ongoing' : undefined };
   }
   if (type === 'poems') return { ...base, body: '', bodyTR: '' };
-  if (type === 'articles') return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '' };
+  if (type === 'articles') return { ...base, type: 'Essay', typeTR: 'Deneme', body: '', bodyTR: '', pdf: '' };
   if (type === 'books') return { ...base, pdf: '', cover: null, allowDownload: true };
   return base;
 }
@@ -755,9 +755,14 @@ function buildFormHTML() {
       <div class="fg"><label class="fl">🇬🇧 Type</label><input class="fi" id="ff-type" value="${ea(currentFormData.type || '')}"></div>
       <div class="fg"><label class="fl">🇹🇷 Tür</label><input class="fi" id="ff-typeTR" value="${ea(currentFormData.typeTR || '')}"></div>
     </div>
+    <div class="fg">
+      <label class="fl">PDF Path (optional - if provided, text body will be ignored)</label>
+      <input class="fi" id="ff-pdf" value="${ea(currentFormData.pdf || '')}" placeholder="e.g. pdfs/article-name.pdf">
+      <div class="fnote">If PDF is set, readers will view the PDF instead of the text body below.</div>
+    </div>
     <div class="f2col">
-      <div class="fg"><label class="fl">🇬🇧 Body</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea></div>
-      <div class="fg"><label class="fl">🇹🇷 Metin</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇬🇧 Body (or summary if PDF)</label><textarea class="ft" id="ff-body" style="min-height:160px;">${eh(currentFormData.body || '')}</textarea></div>
+      <div class="fg"><label class="fl">🇹🇷 Metin (veya PDF varsa özet)</label><textarea class="ft" id="ff-bodyTR" style="min-height:160px;">${eh(currentFormData.bodyTR || '')}</textarea></div>
     </div>`;
   }
 
@@ -1000,6 +1005,7 @@ function saveForm() {
     currentFormData.typeTR = getVal('ff-typeTR');
     currentFormData.body = getText('ff-body');
     currentFormData.bodyTR = getText('ff-bodyTR');
+    currentFormData.pdf = getVal('ff-pdf');
   }
   else if (currentFormType === 'books') {
     currentFormData.pdf = getVal('ff-pdf');
