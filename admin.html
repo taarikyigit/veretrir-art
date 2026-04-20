@@ -69,10 +69,16 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
 .item-title{font-size:14px;font-family:var(--font);font-style:italic;color:var(--text);margin-bottom:2px;}
 .item-meta{font-size:10px;color:var(--faint);letter-spacing:.1em;}
 .item-acts{display:flex;gap:6px;flex-shrink:0;}
-.btn-e,.btn-d,.btn-dup{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
+.btn-e,.btn-d,.btn-dup,.btn-arch{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
 .btn-e:hover{border-color:#aaa;color:#aaa;}
 .btn-d:hover{border-color:var(--red);color:var(--red);}
 .btn-dup:hover{border-color:var(--accent);color:var(--accent);}
+.btn-arch:hover{border-color:#f0ad4e;color:#f0ad4e;}
+.btn-restore{border:1px solid var(--border);background:none;color:var(--dim);padding:5px 10px;cursor:pointer;font-size:11px;transition:all .15s;}
+.btn-restore:hover{border-color:var(--accent);color:var(--accent);}
+.archived-badge{background:#f0ad4e;color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:8px;text-transform:uppercase;letter-spacing:0.05em;}
+.archived-section-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.archived-section-title span{color:var(--faint);font-weight:400;}
 .add-btn{width:100%;background:none;border:1px dashed var(--border);color:var(--faint);padding:13px;cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;transition:border-color .2s,color .2s;}
 .add-btn:hover{border-color:var(--dim);color:var(--dim);}
 
@@ -225,6 +231,11 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
     </div>
+    <div class="sb-sec">Archive</div>
+    <div class="sb-item" data-panel="archived" onclick="go('archived')">
+      <svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+      Archived Items
+    </div>
   </nav>
 
   <main class="main" id="main">
@@ -364,6 +375,36 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <div class="export-pre" id="export-pre"></div>
     </div>
 
+    <div class="panel" id="panel-archived">
+      <div class="ptitle">Archived Items</div>
+      <div class="pdesc">Archived items are hidden from the site but kept in memory. You can restore them anytime.</div>
+      
+      <div class="archived-section" id="archived-artworks-section" style="margin-bottom:24px;">
+        <div class="archived-section-title">Artworks <span id="archived-artworks-count">(0)</span></div>
+        <div class="item-list" id="archived-list-artworks"></div>
+      </div>
+      
+      <div class="archived-section" id="archived-projects-section" style="margin-bottom:24px;">
+        <div class="archived-section-title">Projects <span id="archived-projects-count">(0)</span></div>
+        <div class="item-list" id="archived-list-projects"></div>
+      </div>
+      
+      <div class="archived-section" id="archived-poems-section" style="margin-bottom:24px;">
+        <div class="archived-section-title">Poems <span id="archived-poems-count">(0)</span></div>
+        <div class="item-list" id="archived-list-poems"></div>
+      </div>
+      
+      <div class="archived-section" id="archived-articles-section" style="margin-bottom:24px;">
+        <div class="archived-section-title">Articles <span id="archived-articles-count">(0)</span></div>
+        <div class="item-list" id="archived-list-articles"></div>
+      </div>
+      
+      <div class="archived-section" id="archived-books-section">
+        <div class="archived-section-title">Books <span id="archived-books-count">(0)</span></div>
+        <div class="item-list" id="archived-list-books"></div>
+      </div>
+    </div>
+
     <div class="panel" id="panel-hero">
       <div class="ptitle">Hero Slider Options</div>
       <div class="pdesc">Select which images appear in the homepage hero slider. Choose from all artwork images.</div>
@@ -490,26 +531,32 @@ function renderPanel(name) {
   else if(name==='texts') loadTexts();
   else if(name==='hero') buildHeroPanel();
   else if(name==='export') buildExportPreview();
+  else if(name==='archived') renderArchivedList();
 }
 
 function renderAll() {
   ['artworks','projects','poems','articles','books'].forEach(renderList);
+  renderArchivedList();
 }
 
 function renderList(type) {
   const el=document.getElementById('list-'+type); 
   if(!el) return;
   el.innerHTML='';
-  const items=D[type]||[];
+  // Filter out archived items
+  const items=(D[type]||[]).filter(item => !item.archived);
   if(!items.length){ 
     el.innerHTML='<p style="color:var(--faint);padding:12px 0;font-style:italic;">No items yet.</p>'; 
     return; 
   }
   items.forEach((item,i)=>{
+    // Find actual index in D[type]
+    const actualIdx = D[type].findIndex(x => x.id === item.id);
+    
     const row=document.createElement('div');
     row.className='item-row';
     row.draggable = true;
-    row.dataset.index = i;
+    row.dataset.index = actualIdx;
     row.dataset.type = type;
     const thumbSrc = item.displayImage || (item.images && item.images[0] ? item.images[0].path : null);
     const thumbHTML=thumbSrc ? `<img class="item-thumb" src="${thumbSrc}" alt="">` : `<div class="item-thumb-ph">⊞</div>`;
@@ -522,8 +569,8 @@ function renderList(type) {
     row.innerHTML=`
       <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
       <div class="order-btns">
-        <button class="order-btn" onclick="moveItem('${type}',${i},-1)" ${i===0?'disabled':''}>↑</button>
-        <button class="order-btn" onclick="moveItem('${type}',${i},1)" ${i===items.length-1?'disabled':''}>↓</button>
+        <button class="order-btn" onclick="moveItem('${type}',${actualIdx},-1)" ${i===0?'disabled':''}>↑</button>
+        <button class="order-btn" onclick="moveItem('${type}',${actualIdx},1)" ${i===items.length-1?'disabled':''}>↓</button>
       </div>
       ${thumbHTML}
       <div class="item-info">
@@ -531,9 +578,10 @@ function renderList(type) {
         <div class="item-meta">${meta}</div>
       </div>
       <div class="item-acts">
-        <button class="btn-dup" onclick="duplicateItem('${type}',${i})">Duplicate</button>
-        <button class="btn-e" onclick="openForm('${type}',${i})">Edit</button>
-        <button class="btn-d" onclick="delItem('${type}',${i})">Delete</button>
+        <button class="btn-arch" onclick="archiveItem('${type}',${actualIdx})">Archive</button>
+        <button class="btn-dup" onclick="duplicateItem('${type}',${actualIdx})">Duplicate</button>
+        <button class="btn-e" onclick="openForm('${type}',${actualIdx})">Edit</button>
+        <button class="btn-d" onclick="delItem('${type}',${actualIdx})">Delete</button>
       </div>`;
     
     // Drag events
@@ -598,6 +646,74 @@ function moveItem(type, idx, dir) {
   [items[idx], items[newIdx]] = [items[newIdx], items[idx]];
   saveD();
   renderList(type);
+}
+
+// Archive functions
+function archiveItem(type, idx) {
+  if (!D[type] || !D[type][idx]) return;
+  if (!confirm('Archive this item? It will be hidden from the site but kept in memory.')) return;
+  
+  D[type][idx].archived = true;
+  D[type][idx].archivedAt = new Date().toISOString();
+  saveD();
+  renderList(type);
+  renderArchivedList();
+  toast('Item archived!', 'ok');
+}
+
+function restoreItem(type, idx) {
+  if (!D[type] || !D[type][idx]) return;
+  
+  delete D[type][idx].archived;
+  delete D[type][idx].archivedAt;
+  saveD();
+  renderList(type);
+  renderArchivedList();
+  toast('Item restored!', 'ok');
+}
+
+function renderArchivedList() {
+  const types = ['artworks', 'projects', 'poems', 'articles', 'books'];
+  
+  types.forEach(type => {
+    const el = document.getElementById('archived-list-' + type);
+    const countEl = document.getElementById('archived-' + type + '-count');
+    const sectionEl = document.getElementById('archived-' + type + '-section');
+    if (!el) return;
+    
+    el.innerHTML = '';
+    const archivedItems = (D[type] || []).filter(item => item.archived);
+    
+    if (countEl) countEl.textContent = `(${archivedItems.length})`;
+    if (sectionEl) sectionEl.style.display = archivedItems.length ? '' : 'none';
+    
+    if (!archivedItems.length) return;
+    
+    archivedItems.forEach(item => {
+      const actualIdx = D[type].findIndex(x => x.id === item.id);
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.style.opacity = '0.7';
+      
+      const thumbSrc = item.displayImage || (item.images && item.images[0] ? item.images[0].path : null);
+      const thumbHTML = thumbSrc ? `<img class="item-thumb" src="${thumbSrc}" alt="">` : `<div class="item-thumb-ph">⊞</div>`;
+      
+      const archivedDate = item.archivedAt ? new Date(item.archivedAt).toLocaleDateString() : '';
+      
+      row.innerHTML = `
+        ${thumbHTML}
+        <div class="item-info">
+          <div class="item-title">${esc(item.title || item.id || '—')}<span class="archived-badge">Archived</span></div>
+          <div class="item-meta">${item.year || ''}${archivedDate ? ' · Archived: ' + archivedDate : ''}</div>
+        </div>
+        <div class="item-acts">
+          <button class="btn-restore" onclick="restoreItem('${type}',${actualIdx})">Restore</button>
+          <button class="btn-d" onclick="delItem('${type}',${actualIdx})">Delete</button>
+        </div>`;
+      
+      el.appendChild(row);
+    });
+  });
 }
 
 let currentFormType = null;
