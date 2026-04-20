@@ -240,16 +240,6 @@
 <div class="page-wrap">
   <div class="sec">
     <div class="sec-title" data-en="writings" data-tr="yazılar">writings</div>
- 
-    <!-- Poem of the Day -->
-    <div id="poemOfDaySection" style="display:none; margin-bottom: 48px;">
-      <div class="potd-wrap">
-        <div class="potd-label" data-en="poem of the day" data-tr="günün şiiri">poem of the day</div>
-        <div class="potd-title" id="potdTitle"></div>
-        <div class="potd-text" id="potdText"></div>
-        <div class="potd-date" id="potdDate"></div>
-      </div>
-    </div>
 
     <div class="tabs">
       <button class="tab-btn on" id="tab-all"      onclick="swTab('all')"      data-en="all"      data-tr="tümü">all</button>
@@ -417,45 +407,6 @@ function buildLists() {
   });
   
   // Poem of the Day
-  buildPoemOfDay();
-}
-
-function buildPoemOfDay() {
-  const l = currentLang;
-  const section = document.getElementById('poemOfDaySection');
-  
-  // Get poems marked as poemOfDay
-  const eligiblePoems = (SITE.poems || []).filter(p => p.poemOfDay === true);
-  
-  if (!eligiblePoems.length) {
-    section.style.display = 'none';
-    return;
-  }
-  
-  // Determine which poem to show based on day
-  // Use day of year to rotate through eligible poems
-  const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 0);
-  const diff = now - startOfYear;
-  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const poemIndex = dayOfYear % eligiblePoems.length;
-  const poem = eligiblePoems[poemIndex];
-  
-  const title = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
-  const body = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
-  
-  // Format today's date
-  const dateStr = now.toLocaleDateString(l === 'tr' ? 'tr-TR' : 'en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  
-  document.getElementById('potdTitle').textContent = title;
-  document.getElementById('potdText').textContent = body;
-  document.getElementById('potdDate').textContent = dateStr;
-  
-  section.style.display = '';
 }
  
 function swTab(t) {
