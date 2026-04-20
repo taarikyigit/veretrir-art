@@ -368,11 +368,11 @@ function _renderWork(aw, badgeLabel) {
     const seriesName = serDef ? (l === 'tr' ? serDef.tr : serDef.en) : aw.series;
     const seriesCount = SITE.artworks.filter(a => a.series === aw.series && a.id !== aw.id).length;
     if (seriesCount > 0) {
-      const seriesEncoded = encodeURIComponent(aw.series);
+      const seriesEncoded = encodeURIComponent(aw.series.toLowerCase());
       seriesHTML = `<div class="rw-series-link" style="margin-top:24px;padding:16px;background:#f9f9f9;border:1px solid var(--line);border-radius:4px;">
         <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);margin-bottom:6px;">${l === 'tr' ? 'bu seri' : 'this series'}</div>
         <div style="font-size:14px;color:var(--ink);margin-bottom:8px;">${_esc(seriesName)}</div>
-        <a href="artworks.html#ser:${seriesEncoded}" onclick="closeReading(); window.location.href=this.href; return false;" class="rw-series-btn" style="display:inline-block;font-size:11px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px;">
+        <a href="artworks.html#ser:${seriesEncoded}" onclick="closeReading(); setTimeout(() => { window.location.href = this.href; }, 100); return false;" class="rw-series-btn" style="display:inline-block;font-size:11px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:2px;">
           ${l === 'tr' ? `bu serinin ${seriesCount} diğer eserini gör →` : `see ${seriesCount} other work${seriesCount > 1 ? 's' : ''} in this series →`}
         </a>
       </div>`;
