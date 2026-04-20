@@ -391,22 +391,35 @@ function makeBookItem(idx) {
  
 function buildLists() {
   const l=currentLang;
+  
+  // Filter out archived items
+  const activeBooks = (SITE.books || []).filter(b => !b.archived);
+  const activePoems = (SITE.poems || []).filter(p => !p.archived);
+  const activeArticles = (SITE.articles || []).filter(a => !a.archived);
+  
   ['all-books','only-books'].forEach(id=>{
     const el=document.getElementById(id); el.innerHTML='';
-    SITE.books.forEach((_,i)=>el.appendChild(makeBookItem(i)));
+    activeBooks.forEach((b,i)=>{
+      const actualIdx = SITE.books.findIndex(x => x.id === b.id);
+      el.appendChild(makeBookItem(actualIdx));
+    });
   });
   ['all-poems','only-poems'].forEach(id=>{
     const el=document.getElementById(id); el.innerHTML='';
-    SITE.poems.forEach((p,i)=>el.appendChild(makeWritingItem('poem',i,
-      l==='tr'?p.titleTR:p.title, p.year)));
+    activePoems.forEach((p,i)=>{
+      const actualIdx = SITE.poems.findIndex(x => x.id === p.id);
+      el.appendChild(makeWritingItem('poem',actualIdx,
+        l==='tr'?p.titleTR:p.title, p.year));
+    });
   });
   ['all-articles','only-articles'].forEach(id=>{
     const el=document.getElementById(id); el.innerHTML='';
-    SITE.articles.forEach((a,i)=>el.appendChild(makeWritingItem('article',i,
-      l==='tr'?a.titleTR:a.title, `${a.year} · ${l==='tr'?a.typeTR:a.type}`)));
+    activeArticles.forEach((a,i)=>{
+      const actualIdx = SITE.articles.findIndex(x => x.id === a.id);
+      el.appendChild(makeWritingItem('article',actualIdx,
+        l==='tr'?a.titleTR:a.title, `${a.year} · ${l==='tr'?a.typeTR:a.type}`));
+    });
   });
-  
-  // Poem of the Day
 }
  
 function swTab(t) {
