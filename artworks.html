@@ -662,23 +662,24 @@ function buildPage() {
   // Filter artworks (empty if showing projects only)
   let filtered = [];
   if (!showingProjects) {
-    filtered = SITE.artworks;
+    // Filter out archived items first
+    filtered = SITE.artworks.filter(aw => !aw.archived);
     if (currentCategory !== 'all') {
       if (currentCategory.startsWith('cat:')) {
         const cat = currentCategory.slice(4).toLowerCase();
-        filtered = SITE.artworks.filter(aw => 
+        filtered = filtered.filter(aw => 
           aw.category && aw.category.trim().toLowerCase() === cat
         );
       } else if (currentCategory.startsWith('ser:')) {
         const ser = currentCategory.slice(4).toLowerCase();
         // Case-insensitive comparison for series
-        filtered = SITE.artworks.filter(aw => 
+        filtered = filtered.filter(aw => 
           aw.series && aw.series.trim().toLowerCase() === ser
         );
         console.log('Series filter:', ser, 'Matches:', filtered.map(a => a.title));
       } else {
         // Legacy support for old category format
-        filtered = SITE.artworks.filter(aw => 
+        filtered = filtered.filter(aw => 
           aw.category && aw.category.trim().toLowerCase() === currentCategory
         );
       }
@@ -762,7 +763,10 @@ function buildPage() {
   const projectsSection = document.getElementById('projectsSection');
   const projectsTitle = projectsSection.querySelector('.projects-section-title');
   
-  if ((currentCategory === 'all' || currentCategory === 'projects') && SITE.projects && SITE.projects.length) {
+  // Filter out archived projects
+  const activeProjects = (SITE.projects || []).filter(p => !p.archived);
+  
+  if ((currentCategory === 'all' || currentCategory === 'projects') && activeProjects.length) {
     projectsSection.style.display = '';
     
     // Hide title when it's the main view (projects category)
@@ -778,7 +782,7 @@ function buildPage() {
       projectsSection.style.borderTop = '';
     }
     
-    SITE.projects.forEach((p, idx) => {
+    activeProjects.forEach((p, idx) => {
       const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
       const desc = l === 'tr' ? (p.descTR || p.desc) : p.desc;
       const status = p.status === 'ongoing' 
