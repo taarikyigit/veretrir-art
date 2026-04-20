@@ -310,8 +310,12 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
           </div>
         </div>
         <div class="fg">
-          <label class="fl">Description (optional)</label>
-          <input class="fi" id="series-new-desc" placeholder="Brief description of the series"/>
+          <label class="fl">🇬🇧 Description (optional)</label>
+          <input class="fi" id="series-new-desc" placeholder="Brief description in English"/>
+        </div>
+        <div class="fg">
+          <label class="fl">🇹🇷 Açıklama (opsiyonel)</label>
+          <input class="fi" id="series-new-desc-tr" placeholder="Türkçe kısa açıklama"/>
         </div>
         <button class="btn-save" onclick="addSeries()" style="margin-top:12px;">+ Add Series</button>
       </div>
@@ -1351,14 +1355,16 @@ function renderSeriesList() {
           <span style="color:var(--text);">🇹🇷 ${esc(s.tr)}</span>
           <span style="color:var(--dim);margin-left:12px;font-size:10px;">(${counts[s.en] || 0} works)</span>
         </div>
-        ${s.desc ? `<div style="font-size:11px;color:var(--faint);margin-top:4px;font-style:italic;">${esc(s.desc)}</div>` : ''}
+        ${s.desc ? `<div style="font-size:11px;color:var(--faint);margin-top:4px;font-style:italic;">🇬🇧 ${esc(s.desc)}</div>` : ''}
+        ${s.descTR ? `<div style="font-size:11px;color:var(--faint);margin-top:2px;font-style:italic;">🇹🇷 ${esc(s.descTR)}</div>` : ''}
       </div>
       <div class="ser-edit-fields" id="ser-edit-${i}" style="display:none;flex:1;flex-direction:column;gap:6px;">
         <div style="display:flex;gap:8px;">
-          <input type="text" id="ser-edit-en-${i}" value="${ea(s.en)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="English">
-          <input type="text" id="ser-edit-tr-${i}" value="${ea(s.tr)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Turkish">
+          <input type="text" id="ser-edit-en-${i}" value="${ea(s.en)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="English name">
+          <input type="text" id="ser-edit-tr-${i}" value="${ea(s.tr)}" style="flex:1;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Turkish name">
         </div>
-        <input type="text" id="ser-edit-desc-${i}" value="${ea(s.desc || '')}" style="width:100%;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="Description (optional)">
+        <input type="text" id="ser-edit-desc-${i}" value="${ea(s.desc || '')}" style="width:100%;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="🇬🇧 English description">
+        <input type="text" id="ser-edit-desc-tr-${i}" value="${ea(s.descTR || '')}" style="width:100%;padding:4px 8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;" placeholder="🇹🇷 Türkçe açıklama">
       </div>
       <div style="display:flex;gap:6px;">
         <button onclick="toggleEditSeries(${i})" class="ser-edit-btn-${i}" style="background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;">Edit</button>
@@ -1402,10 +1408,12 @@ function saveEditSeries(idx) {
   const enInput = document.getElementById('ser-edit-en-' + idx);
   const trInput = document.getElementById('ser-edit-tr-' + idx);
   const descInput = document.getElementById('ser-edit-desc-' + idx);
+  const descTRInput = document.getElementById('ser-edit-desc-tr-' + idx);
   
   const en = enInput.value.trim().toLowerCase();
   const tr = trInput.value.trim().toLowerCase();
   const desc = descInput ? descInput.value.trim() : '';
+  const descTR = descTRInput ? descTRInput.value.trim() : '';
   
   if (!en || !tr) {
     toast('Both fields required', 'err');
@@ -1424,6 +1432,7 @@ function saveEditSeries(idx) {
   D.series[idx].en = en;
   D.series[idx].tr = tr;
   D.series[idx].desc = desc;
+  D.series[idx].descTR = descTR;
   saveD();
   renderSeriesList();
   toast('Series updated!', 'ok');
@@ -1433,10 +1442,12 @@ function addSeries() {
   const enInput = document.getElementById('series-new-en');
   const trInput = document.getElementById('series-new-tr');
   const descInput = document.getElementById('series-new-desc');
+  const descTRInput = document.getElementById('series-new-desc-tr');
   
   const en = enInput.value.trim().toLowerCase();
   const tr = trInput.value.trim().toLowerCase();
   const desc = descInput ? descInput.value.trim() : '';
+  const descTR = descTRInput ? descTRInput.value.trim() : '';
   
   if (!en || !tr) {
     toast('Please enter both English and Turkish names', 'err');
@@ -1450,10 +1461,13 @@ function addSeries() {
     return;
   }
   
-  D.series.push({ en, tr, desc });
+  D.series.push({ en, tr, desc, descTR });
   saveD();
   
   enInput.value = '';
+  trInput.value = '';
+  if (descInput) descInput.value = '';
+  if (descTRInput) descTRInput.value = '';
   trInput.value = '';
   if (descInput) descInput.value = '';
   
