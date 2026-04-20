@@ -294,8 +294,10 @@ function buildHeroSlider() {
     }
     
     if (heroSlideData.length === 0) {
-      const featured = SITE.artworks.filter(a => a.featured === true);
-      const pool = featured.length >= 2 ? featured : SITE.artworks;
+      // Filter out archived artworks
+      const activeArtworks = SITE.artworks.filter(a => !a.archived);
+      const featured = activeArtworks.filter(a => a.featured === true);
+      const pool = featured.length >= 2 ? featured : activeArtworks;
       pool.forEach(aw => {
         const img = _mainImg(aw) || _getDisplayImage(aw);
         if (img) heroSlideData.push({ img: img, aw: aw });
