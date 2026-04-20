@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ── LANGUAGE ─────────────────────────────────────────────────── */
-let currentLang = localStorage.getItem('lang') || 'en';
+let currentLang = localStorage.getItem('lang') || 'tr';
 function setLang(l) {
   currentLang = l; localStorage.setItem('lang', l);
   document.documentElement.lang = l;
