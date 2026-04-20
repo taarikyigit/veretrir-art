@@ -604,6 +604,19 @@ function updateSeriesHeader() {
   const descEl = document.getElementById('seriesDesc');
   const countEl = document.getElementById('seriesCount');
   
+  // Handle "projects" category
+  if (currentCategory === 'projects') {
+    const projectCount = (SITE.projects || []).length;
+    titleEl.textContent = l === 'tr' ? 'devam eden & planlanan projeler' : 'ongoing & planned projects';
+    descEl.textContent = '';
+    descEl.style.display = 'none';
+    countEl.textContent = l === 'tr' 
+      ? `${projectCount} proje` 
+      : `${projectCount} project${projectCount !== 1 ? 's' : ''}`;
+    header.style.display = '';
+    return;
+  }
+  
   if (!currentCategory.startsWith('ser:')) {
     header.style.display = 'none';
     return;
