@@ -122,6 +122,38 @@
   padding-top: 0;
 }
 
+/* Series Header */
+.series-header {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.series-title {
+  font-family: var(--font);
+  font-size: 24px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  margin: 0 0 12px 0;
+  text-transform: lowercase;
+}
+
+.series-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--mid);
+  margin: 0 0 12px 0;
+  max-width: 600px;
+}
+
+.series-count {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
 /* ══════════════════════════════════════════════════════════════
    MASONRY GRID — Pinterest-style, no cropping
 ══════════════════════════════════════════════════════════════ */
@@ -358,9 +390,16 @@
       
       <!-- Main Content -->
       <main class="artworks-main">
+        <!-- Series Header (shown when viewing a series) -->
+        <div class="series-header" id="seriesHeader" style="display:none;">
+          <h2 class="series-title" id="seriesTitle"></h2>
+          <p class="series-desc" id="seriesDesc"></p>
+          <div class="series-count" id="seriesCount"></div>
+        </div>
+        
         <div class="masonry-grid" id="artworkGrid"></div>
         
-        <!-- Projects section — always at bottom -->
+        <!-- Projects section — only shown in 'all' view -->
         <div class="projects-section reveal" id="projectsSection">
           <div class="projects-section-title" data-en="ongoing & planned projects" data-tr="devam eden & planlanan projeler">ongoing & planned projects</div>
           <div id="projectsList"></div>
@@ -549,11 +588,51 @@ function buildCategoryNav() {
   });
 }
 
+function updateSeriesHeader() {
+  const l = currentLang;
+  const header = document.getElementById('seriesHeader');
+  const titleEl = document.getElementById('seriesTitle');
+  const descEl = document.getElementById('seriesDesc');
+  const countEl = document.getElementById('seriesCount');
+  
+  if (!currentCategory.startsWith('ser:')) {
+    header.style.display = 'none';
+    return;
+  }
+  
+  const serKey = currentCategory.slice(4).toLowerCase();
+  const seriesDefs = SITE.series || [];
+  const serDef = seriesDefs.find(s => s.en.toLowerCase() === serKey);
+  
+  if (!serDef) {
+    header.style.display = 'none';
+    return;
+  }
+  
+  const seriesName = l === 'tr' ? (serDef.tr || serDef.en) : serDef.en;
+  const seriesDesc = serDef.desc || '';
+  const artworkCount = SITE.artworks.filter(aw => 
+    aw.series && aw.series.trim().toLowerCase() === serKey
+  ).length;
+  
+  titleEl.textContent = seriesName;
+  descEl.textContent = seriesDesc;
+  descEl.style.display = seriesDesc ? '' : 'none';
+  countEl.textContent = l === 'tr' 
+    ? `${artworkCount} eser` 
+    : `${artworkCount} work${artworkCount !== 1 ? 's' : ''}`;
+  
+  header.style.display = '';
+}
+
 function buildPage() {
   const l = currentLang;
   
   // Build category nav
   buildCategoryNav();
+  
+  // Update series header
+  updateSeriesHeader();
 
   // Filter artworks
   let filtered = SITE.artworks;
@@ -641,13 +720,13 @@ function buildPage() {
     grid.innerHTML = '<div class="masonry-empty">—</div>';
   }
 
-  // Build projects list
+  // Build projects list - only show when viewing "all" artworks
   const pl = document.getElementById('projectsList');
   pl.innerHTML = '';
   
   // Show/hide projects section
   const projectsSection = document.getElementById('projectsSection');
-  if (SITE.projects && SITE.projects.length) {
+  if (currentCategory === 'all' && SITE.projects && SITE.projects.length) {
     projectsSection.style.display = '';
     
     SITE.projects.forEach((p, idx) => {
