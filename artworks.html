@@ -619,7 +619,7 @@ function updateSeriesHeader() {
   }
   
   const seriesName = l === 'tr' ? (serDef.tr || serDef.en) : serDef.en;
-  const seriesDesc = serDef.desc || '';
+  const seriesDesc = l === 'tr' ? (serDef.descTR || serDef.desc || '') : (serDef.desc || '');
   const artworkCount = SITE.artworks.filter(aw => 
     aw.series && aw.series.trim().toLowerCase() === serKey
   ).length;
