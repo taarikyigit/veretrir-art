@@ -12,8 +12,8 @@
 ══════════════════════════════════════════════════════════════ */
 .artworks-layout {
   display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 40px;
+  grid-template-columns: 160px 1fr;
+  gap: 30px;
   min-height: calc(100vh - 120px);
 }
 
@@ -22,7 +22,7 @@
   position: sticky;
   top: 80px;
   align-self: start;
-  padding-right: 20px;
+  padding-right: 16px;
   border-right: 1px solid var(--line);
 }
 
@@ -333,8 +333,8 @@
   </div>
 </header>
 
-<div class="page-wrap">
-  <div class="sec" style="max-width:1200px;padding-top:20px;">
+<div class="page-wrap" style="padding-left:0;">
+  <div class="sec" style="max-width:1400px;padding-top:20px;padding-left:var(--page-pad);padding-right:var(--page-pad);">
     
     <div class="artworks-layout">
       <!-- Left Sidebar -->
@@ -564,11 +564,12 @@ function buildPage() {
         aw.category && aw.category.trim().toLowerCase() === cat
       );
     } else if (currentCategory.startsWith('ser:')) {
-      const ser = currentCategory.slice(4);
-      // Compare with exact match (series values are already lowercase in data)
+      const ser = currentCategory.slice(4).toLowerCase();
+      // Case-insensitive comparison for series
       filtered = SITE.artworks.filter(aw => 
-        aw.series && aw.series.trim() === ser
+        aw.series && aw.series.trim().toLowerCase() === ser
       );
+      console.log('Series filter:', ser, 'Matches:', filtered.map(a => a.title));
     } else {
       // Legacy support for old category format
       filtered = SITE.artworks.filter(aw => 
@@ -680,11 +681,15 @@ const _base = window.setLang;
 window.setLang = function(l) { _base(l); buildPage(); triggerReveals(); };
 document.addEventListener('DOMContentLoaded', () => { 
   // Check URL hash for category/series filter
-  const hash = decodeURIComponent(window.location.hash.slice(1));
+  let hash = decodeURIComponent(window.location.hash.slice(1));
   if (hash) {
-    if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
-      currentCategory = hash;
+    // Normalize: lowercase the value part for consistent matching
+    if (hash.startsWith('ser:')) {
+      hash = 'ser:' + hash.slice(4).toLowerCase();
+    } else if (hash.startsWith('cat:')) {
+      hash = 'cat:' + hash.slice(4).toLowerCase();
     }
+    currentCategory = hash;
   }
   
   initSearch();
@@ -694,12 +699,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Handle hash changes
 window.addEventListener('hashchange', () => {
-  const hash = decodeURIComponent(window.location.hash.slice(1));
+  let hash = decodeURIComponent(window.location.hash.slice(1));
   if (hash) {
-    if (hash.startsWith('ser:') || hash.startsWith('cat:')) {
-      currentCategory = hash;
-      buildPage();
+    // Normalize: lowercase the value part
+    if (hash.startsWith('ser:')) {
+      hash = 'ser:' + hash.slice(4).toLowerCase();
+    } else if (hash.startsWith('cat:')) {
+      hash = 'cat:' + hash.slice(4).toLowerCase();
     }
+    currentCategory = hash;
+    buildPage();
   }
 });
 
