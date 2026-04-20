@@ -565,6 +565,15 @@ function buildCategoryNav() {
     catNav.appendChild(link);
   });
 
+  // Add "ongoing & planned" category if there are projects
+  if (SITE.projects && SITE.projects.length > 0) {
+    const projLink = document.createElement('button');
+    projLink.className = 'sidebar-link' + (currentCategory === 'projects' ? ' on' : '');
+    projLink.textContent = l === 'tr' ? 'devam eden & planlanan' : 'ongoing & planned';
+    projLink.addEventListener('click', () => { currentCategory = 'projects'; buildPage(); });
+    catNav.appendChild(projLink);
+  }
+
   // Add series links (if any)
   if (sortedSeries.length > 0) {
     serSection.style.display = '';
@@ -634,37 +643,43 @@ function buildPage() {
   // Update series header
   updateSeriesHeader();
 
-  // Filter artworks
-  let filtered = SITE.artworks;
-  if (currentCategory !== 'all') {
-    if (currentCategory.startsWith('cat:')) {
-      const cat = currentCategory.slice(4).toLowerCase();
-      filtered = SITE.artworks.filter(aw => 
-        aw.category && aw.category.trim().toLowerCase() === cat
-      );
-    } else if (currentCategory.startsWith('ser:')) {
-      const ser = currentCategory.slice(4).toLowerCase();
-      // Case-insensitive comparison for series
-      filtered = SITE.artworks.filter(aw => 
-        aw.series && aw.series.trim().toLowerCase() === ser
-      );
-      console.log('Series filter:', ser, 'Matches:', filtered.map(a => a.title));
-    } else {
-      // Legacy support for old category format
-      filtered = SITE.artworks.filter(aw => 
-        aw.category && aw.category.trim().toLowerCase() === currentCategory
-      );
+  // Check if we're showing the "projects" category
+  const showingProjects = currentCategory === 'projects';
+
+  // Filter artworks (empty if showing projects only)
+  let filtered = [];
+  if (!showingProjects) {
+    filtered = SITE.artworks;
+    if (currentCategory !== 'all') {
+      if (currentCategory.startsWith('cat:')) {
+        const cat = currentCategory.slice(4).toLowerCase();
+        filtered = SITE.artworks.filter(aw => 
+          aw.category && aw.category.trim().toLowerCase() === cat
+        );
+      } else if (currentCategory.startsWith('ser:')) {
+        const ser = currentCategory.slice(4).toLowerCase();
+        // Case-insensitive comparison for series
+        filtered = SITE.artworks.filter(aw => 
+          aw.series && aw.series.trim().toLowerCase() === ser
+        );
+        console.log('Series filter:', ser, 'Matches:', filtered.map(a => a.title));
+      } else {
+        // Legacy support for old category format
+        filtered = SITE.artworks.filter(aw => 
+          aw.category && aw.category.trim().toLowerCase() === currentCategory
+        );
+      }
     }
   }
 
   // Apply search filter
-  if (searchQuery) {
+  if (searchQuery && !showingProjects) {
     filtered = filtered.filter(aw => matchesSearch(aw, searchQuery));
   }
 
   // Update search info
   const searchInfo = document.getElementById('searchInfo');
-  if (searchQuery) {
+  if (searchQuery && !showingProjects) {
     const totalInCategory = currentCategory === 'all' ? SITE.artworks.length : 
       SITE.artworks.filter(aw => {
         if (currentCategory.startsWith('cat:')) return aw.category && aw.category.trim().toLowerCase() === currentCategory.slice(4).toLowerCase();
@@ -684,50 +699,71 @@ function buildPage() {
   // Debug: log filter results
   console.log('Filter:', currentCategory, 'Search:', searchQuery, 'Found:', filtered.length);
 
-  // Build masonry grid
+  // Build masonry grid (hide if showing projects only)
   const grid = document.getElementById('artworkGrid');
   grid.innerHTML = '';
+  
+  if (showingProjects) {
+    grid.style.display = 'none';
+  } else {
+    grid.style.display = '';
 
-  filtered.forEach((aw, idx) => {
-    const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-    const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-    const displaySrc = _getDisplayImage(aw) || _mainImg(aw);
-    
-    // Find original index in SITE.artworks
-    const originalIdx = SITE.artworks.findIndex(a => a.id === aw.id);
+    filtered.forEach((aw, idx) => {
+      const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+      const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
+      const displaySrc = _getDisplayImage(aw) || _mainImg(aw);
+      
+      // Find original index in SITE.artworks
+      const originalIdx = SITE.artworks.findIndex(a => a.id === aw.id);
 
-    const div = document.createElement('div');
-    div.className = 'masonry-item img-zoom-hover';
-    div.addEventListener('click', () => openArtwork(originalIdx));
+      const div = document.createElement('div');
+      div.className = 'masonry-item img-zoom-hover';
+      div.addEventListener('click', () => openArtwork(originalIdx));
 
-    if (displaySrc) {
-      div.innerHTML = `
-        <div class="masonry-img">
-          <img src="${displaySrc}" alt="${_esc(title)}">
-          <div class="masonry-overlay">
-            <div class="masonry-overlay-title">${_esc(title)}</div>
-            <div class="masonry-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
-          </div>
-        </div>`;
-    } else {
-      div.innerHTML = `<div class="masonry-ph"><span>—</span></div>`;
+      if (displaySrc) {
+        div.innerHTML = `
+          <div class="masonry-img">
+            <img src="${displaySrc}" alt="${_esc(title)}">
+            <div class="masonry-overlay">
+              <div class="masonry-overlay-title">${_esc(title)}</div>
+              <div class="masonry-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
+            </div>
+          </div>`;
+      } else {
+        div.innerHTML = `<div class="masonry-ph"><span>—</span></div>`;
+      }
+
+      grid.appendChild(div);
+    });
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="masonry-empty">—</div>';
     }
-
-    grid.appendChild(div);
-  });
-
-  if (!filtered.length) {
-    grid.innerHTML = '<div class="masonry-empty">—</div>';
   }
 
-  // Build projects list - only show when viewing "all" artworks
+  // Build projects list - show when viewing "all" OR "projects" category
   const pl = document.getElementById('projectsList');
   pl.innerHTML = '';
   
   // Show/hide projects section
   const projectsSection = document.getElementById('projectsSection');
-  if (currentCategory === 'all' && SITE.projects && SITE.projects.length) {
+  const projectsTitle = projectsSection.querySelector('.projects-section-title');
+  
+  if ((currentCategory === 'all' || currentCategory === 'projects') && SITE.projects && SITE.projects.length) {
     projectsSection.style.display = '';
+    
+    // Hide title when it's the main view (projects category)
+    if (currentCategory === 'projects') {
+      projectsTitle.style.display = 'none';
+      projectsSection.style.marginTop = '0';
+      projectsSection.style.paddingTop = '0';
+      projectsSection.style.borderTop = 'none';
+    } else {
+      projectsTitle.style.display = '';
+      projectsSection.style.marginTop = '';
+      projectsSection.style.paddingTop = '';
+      projectsSection.style.borderTop = '';
+    }
     
     SITE.projects.forEach((p, idx) => {
       const name = l === 'tr' ? (p.titleTR || p.title) : p.title;
