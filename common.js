@@ -439,13 +439,51 @@ function openArticle(idx) {
   const title = l === 'tr' ? (ar.titleTR || ar.title) : ar.title;
   const type  = l === 'tr' ? (ar.typeTR  || ar.type)  : ar.type;
   const body  = l === 'tr' ? (ar.bodyTR  || ar.body)  : ar.body;
-  const paras = (body || '').split(/\n\n+/).map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
-  openReading(`
-    <div class="reading-title">${_esc(title)}</div>
-    <div class="reading-meta">${_esc(ar.year || '')} · ${_esc(type || '')}</div>
-    <div class="reading-sec-label">${_esc(type || '')}</div>
-    <div class="reading-desc">${paras}</div>
-  `, _esc(type || ''), title);
+  
+  let contentHTML = '';
+  
+  // If article has PDF, show secure PDF viewer
+  if (ar.pdf && ar.pdf.trim()) {
+    const pdfId = 'pdf-' + Math.random().toString(36).substr(2, 9);
+    contentHTML = `
+      <div class="reading-title">${_esc(title)}</div>
+      <div class="reading-meta">${_esc(ar.year || '')} · ${_esc(type || '')}</div>
+      ${body ? `<div class="reading-desc" style="margin-bottom:24px;"><p>${_esc(body)}</p></div>` : ''}
+      <div class="rw-pdf-secure" data-pdf-path="${ar.pdf}" data-pdf-id="${pdfId}">
+        <div class="pdf-viewer-wrap" id="${pdfId}" 
+          oncontextmenu="return false;" 
+          onselectstart="return false;"
+          ondragstart="return false;"
+          style="user-select:none;-webkit-user-select:none;">
+          <div class="pdf-controls">
+            <button onclick="pdfPrevPage('${pdfId}')" class="pdf-ctrl-btn">◀ ${l === 'tr' ? 'önceki' : 'prev'}</button>
+            <span class="pdf-page-info" id="${pdfId}-info">1 / 1</span>
+            <button onclick="pdfNextPage('${pdfId}')" class="pdf-ctrl-btn">${l === 'tr' ? 'sonraki' : 'next'} ▶</button>
+            <button onclick="pdfZoomOut('${pdfId}')" class="pdf-ctrl-btn">−</button>
+            <span class="pdf-zoom-info" id="${pdfId}-zoom">100%</span>
+            <button onclick="pdfZoomIn('${pdfId}')" class="pdf-ctrl-btn">+</button>
+          </div>
+          <div class="pdf-canvas-wrap" id="${pdfId}-wrap" style="overflow:auto;max-height:600px;background:#f5f5f5;border:1px solid var(--line);border-radius:4px;">
+            <canvas id="${pdfId}-canvas" style="display:block;margin:0 auto;"></canvas>
+          </div>
+          <div class="pdf-loading" id="${pdfId}-loading" style="text-align:center;padding:40px;color:var(--mid);">
+            ${l === 'tr' ? 'PDF yükleniyor...' : 'Loading PDF...'}
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    // Regular text article
+    const paras = (body || '').split(/\n\n+/).map(p => `<p>${_esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+    contentHTML = `
+      <div class="reading-title">${_esc(title)}</div>
+      <div class="reading-meta">${_esc(ar.year || '')} · ${_esc(type || '')}</div>
+      <div class="reading-sec-label">${_esc(type || '')}</div>
+      <div class="reading-desc">${paras}</div>
+    `;
+  }
+  
+  openReading(contentHTML, _esc(type || ''), title);
 }
 
 /* ── 3D VIEWER ───────────────────────────────────────────────── */
