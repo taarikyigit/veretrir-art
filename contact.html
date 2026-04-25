@@ -1,86 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>contact — tarık yiğit</title>
-<link rel="stylesheet" href="style.css"/>
-<style>
-.contact-center { text-align: center; padding-top: 40px; }
-.contact-email {
-  display: inline-block;
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--ink);
-  text-decoration: none;
-  border-bottom: 1px solid var(--ink);
-  padding-bottom: 2px;
-  transition: color 0.2s, border-color 0.2s;
-  text-transform: lowercase;
-}
-.contact-email:hover { color: var(--mid); border-color: var(--mid); }
-.contact-note {
-  margin-top: 16px;
-  font-size: 12px;
-  color: var(--dim);
-  text-transform: lowercase;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>contact — tarık yiğit</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="page-transition-mask"></div>
-<header>
-  <div class="header-left">
-    <a href="index.html" class="header-name">tarık yiğit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-      </svg>
-    </a>
-  </div>
-  <nav>
-    <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
-    <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
-    <a href="about.html" data-en="about" data-tr="hakkında">about</a>
-    <a href="contact.html" data-en="contact" data-tr="iletişim" class="active">contact</a>
-  </nav>
-  <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
-    <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
-  </div>
-</header>
-<div class="page-wrap">
-  <div class="sec">
-    <div class="sec-title contact-center reveal" data-en="contact" data-tr="iletişim">contact</div>
-    <div class="contact-center reveal reveal-delay-1">
-      <a href="mailto:hello@veretrir.art" class="contact-email" data-no-transition>hello@veretrir.art</a>
-      <p class="contact-note" id="contactNote"></p>
+
+<div class="site-layout">
+  <!-- Main Content -->
+  <main class="site-content">
+    <div class="contact-content">
+      <div class="contact-email">
+        <a href="mailto:hello@veretrir.art" id="contact-email">hello@veretrir.art</a>
+      </div>
+      <div class="contact-note" id="contact-note"></div>
     </div>
-  </div>
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="site-sidebar">
+    <div class="sidebar-name">
+      <a href="index.html">tarık yiğit</a>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link" data-en="artworks" data-tr="eserler">artworks</a>
+      <a href="about.html" class="sidebar-link" data-en="about" data-tr="hakkında">about</a>
+      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
+      <a href="contact.html" class="sidebar-link active" data-en="contact" data-tr="iletişim">contact</a>
+    </nav>
+    
+    <div class="sidebar-spacer"></div>
+    
+    <div class="sidebar-lang">
+      <button id="b-en" class="on">EN</button>
+      <span>/</span>
+      <button id="b-tr">TR</button>
+    </div>
+  </aside>
 </div>
-<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
+
 <script src="data.js"></script>
-<script src="common.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  function renderNote() {
-    const l = currentLang;
-    const txt = (SITE.texts || {});
-    const note = l === 'tr' ? (txt.contactNoteTR || txt.contactNote || '') : (txt.contactNote || 'collaborations, exhibitions, publications.');
-    const el = document.getElementById('contactNote');
-    if (el) el.textContent = note;
-  }
-  renderNote();
-  document.getElementById('b-en').addEventListener('click', renderNote);
-  document.getElementById('b-tr').addEventListener('click', renderNote);
+let currentLang = localStorage.getItem('lang') || 'tr';
+
+function updateLang() {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
+  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
+  localStorage.setItem('lang', currentLang);
+}
+
+function buildContact() {
+  const l = currentLang;
+  const texts = SITE.texts || {};
   
-  // Trigger reveal animations
-  setTimeout(() => {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
-  }, 100);
+  const note = l === 'tr' ? (texts.contactNoteTR || texts.contactNote || '') : (texts.contactNote || '');
+  document.getElementById('contact-note').textContent = note;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateLang();
+  buildContact();
+  
+  document.getElementById('b-en').addEventListener('click', () => {
+    currentLang = 'en';
+    updateLang();
+    buildContact();
+  });
+  
+  document.getElementById('b-tr').addEventListener('click', () => {
+    currentLang = 'tr';
+    updateLang();
+    buildContact();
+  });
 });
 </script>
+
 </body>
 </html>
