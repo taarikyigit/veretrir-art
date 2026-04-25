@@ -1,117 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>about — tarık yiğit</title>
-<link rel="stylesheet" href="style.css"/>
-<style>
-.about-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 48px;
-  max-width: 800px;
-}
-
-@media (min-width: 700px) {
-  .about-container {
-    grid-template-columns: 280px 1fr;
-    gap: 60px;
-    align-items: start;
-  }
-}
-
-.about-text {
-  font-size: 14px;
-  line-height: 2.0;
-  color: #444;
-}
-.about-text p + p { margin-top: 16px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about — tarık yiğit</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="page-transition-mask"></div>
-<header>
-  <div class="header-left">
-    <a href="index.html" class="header-name">tarık yiğit</a>
-    <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" class="ig-btn" title="Instagram" data-no-transition>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-      </svg>
-    </a>
-  </div>
-  <nav>
-    <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
-    <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
-    <a href="about.html" data-en="about" data-tr="hakkında" class="active">about</a>
-    <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
-  </nav>
-  <div class="header-right">
-    <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
-    <span class="lang-sep">·</span>
-    <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
-  </div>
-</header>
-<div class="page-wrap">
-  <div class="sec">
-    <div class="sec-title reveal" data-en="about" data-tr="hakkında">about</div>
-    
-    <div class="about-container">
-      <!-- Profile Photo -->
-      <div class="about-photo-wrap reveal reveal-delay-1" id="profilePhotoWrap"></div>
-      
-      <!-- About Text -->
-      <div class="about-text reveal reveal-delay-2" id="aboutText"></div>
+
+<div class="site-layout">
+  <!-- Main Content -->
+  <main class="site-content">
+    <div class="about-content">
+      <img class="about-photo" id="about-photo" src="" alt="" style="display:none;">
+      <div class="about-text" id="about-text"></div>
     </div>
-  </div>
-</div>
-<footer><span>tarık yiğit</span><span>veretrir.art</span></footer>
-<script src="data.js"></script><script src="common.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  function renderAbout() {
-    const l = currentLang;
-    const txt = (SITE.texts || {});
-    const raw = l === 'tr' ? (txt.aboutTR || txt.aboutEN || '') : (txt.aboutEN || '');
-    const el = document.getElementById('aboutText');
-    if (!el) return;
-    el.innerHTML = raw.split(/\n\n+/)
-      .filter(p => p.trim())
-      .map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`)
-      .join('');
-  }
-  
-  function renderProfilePhoto() {
-    const txt = (SITE.texts || {});
-    const photoPath = txt.profilePhoto || '';
-    const wrap = document.getElementById('profilePhotoWrap');
-    if (!wrap) return;
+  </main>
+
+  <!-- Right Sidebar -->
+  <aside class="site-sidebar">
+    <div class="sidebar-name">
+      <a href="index.html">tarık yiğit</a>
+    </div>
     
-    if (photoPath) {
-      wrap.innerHTML = `<img 
-        src="${photoPath}" 
-        alt="tarık yiğit" 
-        class="about-photo"
-        onerror="this.parentElement.innerHTML='<div class=\\'about-photo-placeholder\\'>photo</div>'"
-      >`;
-      wrap.style.display = '';
-    } else {
-      wrap.style.display = 'none';
-    }
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link" data-en="artworks" data-tr="eserler">artworks</a>
+      <a href="about.html" class="sidebar-link active" data-en="about" data-tr="hakkında">about</a>
+      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
+      <a href="contact.html" class="sidebar-link" data-en="contact" data-tr="iletişim">contact</a>
+    </nav>
+    
+    <div class="sidebar-spacer"></div>
+    
+    <div class="sidebar-lang">
+      <button id="b-en" class="on">EN</button>
+      <span>/</span>
+      <button id="b-tr">TR</button>
+    </div>
+  </aside>
+</div>
+
+<script src="data.js"></script>
+<script>
+let currentLang = localStorage.getItem('lang') || 'tr';
+
+function updateLang() {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
+  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
+  localStorage.setItem('lang', currentLang);
+}
+
+function buildAbout() {
+  const l = currentLang;
+  const texts = SITE.texts || {};
+  
+  // Photo
+  const photoEl = document.getElementById('about-photo');
+  if (texts.profilePhoto) {
+    photoEl.src = texts.profilePhoto;
+    photoEl.style.display = '';
+  } else {
+    photoEl.style.display = 'none';
   }
   
-  renderAbout();
-  renderProfilePhoto();
+  // Text
+  const aboutText = l === 'tr' ? (texts.aboutTR || texts.aboutEN || '') : (texts.aboutEN || '');
+  const paras = aboutText.split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
+  document.getElementById('about-text').innerHTML = paras;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateLang();
+  buildAbout();
   
-  document.getElementById('b-en').addEventListener('click', renderAbout);
-  document.getElementById('b-tr').addEventListener('click', renderAbout);
+  document.getElementById('b-en').addEventListener('click', () => {
+    currentLang = 'en';
+    updateLang();
+    buildAbout();
+  });
   
-  // Trigger reveal animations
-  setTimeout(() => {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
-  }, 100);
+  document.getElementById('b-tr').addEventListener('click', () => {
+    currentLang = 'tr';
+    updateLang();
+    buildAbout();
+  });
 });
 </script>
+
 </body>
 </html>
