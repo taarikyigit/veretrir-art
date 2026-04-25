@@ -3,30 +3,47 @@
    Shared utilities and data management
    ═══════════════════════════════════════ */
 
-const DATA_VERSION = 6;
+const DATA_VERSION = 7;
 
-// Initialize SITE from localStorage or data.js
+// Initialize SITE - check localStorage first, fall back to data.js
 (function initSite() {
+  // SITE should already be defined by data.js (loaded before this script)
+  const fromDataJs = window.SITE || {};
+  
+  // Check localStorage for admin edits
   const stored = localStorage.getItem('veretrir_site');
-  if (stored) {
+  const storedVersion = localStorage.getItem('veretrir_version');
+  
+  if (stored && storedVersion === String(DATA_VERSION)) {
     try {
       window.SITE = JSON.parse(stored);
+      console.log('Loaded SITE from localStorage');
     } catch (e) {
-      window.SITE = window.SITE || {};
+      window.SITE = fromDataJs;
+      console.log('localStorage parse error, using data.js');
     }
+  } else {
+    // Use data.js directly
+    window.SITE = fromDataJs;
+    console.log('Using SITE from data.js');
   }
   
   // Ensure arrays exist
+  if (!window.SITE) window.SITE = {};
   SITE.artworks = SITE.artworks || [];
-  SITE.projects = SITE.projects || [];
   SITE.poems = SITE.poems || [];
   SITE.articles = SITE.articles || [];
   SITE.books = SITE.books || [];
-  SITE.categories = SITE.categories || [];
-  SITE.series = SITE.series || [];
   SITE.texts = SITE.texts || {};
-  SITE.heroSlider = SITE.heroSlider || {};
 })();
+
+// Language
+let currentLang = localStorage.getItem('veretrir_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('veretrir_lang', lang);
+}
 
 // Escape HTML
 function _esc(str) {
