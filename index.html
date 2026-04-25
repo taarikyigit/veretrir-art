@@ -1,403 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>tarık yiğit</title>
-<link rel="stylesheet" href="style.css"/>
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-<style>
-/* ── HOME LAYOUT ── */
-.home-wrap {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: 100vh;
-}
-
-/* Left panel — name + nav */
-.home-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 40px 60px;
-}
-.home-name {
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-  margin-bottom: 24px;
-  line-height: 1.4;
-}
-.home-nav { display: flex; flex-direction: column; gap: 6px; }
-.home-nav a {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  text-transform: lowercase;
-  color: var(--mid);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.home-nav a:hover { color: var(--ink); }
-.home-lang {
-  margin-top: 20px;
-  display: flex; gap: 6px; align-items: center;
-}
-.home-ig {
-  margin-top: 16px;
-}
-.home-ig a {
-  display: inline-flex; align-items: center;
-  text-decoration: none; color: var(--dim);
-  transition: color 0.2s;
-}
-.home-ig a:hover { color: var(--ink); }
-.home-ig svg { width: 14px; height: 14px; }
-
-/* Right panel — image slideshow with overlay */
-.home-right {
-  position: relative;
-  overflow: hidden;
-  background: #f5f5f5;
-}
-
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  pointer-events: none; /* Disable clicks on inactive slides */
-}
-.hero-slide.active { 
-  opacity: 1; 
-  pointer-events: auto; /* Enable clicks only on active slide */
-}
-
-.hero-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  animation: kenBurns 8s ease-in-out infinite alternate;
-}
-
-@keyframes kenBurns {
-  0% { transform: scale(1) translate(0, 0); }
-  100% { transform: scale(1.08) translate(-1%, -1%); }
-}
-
-/* Pause animation when not active */
-.hero-slide:not(.active) img {
-  animation-play-state: paused;
-}
-
-.hero-slide-ph {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f0;
-}
-.hero-slide-ph span {
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: lowercase;
-  color: var(--dim);
-}
-
-/* Progress bar for slides */
-.hero-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background: rgba(255,255,255,0.6);
-  z-index: 3;
-  transition: width 0.1s linear;
-}
-
-/* Hero overlay with artwork info */
-.hero-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.hero-slide.active .hero-overlay { opacity: 1; }
-
-.hero-overlay-title {
-  font-size: 18px;
-  color: #fff;
-  text-transform: lowercase;
-  margin-bottom: 6px;
-  font-weight: 400;
-}
-.hero-overlay-meta {
-  font-size: 11px;
-  color: rgba(255,255,255,0.7);
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 16px;
-}
-.hero-overlay-link {
-  display: inline-block;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: lowercase;
-  color: #fff;
-  text-decoration: none;
-  border: 1px solid rgba(255,255,255,0.5);
-  padding: 8px 16px;
-  transition: all 0.2s;
-}
-.hero-overlay-link:hover {
-  background: #fff;
-  color: #000;
-  border-color: #fff;
-}
-
-/* Minimal dot nav */
-.hero-dots {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  z-index: 2;
-  display: flex;
-  gap: 6px;
-}
-.hero-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.3s;
-}
-.hero-dot.on { background: rgba(255,255,255,0.9); }
-
-/* ── Responsive ── */
-@media (max-width: 800px) {
-  .home-wrap {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
-  }
-  .home-right { min-height: 60vh; order: -1; }
-  .home-left {
-    padding: 32px 20px 40px;
-    justify-content: flex-start;
-  }
-  .hero-overlay { padding: 24px; }
-  .hero-overlay-title { font-size: 16px; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tarık yiğit</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="page-transition-mask" style="position:fixed;inset:0;background:#fff;z-index:9000;"></div>
+<div class="site-layout">
+  <!-- Main Content -->
+  <main class="site-content">
+    <div class="gallery-grid" id="gallery"></div>
+  </main>
 
-<div class="home-wrap">
-  <!-- LEFT: name + nav -->
-  <div class="home-left">
-    <div class="home-name">tarık yiğit</div>
-    <div class="home-nav">
-      <a href="artworks.html" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="about.html" data-en="about" data-tr="hakkında">about</a>
-      <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
+  <!-- Right Sidebar -->
+  <aside class="site-sidebar">
+    <div class="sidebar-name">
+      <a href="index.html">tarık yiğit</a>
     </div>
-    <div class="home-lang">
-      <button class="lb on" id="b-en" onclick="setLang('en')">en</button>
-      <span class="lang-sep">·</span>
-      <button class="lb" id="b-tr" onclick="setLang('tr')">tr</button>
+    
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link active" data-en="artworks" data-tr="eserler">artworks</a>
+      <a href="about.html" class="sidebar-link" data-en="about" data-tr="hakkında">about</a>
+      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
+      <a href="contact.html" class="sidebar-link" data-en="contact" data-tr="iletişim">contact</a>
+    </nav>
+    
+    <div class="sidebar-spacer"></div>
+    
+    <div class="sidebar-lang">
+      <button id="b-en" class="on">EN</button>
+      <span>/</span>
+      <button id="b-tr">TR</button>
     </div>
-    <div class="home-ig">
-      <a href="https://instagram.com/veretrir" target="_blank" rel="noopener" data-no-transition>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-
-  <!-- RIGHT: image slideshow with artwork info -->
-  <div class="home-right" id="heroArea">
-    <div class="hero-progress" id="heroProgress"></div>
-    <div class="hero-dots" id="heroDots"></div>
-  </div>
+  </aside>
 </div>
 
-<!-- READING OVERLAY -->
-<div id="reading-overlay">
-  <div class="reading-topbar">
-    <span class="reading-badge" id="reading-badge"></span>
-    <span class="reading-top-title" id="reading-top-title"></span>
-  </div>
-  <div class="reading-body" id="reading-body"></div>
+<!-- Lightbox for artwork detail -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()" data-en="← back" data-tr="← geri">← back</button>
+  <div class="lightbox-inner" id="lightbox-content"></div>
 </div>
-<button id="back-fab" onclick="closeReading()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-  <span data-en="back" data-tr="geri">back</span>
-</button>
 
-<!-- 3D viewer -->
-<div id="viewer-overlay">
-  <div class="viewer-topbar">
-    <span class="viewer-title" id="viewer-title-el"></span>
+<!-- 3D Viewer -->
+<div class="viewer-overlay" id="viewer-overlay">
+  <div class="viewer-header">
+    <div class="viewer-title" id="viewer-title"></div>
     <button class="viewer-close" onclick="closeViewer()" data-en="close" data-tr="kapat">close</button>
   </div>
-  <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.75"
-    style="background:#000;width:100%;height:100%;flex:1;"></model-viewer>
+  <div class="viewer-body">
+    <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.8"></model-viewer>
+  </div>
 </div>
 
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 <script src="data.js"></script>
 <script src="common.js"></script>
 <script>
-/* ═══ HERO SLIDESHOW ═══ */
-let heroTimer = null;
-let heroSlideData = [];
-let heroCur = 0;
+let currentLang = localStorage.getItem('lang') || 'tr';
+let currentArtworkIndex = 0;
+let visibleArtworks = [];
 
-function buildHeroSlider() {
-  const area = document.getElementById('heroArea');
-  const dotsEl = document.getElementById('heroDots');
-  if (!area || !dotsEl) return;
-  
+function updateLang() {
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
+  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
+  localStorage.setItem('lang', currentLang);
+}
+
+function buildGallery() {
   const l = currentLang;
-
-  // Clear existing slides and dots (keep dotsEl)
-  area.querySelectorAll('.hero-slide').forEach(s => s.remove());
-  dotsEl.innerHTML = '';
-  if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-
-  // Collect slides on first run only
-  if (heroSlideData.length === 0) {
-    const heroSettings = SITE.heroSlider || {};
-    const heroImages = heroSettings.images || [];
-    const maxSlides = heroSettings.slideCount || 5;
-    const shouldRandomize = heroSettings.randomize !== false;
-
-    if (heroImages.length > 0) {
-      heroImages.forEach(hi => {
-        const aw = SITE.artworks.find(a => a.id === hi.artworkId);
-        if (aw && hi.path) {
-          heroSlideData.push({ img: hi.path, aw: aw });
-        }
-      });
-    }
-    
-    if (heroSlideData.length === 0) {
-      // Filter out archived artworks
-      const activeArtworks = SITE.artworks.filter(a => !a.archived);
-      const featured = activeArtworks.filter(a => a.featured === true);
-      const pool = featured.length >= 2 ? featured : activeArtworks;
-      pool.forEach(aw => {
-        const img = _mainImg(aw) || _getDisplayImage(aw);
-        if (img) heroSlideData.push({ img: img, aw: aw });
-      });
-    }
-
-    if (shouldRandomize && heroSlideData.length > 1) {
-      for (let i = heroSlideData.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [heroSlideData[i], heroSlideData[j]] = [heroSlideData[j], heroSlideData[i]];
-      }
-    }
-
-    heroSlideData = heroSlideData.slice(0, maxSlides);
-  }
+  const grid = document.getElementById('gallery');
+  grid.innerHTML = '';
   
-  if (heroSlideData.length === 0) {
-    area.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;">No artworks yet</div>';
-    return;
-  }
-
-  const INTERVAL = 5000;
-  heroCur = 0;
-
-  // Create slides with current language
-  heroSlideData.forEach((sd, i) => {
-    const aw = sd.aw;
+  // Filter out archived
+  visibleArtworks = (SITE.artworks || []).filter(aw => !aw.archived);
+  
+  visibleArtworks.forEach((aw, idx) => {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
     const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-    const seeText = l === 'tr' ? 'eseri gör' : 'see artwork';
-
-    const div = document.createElement('div');
-    div.className = 'hero-slide' + (i === 0 ? ' active' : '');
-    div.dataset.awId = aw.id;
-    div.innerHTML = `
-      <img src="${sd.img}" alt="${_esc(title)}">
-      <div class="hero-overlay">
-        <div class="hero-overlay-title">${_esc(title)}</div>
-        <div class="hero-overlay-meta">${medium ? _esc(medium) : ''}${medium && aw.year ? ' · ' : ''}${aw.year || ''}</div>
-        <a href="#" class="hero-overlay-link">${seeText}</a>
-      </div>`;
-    area.insertBefore(div, dotsEl);
-
-    const dot = document.createElement('button');
-    dot.className = 'hero-dot' + (i === 0 ? ' on' : '');
-    dot.onclick = (e) => { e.stopPropagation(); heroGoTo(i); };
-    dotsEl.appendChild(dot);
-  });
-
-  const allSlides = area.querySelectorAll('.hero-slide');
-  const allDots = dotsEl.querySelectorAll('.hero-dot');
-
-  area.onclick = function(e) {
-    if (e.target.closest('.hero-dot')) return;
-    const link = e.target.closest('.hero-overlay-link');
-    if (link) {
-      e.preventDefault();
-      const slide = link.closest('.hero-slide');
-      if (slide) {
-        const idx = SITE.artworks.findIndex(a => a.id === slide.dataset.awId);
-        if (idx >= 0) openArtwork(idx);
-      }
-    }
-  };
-
-  function heroGoTo(n) {
-    allSlides[heroCur]?.classList.remove('active');
-    allDots[heroCur]?.classList.remove('on');
-    heroCur = ((n % heroSlideData.length) + heroSlideData.length) % heroSlideData.length;
-    allSlides[heroCur]?.classList.add('active');
-    allDots[heroCur]?.classList.add('on');
-    resetHeroTimer();
-  }
-
-  function resetHeroTimer() {
-    clearInterval(heroTimer);
-    heroTimer = setInterval(() => heroGoTo(heroCur + 1), INTERVAL);
-  }
-
-  if (heroSlideData.length > 1) {
-    heroTimer = setInterval(() => heroGoTo(heroCur + 1), INTERVAL);
-  }
-
-  let startX = 0;
-  area.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-  area.addEventListener('touchend', e => {
-    const diff = e.changedTouches[0].clientX - startX;
-    if (Math.abs(diff) > 50) heroGoTo(heroCur + (diff < 0 ? 1 : -1));
+    const displayImg = aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : '');
+    
+    if (!displayImg) return;
+    
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `
+      <img src="${displayImg}" alt="${title}" loading="lazy">
+      <div class="gallery-item-info">
+        <div class="gallery-item-title">${title}</div>
+        <div class="gallery-item-meta">${medium || ''}${aw.year ? ', ' + aw.year : ''}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => openLightbox(idx));
+    grid.appendChild(item);
   });
 }
 
-// Build on load
-buildHeroSlider();
+function openLightbox(idx) {
+  currentArtworkIndex = idx;
+  const aw = visibleArtworks[idx];
+  if (!aw) return;
+  
+  const l = currentLang;
+  const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+  const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
+  const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
+  
+  // Main image
+  const mainImg = (aw.images && aw.images[0]) ? aw.images[0].path : aw.displayImage;
+  
+  let html = `
+    <div class="lightbox-image">
+      <img src="${mainImg}" alt="${title}">
+    </div>
+    <div class="lightbox-title">${title}</div>
+    <div class="lightbox-meta">${medium || ''}${aw.year ? ', ' + aw.year : ''}</div>
+  `;
+  
+  if (desc) {
+    const paras = desc.split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
+    html += `<div class="lightbox-desc">${paras}</div>`;
+  }
+  
+  // Additional images
+  if (aw.images && aw.images.length > 1) {
+    html += '<div class="lightbox-gallery">';
+    for (let i = 1; i < aw.images.length; i++) {
+      html += `<img src="${aw.images[i].path}" alt="${title}">`;
+    }
+    html += '</div>';
+  }
+  
+  // 3D model button
+  if (aw.workType === '3d' && aw.materials && aw.materials.length) {
+    const glbFile = aw.materials.find(m => m.path && m.path.endsWith('.glb'));
+    if (glbFile) {
+      html += `
+        <div style="margin-top:30px;">
+          <button onclick="openViewer('${glbFile.path}', '${title.replace(/'/g, "\\'")}')" style="
+            font-family: var(--font);
+            font-size: 14px;
+            color: var(--mid);
+            background: none;
+            border: 1px solid var(--line);
+            padding: 10px 20px;
+            cursor: pointer;
+          ">${l === 'tr' ? '3D görüntüle' : 'View in 3D'}</button>
+        </div>
+      `;
+    }
+  }
+  
+  // Navigation
+  html += `
+    <div class="lightbox-nav">
+      <button onclick="navLightbox(-1)" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>← ${l === 'tr' ? 'önceki' : 'previous'}</button>
+      <button onclick="navLightbox(1)" ${idx === visibleArtworks.length - 1 ? 'disabled style="opacity:0.3"' : ''}>${l === 'tr' ? 'sonraki' : 'next'} →</button>
+    </div>
+  `;
+  
+  document.getElementById('lightbox-content').innerHTML = html;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
 
-// Rebuild on language change
-const _origSetLang = window.setLang;
-window.setLang = function(l) {
-  _origSetLang(l);
-  buildHeroSlider();
-};
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function navLightbox(dir) {
+  const newIdx = currentArtworkIndex + dir;
+  if (newIdx >= 0 && newIdx < visibleArtworks.length) {
+    openLightbox(newIdx);
+  }
+}
+
+function openViewer(src, title) {
+  const mv = document.getElementById('model-viewer-el');
+  mv.setAttribute('src', src);
+  document.getElementById('viewer-title').textContent = title;
+  document.getElementById('viewer-overlay').classList.add('open');
+}
+
+function closeViewer() {
+  document.getElementById('viewer-overlay').classList.remove('open');
+  document.getElementById('model-viewer-el').removeAttribute('src');
+}
+
+// ESC key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('viewer-overlay').classList.contains('open')) {
+      closeViewer();
+    } else if (document.getElementById('lightbox').classList.contains('open')) {
+      closeLightbox();
+    }
+  }
+  // Arrow keys for lightbox nav
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') navLightbox(-1);
+    if (e.key === 'ArrowRight') navLightbox(1);
+  }
+});
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  updateLang();
+  buildGallery();
+  
+  document.getElementById('b-en').addEventListener('click', () => {
+    currentLang = 'en';
+    updateLang();
+    buildGallery();
+  });
+  
+  document.getElementById('b-tr').addEventListener('click', () => {
+    currentLang = 'tr';
+    updateLang();
+    buildGallery();
+  });
+});
 </script>
+
 </body>
 </html>
