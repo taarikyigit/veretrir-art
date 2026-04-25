@@ -225,18 +225,10 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
   <main class="main" id="main">
     <div class="panel on" id="panel-artworks">
       <div class="ptitle">Artworks</div>
-      <div class="pdesc">Each artwork has a Display Image (for gallery thumbnails) and a Main Image (for detail page top). Check "Show in Hero Slider" to include in homepage randomizer.</div>
+      <div class="pdesc">Display Image for gallery, Main Image for lightbox detail view.</div>
       <button class="add-btn" onclick="openForm('artworks',-1)">+ Add New Artwork</button>
       <div id="form-artworks"></div>
       <div class="item-list" id="list-artworks"></div>
-    </div>
-
-    <div class="panel" id="panel-projects">
-      <div class="ptitle">Projects</div>
-      <div class="pdesc">Ongoing and planned projects.</div>
-      <button class="add-btn" onclick="openForm('projects',-1)">+ Add New Project</button>
-      <div id="form-projects"></div>
-      <div class="item-list" id="list-projects"></div>
     </div>
 
     <div class="panel" id="panel-poems">
@@ -261,64 +253,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
       <button class="add-btn" onclick="openForm('books',-1)">+ Add New Book</button>
       <div id="form-books"></div>
       <div class="item-list" id="list-books"></div>
-    </div>
-
-    <div class="panel" id="panel-categories">
-      <div class="ptitle">Categories</div>
-      <div class="pdesc">Define artwork categories with English and Turkish names. These will appear as dropdown options when editing artworks.</div>
-      
-      <div class="form-drawer" style="margin-bottom:20px;">
-        <div class="form-drawer-title">Add New Category</div>
-        <div class="frow">
-          <div class="fg">
-            <label class="fl">🇬🇧 English Name</label>
-            <input class="fi" id="cat-new-en" placeholder="e.g. print"/>
-          </div>
-          <div class="fg">
-            <label class="fl">🇹🇷 Turkish Name</label>
-            <input class="fi" id="cat-new-tr" placeholder="e.g. baskı"/>
-          </div>
-        </div>
-        <button class="btn-save" onclick="addCategory()" style="margin-top:12px;">+ Add Category</button>
-      </div>
-
-      <div class="fg">
-        <label class="fl">Existing Categories</label>
-        <div id="categories-list" style="background:var(--raised);border:1px solid var(--border);padding:12px;min-height:60px;"></div>
-      </div>
-    </div>
-
-    <div class="panel" id="panel-series">
-      <div class="ptitle">Series of Works</div>
-      <div class="pdesc">Define series to group related artworks. Series will appear as a filter tab in the artworks page.</div>
-      
-      <div class="form-drawer" style="margin-bottom:20px;">
-        <div class="form-drawer-title">Add New Series</div>
-        <div class="frow">
-          <div class="fg">
-            <label class="fl">🇬🇧 English Name</label>
-            <input class="fi" id="series-new-en" placeholder="e.g. hayat döner"/>
-          </div>
-          <div class="fg">
-            <label class="fl">🇹🇷 Turkish Name</label>
-            <input class="fi" id="series-new-tr" placeholder="e.g. hayat döner"/>
-          </div>
-        </div>
-        <div class="fg">
-          <label class="fl">🇬🇧 Description (optional)</label>
-          <input class="fi" id="series-new-desc" placeholder="Brief description in English"/>
-        </div>
-        <div class="fg">
-          <label class="fl">🇹🇷 Açıklama (opsiyonel)</label>
-          <input class="fi" id="series-new-desc-tr" placeholder="Türkçe kısa açıklama"/>
-        </div>
-        <button class="btn-save" onclick="addSeries()" style="margin-top:12px;">+ Add Series</button>
-      </div>
-
-      <div class="fg">
-        <label class="fl">Existing Series</label>
-        <div id="series-list" style="background:var(--raised);border:1px solid var(--border);padding:12px;min-height:60px;"></div>
-      </div>
     </div>
 
     <div class="panel" id="panel-texts">
@@ -368,11 +302,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
         <div class="item-list" id="archived-list-artworks"></div>
       </div>
       
-      <div class="archived-section" id="archived-projects-section" style="margin-bottom:24px;">
-        <div class="archived-section-title">Projects <span id="archived-projects-count">(0)</span></div>
-        <div class="item-list" id="archived-list-projects"></div>
-      </div>
-      
       <div class="archived-section" id="archived-poems-section" style="margin-bottom:24px;">
         <div class="archived-section-title">Poems <span id="archived-poems-count">(0)</span></div>
         <div class="item-list" id="archived-list-poems"></div>
@@ -387,39 +316,6 @@ button,input,select,textarea{font-family:var(--mono);font-size:13px;}
         <div class="archived-section-title">Books <span id="archived-books-count">(0)</span></div>
         <div class="item-list" id="archived-list-books"></div>
       </div>
-    </div>
-
-    <div class="panel" id="panel-hero">
-      <div class="ptitle">Hero Slider Options</div>
-      <div class="pdesc">Select which images appear in the homepage hero slider. Choose from all artwork images.</div>
-      
-      <div class="frow" style="margin-bottom:20px;">
-        <div class="fg">
-          <label class="fl">Slides to Show</label>
-          <input type="number" class="fi" id="hero-slideCount" min="1" max="10" value="5" style="width:80px;">
-        </div>
-        <div class="fg">
-          <label class="fl">Randomize Order</label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-            <input type="checkbox" id="hero-randomize" checked>
-            <span style="font-size:11px;color:var(--dim);">Shuffle slides on each page load</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="fg">
-        <label class="fl">Selected Images for Hero Slider</label>
-        <div id="hero-selected" style="display:flex;flex-wrap:wrap;gap:8px;min-height:80px;background:var(--raised);border:1px solid var(--border);padding:12px;margin-bottom:12px;">
-          <span style="color:var(--faint);font-size:11px;" id="hero-empty-msg">No images selected. Click images below to add.</span>
-        </div>
-      </div>
-
-      <div class="fg">
-        <label class="fl">All Available Images (click to add/remove)</label>
-        <div id="hero-all-images" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;max-height:500px;overflow-y:auto;background:var(--bg);border:1px solid var(--border);padding:12px;"></div>
-      </div>
-
-      <button class="btn-save" onclick="saveHeroSettings()" style="margin-top:16px;">Save Hero Slider Settings</button>
     </div>
   </main>
 </div>
@@ -454,10 +350,10 @@ function loadD() {
     if (s) {
       D=JSON.parse(s);
     } else {
-      D=JSON.parse(JSON.stringify(SITE_BASE));
+      D=JSON.parse(JSON.stringify(SITE));
     }
-    Object.keys(SITE_BASE).forEach(k=>{ 
-      if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE_BASE[k])); 
+    Object.keys(SITE).forEach(k=>{ 
+      if(D[k]===undefined) D[k]=JSON.parse(JSON.stringify(SITE[k])); 
     });
     ['artworks','projects'].forEach(col=>{
       if (!D[col]) D[col] = [];
@@ -473,9 +369,9 @@ function loadD() {
     ['poems','articles','books'].forEach(col=>{
       if(!D[col]) D[col] = [];
     });
-    if(!D.texts) D.texts = SITE_BASE.texts ? JSON.parse(JSON.stringify(SITE_BASE.texts)) : {};
+    if(!D.texts) D.texts = SITE.texts ? JSON.parse(JSON.stringify(SITE.texts)) : {};
   } catch(e){ 
-    D=JSON.parse(JSON.stringify(SITE_BASE)); 
+    D=JSON.parse(JSON.stringify(SITE)); 
   }
 }
 
@@ -1199,7 +1095,7 @@ function buildDataJS() {
    Upload this file to your server root to publish changes.
    ============================================================= */
 
-const SITE_BASE = ${JSON.stringify(D,null,2)};
+const SITE = ${JSON.stringify(D,null,2)};
 `;
 }
 
