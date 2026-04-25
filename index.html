@@ -4,166 +4,96 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tarık yiğit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="site-wrapper">
+    <!-- Main Content (Left) -->
+    <main class="main-content">
+      <div class="gallery-grid" id="gallery"></div>
+    </main>
 
-<div class="site-layout">
-  <!-- Main Content -->
-  <main class="site-content">
-    <div class="gallery-grid" id="gallery"></div>
-  </main>
-
-  <!-- Right Sidebar -->
-  <aside class="site-sidebar">
-    <div class="sidebar-name">
-      <a href="index.html">tarık yiğit</a>
-    </div>
-    
-    <nav class="sidebar-nav">
-      <a href="index.html" class="sidebar-link active" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="about.html" class="sidebar-link" data-en="about" data-tr="hakkında">about</a>
-      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="contact.html" class="sidebar-link" data-en="contact" data-tr="iletişim">contact</a>
+    <!-- Sidebar (Right) -->
+    <nav class="sidebar">
+      <div class="sidebar-name">
+        <a href="index.html">tarık yiğit</a>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html" class="active" data-en="artworks" data-tr="eserler">artworks</a>
+        <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+        <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+        <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="lang-switch">
+          <button id="btn-en" class="active">EN</button>
+          <button id="btn-tr">TR</button>
+        </div>
+      </div>
     </nav>
-    
-    <div class="sidebar-spacer"></div>
-    
-    <div class="sidebar-lang">
-      <button id="b-en" class="on">EN</button>
-      <span>/</span>
-      <button id="b-tr">TR</button>
-    </div>
-  </aside>
-</div>
-
-<!-- Lightbox for artwork detail -->
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" onclick="closeLightbox()" data-en="← back" data-tr="← geri">← back</button>
-  <div class="lightbox-inner" id="lightbox-content"></div>
-</div>
-
-<!-- 3D Viewer -->
-<div class="viewer-overlay" id="viewer-overlay">
-  <div class="viewer-header">
-    <div class="viewer-title" id="viewer-title"></div>
-    <button class="viewer-close" onclick="closeViewer()" data-en="close" data-tr="kapat">close</button>
   </div>
-  <div class="viewer-body">
-    <model-viewer id="model-viewer-el" camera-controls auto-rotate shadow-intensity="1" exposure="0.8"></model-viewer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)">‹</button>
+    <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)">›</button>
+    <div class="lightbox-content" id="lightbox-content"></div>
   </div>
-</div>
 
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
-<script src="data.js"></script>
-<script src="common.js"></script>
-<script>
-let currentLang = localStorage.getItem('lang') || 'tr';
-let currentArtworkIndex = 0;
-let visibleArtworks = [];
+  <!-- 3D Viewer Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-function updateLang() {
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
-  });
-  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
-  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
-  localStorage.setItem('lang', currentLang);
-}
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="viewer3d.js"></script>
+  <script>
+/* ════════════════════════════════════════════
+   GALLERY
+════════════════════════════════════════════ */
+let currentArtworks = [];
+let currentLightboxIndex = 0;
 
 function buildGallery() {
-  const l = currentLang;
   const grid = document.getElementById('gallery');
   grid.innerHTML = '';
+  const l = currentLang;
   
   // Filter out archived
-  visibleArtworks = (SITE.artworks || []).filter(aw => !aw.archived);
+  currentArtworks = (SITE.artworks || []).filter(a => !a.archived);
   
-  visibleArtworks.forEach((aw, idx) => {
+  currentArtworks.forEach((aw, idx) => {
     const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-    const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-    const displayImg = aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : '');
+    const displayImg = aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
     
     if (!displayImg) return;
     
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.innerHTML = `
-      <img src="${displayImg}" alt="${title}" loading="lazy">
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.innerHTML = `
+      <img src="${_esc(displayImg)}" alt="${_esc(title)}">
       <div class="gallery-item-info">
-        <div class="gallery-item-title">${title}</div>
-        <div class="gallery-item-meta">${medium || ''}${aw.year ? ', ' + aw.year : ''}</div>
+        <div class="gallery-item-title">${_esc(title)}</div>
+        <div class="gallery-item-meta">${aw.year || ''}${aw.medium ? ' · ' + (l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium) : ''}</div>
       </div>
     `;
-    item.addEventListener('click', () => openLightbox(idx));
-    grid.appendChild(item);
+    div.addEventListener('click', () => openLightbox(idx));
+    grid.appendChild(div);
   });
 }
 
+/* ════════════════════════════════════════════
+   LIGHTBOX
+════════════════════════════════════════════ */
 function openLightbox(idx) {
-  currentArtworkIndex = idx;
-  const aw = visibleArtworks[idx];
-  if (!aw) return;
-  
-  const l = currentLang;
-  const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
-  const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
-  const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
-  
-  // Main image
-  const mainImg = (aw.images && aw.images[0]) ? aw.images[0].path : aw.displayImage;
-  
-  let html = `
-    <div class="lightbox-image">
-      <img src="${mainImg}" alt="${title}">
-    </div>
-    <div class="lightbox-title">${title}</div>
-    <div class="lightbox-meta">${medium || ''}${aw.year ? ', ' + aw.year : ''}</div>
-  `;
-  
-  if (desc) {
-    const paras = desc.split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
-    html += `<div class="lightbox-desc">${paras}</div>`;
-  }
-  
-  // Additional images
-  if (aw.images && aw.images.length > 1) {
-    html += '<div class="lightbox-gallery">';
-    for (let i = 1; i < aw.images.length; i++) {
-      html += `<img src="${aw.images[i].path}" alt="${title}">`;
-    }
-    html += '</div>';
-  }
-  
-  // 3D model button
-  if (aw.workType === '3d' && aw.materials && aw.materials.length) {
-    const glbFile = aw.materials.find(m => m.path && m.path.endsWith('.glb'));
-    if (glbFile) {
-      html += `
-        <div style="margin-top:30px;">
-          <button onclick="openViewer('${glbFile.path}', '${title.replace(/'/g, "\\'")}')" style="
-            font-family: var(--font);
-            font-size: 14px;
-            color: var(--mid);
-            background: none;
-            border: 1px solid var(--line);
-            padding: 10px 20px;
-            cursor: pointer;
-          ">${l === 'tr' ? '3D görüntüle' : 'View in 3D'}</button>
-        </div>
-      `;
-    }
-  }
-  
-  // Navigation
-  html += `
-    <div class="lightbox-nav">
-      <button onclick="navLightbox(-1)" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>← ${l === 'tr' ? 'önceki' : 'previous'}</button>
-      <button onclick="navLightbox(1)" ${idx === visibleArtworks.length - 1 ? 'disabled style="opacity:0.3"' : ''}>${l === 'tr' ? 'sonraki' : 'next'} →</button>
-    </div>
-  `;
-  
-  document.getElementById('lightbox-content').innerHTML = html;
+  currentLightboxIndex = idx;
+  renderLightbox();
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -171,61 +101,122 @@ function openLightbox(idx) {
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  // Clean up 3D viewer if active
+  if (window.viewer3d) {
+    window.viewer3d.dispose();
+    window.viewer3d = null;
+  }
 }
 
 function navLightbox(dir) {
-  const newIdx = currentArtworkIndex + dir;
-  if (newIdx >= 0 && newIdx < visibleArtworks.length) {
-    openLightbox(newIdx);
+  currentLightboxIndex += dir;
+  if (currentLightboxIndex < 0) currentLightboxIndex = currentArtworks.length - 1;
+  if (currentLightboxIndex >= currentArtworks.length) currentLightboxIndex = 0;
+  renderLightbox();
+}
+
+function renderLightbox() {
+  const aw = currentArtworks[currentLightboxIndex];
+  if (!aw) return;
+  
+  const l = currentLang;
+  const title = l === 'tr' ? (aw.titleTR || aw.title) : aw.title;
+  const medium = l === 'tr' ? (aw.mediumTR || aw.medium) : aw.medium;
+  const desc = l === 'tr' ? (aw.descTR || aw.desc) : aw.desc;
+  
+  const content = document.getElementById('lightbox-content');
+  
+  // Check if 3D model
+  const is3D = aw.workType === '3d' && aw.images && aw.images.some(img => 
+    img.path && /\.(glb|gltf|obj|fbx)$/i.test(img.path)
+  );
+  
+  if (is3D) {
+    const modelFile = aw.images.find(img => /\.(glb|gltf|obj|fbx)$/i.test(img.path));
+    content.innerHTML = `
+      <div class="lightbox-image-wrap">
+        <div class="viewer3d-container">
+          <canvas id="viewer3d-canvas"></canvas>
+          <div class="viewer3d-hint" data-en="drag to rotate · scroll to zoom" data-tr="döndürmek için sürükle · yakınlaştırmak için kaydır">drag to rotate · scroll to zoom</div>
+        </div>
+      </div>
+      <div class="lightbox-info">
+        <div class="lightbox-title">${_esc(title)}</div>
+        <div class="lightbox-meta">
+          ${aw.year ? aw.year + '<br>' : ''}
+          ${medium || ''}
+        </div>
+        ${desc ? `<div class="lightbox-desc">${_esc(desc)}</div>` : ''}
+      </div>
+    `;
+    // Initialize 3D viewer
+    setTimeout(() => {
+      if (window.viewer3d) window.viewer3d.dispose();
+      window.viewer3d = new Viewer3D('viewer3d-canvas', modelFile.path);
+    }, 100);
+  } else {
+    // Regular image
+    const mainImg = aw.mainImage || (aw.images && aw.images[0] ? aw.images[0].path : aw.displayImage);
+    content.innerHTML = `
+      <div class="lightbox-image-wrap">
+        <img class="lightbox-image" src="${_esc(mainImg)}" alt="${_esc(title)}">
+      </div>
+      <div class="lightbox-info">
+        <div class="lightbox-title">${_esc(title)}</div>
+        <div class="lightbox-meta">
+          ${aw.year ? aw.year + '<br>' : ''}
+          ${medium || ''}
+        </div>
+        ${desc ? `<div class="lightbox-desc">${_esc(desc)}</div>` : ''}
+      </div>
+    `;
   }
+  
+  // Update hint text for current language
+  updateLangTexts();
 }
 
-function openViewer(src, title) {
-  const mv = document.getElementById('model-viewer-el');
-  mv.setAttribute('src', src);
-  document.getElementById('viewer-title').textContent = title;
-  document.getElementById('viewer-overlay').classList.add('open');
+/* ════════════════════════════════════════════
+   LANGUAGE
+════════════════════════════════════════════ */
+function updateLangTexts() {
+  const l = currentLang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = l === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  
+  // Update active state on lang buttons
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
 }
 
-function closeViewer() {
-  document.getElementById('viewer-overlay').classList.remove('open');
-  document.getElementById('model-viewer-el').removeAttribute('src');
-}
-
-// ESC key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (document.getElementById('viewer-overlay').classList.contains('open')) {
-      closeViewer();
-    } else if (document.getElementById('lightbox').classList.contains('open')) {
-      closeLightbox();
-    }
-  }
-  // Arrow keys for lightbox nav
-  if (document.getElementById('lightbox').classList.contains('open')) {
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  buildGallery();
+  updateLangTexts();
+  
+  document.getElementById('btn-en').addEventListener('click', () => {
+    setLang('en');
+    buildGallery();
+    updateLangTexts();
+  });
+  
+  document.getElementById('btn-tr').addEventListener('click', () => {
+    setLang('tr');
+    buildGallery();
+    updateLangTexts();
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
     if (e.key === 'ArrowLeft') navLightbox(-1);
     if (e.key === 'ArrowRight') navLightbox(1);
-  }
-});
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
-  updateLang();
-  buildGallery();
-  
-  document.getElementById('b-en').addEventListener('click', () => {
-    currentLang = 'en';
-    updateLang();
-    buildGallery();
-  });
-  
-  document.getElementById('b-tr').addEventListener('click', () => {
-    currentLang = 'tr';
-    updateLang();
-    buildGallery();
   });
 });
-</script>
-
+  </script>
 </body>
 </html>
