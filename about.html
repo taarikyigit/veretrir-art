@@ -4,91 +4,87 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>about — tarık yiğit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="site-wrapper">
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="about-content">
+        <img class="about-photo" id="about-photo" src="" alt="" style="display:none;">
+        <div class="about-text" id="about-text"></div>
+      </div>
+    </main>
 
-<div class="site-layout">
-  <!-- Main Content -->
-  <main class="site-content">
-    <div class="about-content">
-      <img class="about-photo" id="about-photo" src="" alt="" style="display:none;">
-      <div class="about-text" id="about-text"></div>
-    </div>
-  </main>
-
-  <!-- Right Sidebar -->
-  <aside class="site-sidebar">
-    <div class="sidebar-name">
-      <a href="index.html">tarık yiğit</a>
-    </div>
-    
-    <nav class="sidebar-nav">
-      <a href="index.html" class="sidebar-link" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="about.html" class="sidebar-link active" data-en="about" data-tr="hakkında">about</a>
-      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="contact.html" class="sidebar-link" data-en="contact" data-tr="iletişim">contact</a>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-name">
+        <a href="index.html">tarık yiğit</a>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html" data-en="artworks" data-tr="eserler">artworks</a>
+        <a href="about.html" class="active" data-en="about" data-tr="hakkında">about</a>
+        <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+        <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="lang-switch">
+          <button id="btn-en" class="active">EN</button>
+          <button id="btn-tr">TR</button>
+        </div>
+      </div>
     </nav>
-    
-    <div class="sidebar-spacer"></div>
-    
-    <div class="sidebar-lang">
-      <button id="b-en" class="on">EN</button>
-      <span>/</span>
-      <button id="b-tr">TR</button>
-    </div>
-  </aside>
-</div>
+  </div>
 
-<script src="data.js"></script>
-<script>
-let currentLang = localStorage.getItem('lang') || 'tr';
-
-function updateLang() {
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
-  });
-  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
-  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
-  localStorage.setItem('lang', currentLang);
-}
-
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script>
 function buildAbout() {
   const l = currentLang;
   const texts = SITE.texts || {};
   
   // Photo
-  const photoEl = document.getElementById('about-photo');
+  const photo = document.getElementById('about-photo');
   if (texts.profilePhoto) {
-    photoEl.src = texts.profilePhoto;
-    photoEl.style.display = '';
+    photo.src = texts.profilePhoto;
+    photo.style.display = '';
   } else {
-    photoEl.style.display = 'none';
+    photo.style.display = 'none';
   }
   
   // Text
   const aboutText = l === 'tr' ? (texts.aboutTR || texts.aboutEN || '') : (texts.aboutEN || '');
-  const paras = aboutText.split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
-  document.getElementById('about-text').innerHTML = paras;
+  const textEl = document.getElementById('about-text');
+  textEl.innerHTML = aboutText.split('\n\n').map(p => `<p>${_esc(p)}</p>`).join('');
+}
+
+function updateLangTexts() {
+  const l = currentLang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = l === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  updateLang();
   buildAbout();
+  updateLangTexts();
   
-  document.getElementById('b-en').addEventListener('click', () => {
-    currentLang = 'en';
-    updateLang();
+  document.getElementById('btn-en').addEventListener('click', () => {
+    setLang('en');
     buildAbout();
+    updateLangTexts();
   });
   
-  document.getElementById('b-tr').addEventListener('click', () => {
-    currentLang = 'tr';
-    updateLang();
+  document.getElementById('btn-tr').addEventListener('click', () => {
+    setLang('tr');
     buildAbout();
+    updateLangTexts();
   });
 });
-</script>
-
+  </script>
 </body>
 </html>
