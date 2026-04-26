@@ -4,82 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>contact — tarık yiğit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div class="site-layout">
-  <!-- Main Content -->
-  <main class="site-content">
-    <div class="contact-content">
-      <div class="contact-email">
-        <a href="mailto:hello@veretrir.art" id="contact-email">hello@veretrir.art</a>
+  <div class="site-wrapper">
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="contact-content">
+        <div class="contact-email">
+          <a href="mailto:tarik@veretrir.art">tarik@veretrir.art</a>
+        </div>
+        <div class="contact-note" id="contact-note"></div>
       </div>
-      <div class="contact-note" id="contact-note"></div>
-    </div>
-  </main>
+    </main>
 
-  <!-- Right Sidebar -->
-  <aside class="site-sidebar">
-    <div class="sidebar-name">
-      <a href="index.html">tarık yiğit</a>
-    </div>
-    
-    <nav class="sidebar-nav">
-      <a href="index.html" class="sidebar-link" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="about.html" class="sidebar-link" data-en="about" data-tr="hakkında">about</a>
-      <a href="writings.html" class="sidebar-link" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="contact.html" class="sidebar-link active" data-en="contact" data-tr="iletişim">contact</a>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-name">
+        <a href="index.html">tarık yiğit</a>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html" data-en="artworks" data-tr="eserler">artworks</a>
+        <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+        <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+        <a href="contact.html" class="active" data-en="contact" data-tr="iletişim">contact</a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="lang-switch">
+          <button id="btn-en" class="active">EN</button>
+          <button id="btn-tr">TR</button>
+        </div>
+      </div>
     </nav>
-    
-    <div class="sidebar-spacer"></div>
-    
-    <div class="sidebar-lang">
-      <button id="b-en" class="on">EN</button>
-      <span>/</span>
-      <button id="b-tr">TR</button>
-    </div>
-  </aside>
-</div>
+  </div>
 
-<script src="data.js"></script>
-<script>
-let currentLang = localStorage.getItem('lang') || 'tr';
-
-function updateLang() {
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
-  });
-  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
-  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
-  localStorage.setItem('lang', currentLang);
-}
-
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script>
 function buildContact() {
   const l = currentLang;
   const texts = SITE.texts || {};
-  
   const note = l === 'tr' ? (texts.contactNoteTR || texts.contactNote || '') : (texts.contactNote || '');
   document.getElementById('contact-note').textContent = note;
 }
 
+function updateLangTexts() {
+  const l = currentLang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = l === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  updateLang();
   buildContact();
+  updateLangTexts();
   
-  document.getElementById('b-en').addEventListener('click', () => {
-    currentLang = 'en';
-    updateLang();
+  document.getElementById('btn-en').addEventListener('click', () => {
+    setLang('en');
     buildContact();
+    updateLangTexts();
   });
   
-  document.getElementById('b-tr').addEventListener('click', () => {
-    currentLang = 'tr';
-    updateLang();
+  document.getElementById('btn-tr').addEventListener('click', () => {
+    setLang('tr');
     buildContact();
+    updateLangTexts();
   });
 });
-</script>
-
+  </script>
 </body>
 </html>
