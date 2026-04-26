@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div class="site-wrapper" id="site-wrapper" style="display:none;">
+  <div class="site-wrapper" id="site-wrapper">
     <!-- Main Content (Left) -->
     <main class="main-content">
       <div class="gallery-grid" id="gallery"></div>
@@ -33,29 +33,22 @@
         <!-- Artworks with series dropdown -->
         <div class="nav-item-group">
           <a href="index.html" class="nav-main active" data-en="artworks" data-tr="eserler">artworks</a>
-          <button class="nav-toggle" id="series-toggle" aria-label="Toggle series">
-            <span class="toggle-arrow">▼</span>
-          </button>
+          <button class="nav-toggle" id="series-toggle" aria-label="Toggle series">▼</button>
         </div>
-        <div class="series-dropdown" id="series-dropdown">
-          <a href="#" class="series-link active" data-series="all" data-en="all works" data-tr="tüm eserler">all works</a>
-          <!-- Series items will be populated by JS -->
-        </div>
+        <div class="sub-dropdown" id="series-dropdown"></div>
         
         <a href="about.html" data-en="about" data-tr="hakkında">about</a>
         <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
         
         <!-- Simulations dropdown -->
         <div class="nav-item-group">
-          <a href="#" class="nav-main" onclick="return false;" data-en="simulations" data-tr="simülasyonlar">simulations</a>
-          <button class="nav-toggle" id="sim-toggle" aria-label="Toggle simulations">
-            <span class="toggle-arrow sim-arrow">▼</span>
-          </button>
+          <span class="nav-main" data-en="simulations" data-tr="simülasyonlar">simulations</span>
+          <button class="nav-toggle" id="sim-toggle" aria-label="Toggle simulations">▼</button>
         </div>
-        <div class="series-dropdown sim-dropdown" id="sim-dropdown">
-          <a href="kaplanmis_golgesi.html" target="_blank" class="series-link" data-en="shadow of the object" data-tr="nesnenin kaplanmış gölgesi">shadow of the object</a>
-          <a href="hayat_doner.html" target="_blank" class="series-link" data-en="life revolves" data-tr="hayat döner">life revolves</a>
-          <a href="yercekiminin_izi.html" target="_blank" class="series-link" data-en="trace of gravity" data-tr="yerçekiminin izi">trace of gravity</a>
+        <div class="sub-dropdown" id="sim-dropdown">
+          <a href="kaplanmis_golgesi.html" target="_blank" class="sub-link">shadow of the object</a>
+          <a href="hayat_doner.html" target="_blank" class="sub-link">life revolves</a>
+          <a href="yercekiminin_izi.html" target="_blank" class="sub-link">trace of gravity</a>
         </div>
         
         <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
@@ -80,16 +73,14 @@
   <!-- 3D Viewer Overlay -->
   <div class="viewer-overlay" id="viewer-overlay">
     <button class="viewer-close" onclick="closeViewer()">×</button>
-    <div class="viewer-container">
-      <canvas id="viewer3d-canvas"></canvas>
-    </div>
+    <div class="viewer-container" id="viewer-container"></div>
     <div class="viewer-hint" data-en="drag to rotate · scroll to zoom" data-tr="döndürmek için sürükle · yakınlaştırmak için kaydır">drag to rotate · scroll to zoom</div>
   </div>
 
   <!-- PDF Viewer Overlay -->
   <div class="pdf-overlay" id="pdf-overlay">
     <div class="pdf-toolbar">
-      <span class="pdf-title" id="pdf-title">PDF</span>
+      <span class="pdf-title">PDF</span>
       <div class="pdf-controls">
         <button onclick="pdfNav(-1)">‹</button>
         <span id="pdf-page-info">1 / 1</span>
@@ -99,7 +90,7 @@
         <span id="pdf-zoom-info">100%</span>
         <button onclick="pdfZoom(1)">+</button>
         <span class="pdf-sep">|</span>
-        <button onclick="closePdfViewer()" data-en="close" data-tr="kapat">close</button>
+        <button onclick="closePdfViewer()">✕</button>
       </div>
     </div>
     <div class="pdf-stage">
@@ -107,25 +98,26 @@
     </div>
   </div>
 
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  
-  <!-- PDF.js -->
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  
   <script src="data.js"></script>
   <script src="common.js"></script>
+  
   <script>
+// PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
 /* ════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════ */
 let currentArtworks = [];
 let currentLightboxIndex = 0;
 let currentSeries = 'all';
-let seriesOpen = true;
+let seriesOpen = false;
 let simOpen = false;
 
 /* ════════════════════════════════════════════
@@ -135,7 +127,6 @@ function buildHeroSlider() {
   const slidesContainer = document.getElementById('hero-slides');
   slidesContainer.innerHTML = '';
   
-  // Get featured artworks or first 5
   let heroImages = [];
   const artworks = (SITE.artworks || []).filter(a => !a.archived);
   const featured = artworks.filter(a => a.featured);
@@ -147,7 +138,6 @@ function buildHeroSlider() {
   });
   
   if (heroImages.length === 0) {
-    // Skip hero if no images
     enterSite();
     return;
   }
@@ -159,10 +149,10 @@ function buildHeroSlider() {
     slidesContainer.appendChild(slide);
   });
   
-  // Start slideshow
   let currentSlide = 0;
   setInterval(() => {
     const slides = document.querySelectorAll('.hero-slide');
+    if (slides.length === 0) return;
     slides[currentSlide].classList.remove('active');
     currentSlide = (currentSlide + 1) % slides.length;
     slides[currentSlide].classList.add('active');
@@ -170,80 +160,95 @@ function buildHeroSlider() {
 }
 
 function enterSite() {
-  document.getElementById('hero-slider').style.display = 'none';
-  document.getElementById('site-wrapper').style.display = 'flex';
-  sessionStorage.setItem('entered', '1');
+  const hero = document.getElementById('hero-slider');
+  const site = document.getElementById('site-wrapper');
+  
+  // Smooth slide up animation
+  hero.style.transition = 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out';
+  hero.style.transform = 'translateY(-100%)';
+  hero.style.opacity = '0';
+  
+  setTimeout(() => {
+    hero.style.display = 'none';
+    site.classList.add('visible');
+    sessionStorage.setItem('entered', '1');
+  }, 800);
 }
 
 function checkEntered() {
   if (sessionStorage.getItem('entered')) {
     document.getElementById('hero-slider').style.display = 'none';
-    document.getElementById('site-wrapper').style.display = 'flex';
+    document.getElementById('site-wrapper').classList.add('visible');
     return true;
   }
   return false;
 }
 
 /* ════════════════════════════════════════════
-   SERIES DROPDOWN
+   DROPDOWNS
 ════════════════════════════════════════════ */
 function buildSeriesDropdown() {
   const dropdown = document.getElementById('series-dropdown');
   const l = currentLang;
   
-  // Keep the "all works" link
-  let html = `<a href="#" class="series-link ${currentSeries === 'all' ? 'active' : ''}" data-series="all">${l === 'tr' ? 'tüm eserler' : 'all works'}</a>`;
+  let html = `<a href="#" class="sub-link ${currentSeries === 'all' ? 'active' : ''}" data-series="all">${l === 'tr' ? 'tüm eserler' : 'all works'}</a>`;
   
-  // Add series from data
   const series = SITE.series || [];
   series.forEach(s => {
     const name = l === 'tr' ? (s.tr || s.en) : s.en;
     const isActive = currentSeries === s.en;
-    html += `<a href="#" class="series-link ${isActive ? 'active' : ''}" data-series="${s.en}">${name}</a>`;
+    html += `<a href="#" class="sub-link ${isActive ? 'active' : ''}" data-series="${s.en}">${name}</a>`;
   });
   
   dropdown.innerHTML = html;
   
-  // Add click handlers
-  dropdown.querySelectorAll('.series-link').forEach(link => {
+  dropdown.querySelectorAll('.sub-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       currentSeries = link.dataset.series;
-      dropdown.querySelectorAll('.series-link').forEach(l => l.classList.remove('active'));
+      dropdown.querySelectorAll('.sub-link').forEach(l => l.classList.remove('active'));
       link.classList.add('active');
       buildGallery();
     });
   });
 }
 
-function toggleSeries() {
-  seriesOpen = !seriesOpen;
-  const dropdown = document.getElementById('series-dropdown');
-  const arrow = document.querySelector('.toggle-arrow');
-  dropdown.classList.toggle('open', seriesOpen);
-  arrow.style.transform = seriesOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+function toggleDropdown(id, toggleId, stateVar) {
+  const dropdown = document.getElementById(id);
+  const toggle = document.getElementById(toggleId);
+  const isOpen = dropdown.classList.contains('open');
+  
+  dropdown.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+  
+  return !isOpen;
 }
 
-function toggleSimulations() {
-  simOpen = !simOpen;
-  const dropdown = document.getElementById('sim-dropdown');
-  const arrow = document.querySelector('.sim-arrow');
-  dropdown.classList.toggle('open', simOpen);
-  arrow.style.transform = simOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+function updateSimulationLinks() {
+  const l = currentLang;
+  const simLinks = document.querySelectorAll('#sim-dropdown .sub-link');
+  const simNames = [
+    { en: 'shadow of the object', tr: 'nesnenin kaplanmış gölgesi' },
+    { en: 'life revolves', tr: 'hayat döner' },
+    { en: 'trace of gravity', tr: 'yerçekiminin izi' }
+  ];
+  simLinks.forEach((link, i) => {
+    if (simNames[i]) {
+      link.textContent = l === 'tr' ? simNames[i].tr : simNames[i].en;
+    }
+  });
 }
 
 /* ════════════════════════════════════════════
-   MASONRY GALLERY
+   GALLERY
 ════════════════════════════════════════════ */
 function buildGallery() {
   const grid = document.getElementById('gallery');
   grid.innerHTML = '';
   const l = currentLang;
   
-  // Filter out archived
   let artworks = (SITE.artworks || []).filter(a => !a.archived);
   
-  // Filter by series if selected
   if (currentSeries !== 'all') {
     artworks = artworks.filter(a => {
       const awSeries = (a.series || '').toLowerCase().trim();
@@ -261,8 +266,8 @@ function buildGallery() {
     
     const div = document.createElement('div');
     div.className = 'gallery-item';
+    div.style.animationDelay = `${idx * 0.06}s`;
     
-    // Create image with natural aspect ratio for masonry
     const img = document.createElement('img');
     img.src = displayImg;
     img.alt = title;
@@ -315,14 +320,13 @@ function renderLightbox() {
   
   const content = document.getElementById('lightbox-content');
   
-  // Get main image
   let mainImg = aw.displayImage;
   if (aw.images && aw.images.length) {
     const main = aw.images.find(i => i.isMain);
     mainImg = main ? main.path : aw.images[0].path;
   }
   
-  // Check for 3D model in materials
+  // Find 3D model
   let modelPath = null;
   if (aw.materials) {
     const modelMat = aw.materials.find(m => (m.type === '3d-model' || m.type === '3d') && m.path);
@@ -335,16 +339,13 @@ function renderLightbox() {
     </div>
     <div class="lightbox-info">
       <div class="lightbox-title">${escapeHtml(title)}</div>
-      <div class="lightbox-meta">
-        ${aw.year ? aw.year + '<br>' : ''}
-        ${medium || ''}
-      </div>
+      <div class="lightbox-meta">${aw.year ? aw.year + '<br>' : ''}${medium || ''}</div>
       ${desc ? `<div class="lightbox-desc">${formatDesc(desc)}</div>` : ''}
-      ${modelPath ? `<button class="btn-3d" onclick="openViewer('${escapeHtml(modelPath)}')">${l === 'tr' ? '3D Görüntüle' : 'View in 3D'}</button>` : ''}
+      ${modelPath ? `<button class="btn-action" onclick="openViewer('${escapeHtml(modelPath)}')">${l === 'tr' ? '3D Görüntüle' : 'View in 3D'}</button>` : ''}
     </div>
   `;
   
-  // Additional images (excluding main)
+  // Additional images
   if (aw.images && aw.images.length > 1) {
     const additionalImgs = aw.images.filter(img => img.path !== mainImg);
     if (additionalImgs.length > 0) {
@@ -356,7 +357,7 @@ function renderLightbox() {
     }
   }
   
-  // Materials section
+  // Materials
   if (aw.materials && aw.materials.length > 0) {
     html += `<div class="lightbox-materials">`;
     
@@ -365,21 +366,15 @@ function renderLightbox() {
       const matContent = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
       
       html += `<div class="material-section">`;
-      if (label) {
-        html += `<div class="material-label">${escapeHtml(label)}</div>`;
-      }
+      if (label) html += `<div class="material-label">${escapeHtml(label)}</div>`;
       
-      // GIF type
-      if (mat.type === 'gif') {
-        if (mat.images && mat.images.length > 0) {
-          html += '<div class="material-gif">';
-          mat.images.forEach(img => {
-            html += `<img src="${escapeHtml(img.path)}" alt="GIF" class="gif-image">`;
-          });
-          html += '</div>';
-        }
+      if (mat.type === 'gif' && mat.images && mat.images.length > 0) {
+        html += '<div class="material-media">';
+        mat.images.forEach(img => {
+          html += `<img src="${escapeHtml(img.path)}" alt="GIF">`;
+        });
+        html += '</div>';
       }
-      // Image gallery
       else if (mat.type === 'image-gallery' && mat.images && mat.images.length > 0) {
         html += '<div class="material-images">';
         mat.images.forEach(img => {
@@ -387,29 +382,17 @@ function renderLightbox() {
         });
         html += '</div>';
       }
-      // Text
       else if (mat.type === 'text' && matContent) {
         html += `<div class="material-text">${formatDesc(matContent)}</div>`;
       }
-      // Video
       else if (mat.type === 'video' && mat.path) {
         html += `<video controls style="max-width:100%;"><source src="${escapeHtml(mat.path)}"></video>`;
       }
-      // PDF
       else if (mat.type === 'pdf' && mat.path) {
-        html += `
-          <div class="material-pdf">
-            <button class="btn-pdf" onclick="openPdfViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? 'PDF Görüntüle' : 'View PDF'}</button>
-          </div>
-        `;
+        html += `<button class="btn-action" onclick="openPdfViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? 'PDF Görüntüle' : 'View PDF'}</button>`;
       }
-      // 3D model (show button if not already shown)
-      else if ((mat.type === '3d' || mat.type === '3d-model') && mat.path && !modelPath) {
-        html += `
-          <div class="material-3d">
-            <button class="btn-3d" onclick="openViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? '3D Görüntüle' : 'View in 3D'}</button>
-          </div>
-        `;
+      else if ((mat.type === '3d' || mat.type === '3d-model') && mat.path) {
+        html += `<button class="btn-action" onclick="openViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? '3D Görüntüle' : 'View in 3D'}</button>`;
       }
       
       html += '</div>';
@@ -419,25 +402,24 @@ function renderLightbox() {
   }
   
   content.innerHTML = html;
-  
-  // Scroll to top when opening new artwork
   document.getElementById('lightbox').scrollTop = 0;
 }
 
 function formatDesc(text) {
+  if (!text) return '';
   return text.split('\n\n').map(p => `<p>${escapeHtml(p)}</p>`).join('');
 }
 
 /* ════════════════════════════════════════════
-   3D VIEWER
+   3D VIEWER (Three.js)
 ════════════════════════════════════════════ */
 let viewer3d = null;
 
 function openViewer(modelPath) {
+  console.log('Opening 3D viewer for:', modelPath);
   document.getElementById('viewer-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   
-  // Initialize Three.js viewer
   setTimeout(() => {
     initViewer(modelPath);
   }, 100);
@@ -448,71 +430,93 @@ function closeViewer() {
   document.body.style.overflow = '';
   
   if (viewer3d) {
-    cancelAnimationFrame(viewer3d.animId);
-    viewer3d.renderer.dispose();
+    if (viewer3d.animId) cancelAnimationFrame(viewer3d.animId);
+    if (viewer3d.renderer) viewer3d.renderer.dispose();
+    if (viewer3d.controls) viewer3d.controls.dispose();
+    document.getElementById('viewer-container').innerHTML = '';
     viewer3d = null;
   }
 }
 
 function initViewer(modelPath) {
-  const canvas = document.getElementById('viewer3d-canvas');
-  const container = canvas.parentElement;
-  const W = container.clientWidth;
-  const H = container.clientHeight;
+  const container = document.getElementById('viewer-container');
+  container.innerHTML = '';
+  
+  const W = container.clientWidth || 800;
+  const H = container.clientHeight || 500;
+  
+  console.log('Init viewer:', W, 'x', H);
   
   // Scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xf5f5f5);
+  scene.background = new THREE.Color(0xf0f0f0);
   
   // Camera
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
-  camera.position.set(0, 1, 3);
+  camera.position.set(0, 1.5, 4);
   
   // Renderer
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(W, H);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputEncoding = THREE.sRGBEncoding;
+  container.appendChild(renderer.domElement);
   
   // Controls
-  const controls = new THREE.OrbitControls(camera, canvas);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
+  controls.target.set(0, 0, 0);
   
   // Lights
-  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-  scene.add(ambient);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
   const directional = new THREE.DirectionalLight(0xffffff, 0.8);
   directional.position.set(5, 10, 7.5);
   scene.add(directional);
+  const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+  backLight.position.set(-5, 5, -5);
+  scene.add(backLight);
   
   // Load model
   const loader = new THREE.GLTFLoader();
-  loader.load(modelPath, gltf => {
-    const model = gltf.scene;
-    
-    // Center and scale
-    const box = new THREE.Box3().setFromObject(model);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    model.position.sub(center);
-    const maxDim = Math.max(size.x, size.y, size.z);
-    model.scale.setScalar(2 / maxDim);
-    
-    scene.add(model);
-  });
+  loader.load(
+    modelPath,
+    function(gltf) {
+      console.log('Model loaded:', gltf);
+      const model = gltf.scene;
+      
+      // Center and scale
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      model.position.sub(center);
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 2.5 / maxDim;
+      model.scale.setScalar(scale);
+      
+      scene.add(model);
+      controls.update();
+    },
+    function(xhr) {
+      console.log('Loading: ' + (xhr.loaded / xhr.total * 100) + '%');
+    },
+    function(error) {
+      console.error('3D Model load error:', error);
+      alert('3D model yüklenemedi / Could not load 3D model');
+    }
+  );
   
-  // Animate
+  // Animation loop
   function animate() {
     viewer3d.animId = requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
   
-  viewer3d = { renderer, animId: null };
+  viewer3d = { renderer, controls, animId: null };
   animate();
   
-  // Handle resize
+  // Resize handler
   window.addEventListener('resize', () => {
     const W = container.clientWidth;
     const H = container.clientHeight;
@@ -598,18 +602,7 @@ function updateLangTexts() {
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
   document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
   
-  // Update simulation links
-  const simLinks = document.querySelectorAll('.sim-dropdown .series-link');
-  const simNames = [
-    { en: 'shadow of the object', tr: 'nesnenin kaplanmış gölgesi' },
-    { en: 'life revolves', tr: 'hayat döner' },
-    { en: 'trace of gravity', tr: 'yerçekiminin izi' }
-  ];
-  simLinks.forEach((link, i) => {
-    if (simNames[i]) {
-      link.textContent = l === 'tr' ? simNames[i].tr : simNames[i].en;
-    }
-  });
+  updateSimulationLinks();
 }
 
 /* ════════════════════════════════════════════
@@ -640,14 +633,15 @@ document.addEventListener('DOMContentLoaded', () => {
   buildGallery();
   updateLangTexts();
   
-  // Series toggle
-  document.getElementById('series-toggle').addEventListener('click', toggleSeries);
+  // Series toggle (closed by default)
+  document.getElementById('series-toggle').addEventListener('click', () => {
+    seriesOpen = toggleDropdown('series-dropdown', 'series-toggle', seriesOpen);
+  });
   
-  // Simulations toggle
-  document.getElementById('sim-toggle').addEventListener('click', toggleSimulations);
-  
-  // Start with series dropdown open
-  document.getElementById('series-dropdown').classList.add('open');
+  // Simulations toggle (closed by default)
+  document.getElementById('sim-toggle').addEventListener('click', () => {
+    simOpen = toggleDropdown('sim-dropdown', 'sim-toggle', simOpen);
+  });
   
   // Language buttons
   document.getElementById('btn-en').addEventListener('click', () => {
