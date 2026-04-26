@@ -4,244 +4,255 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>writings — tarık yiğit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="site-wrapper">
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Tabs -->
+      <div class="writings-tabs">
+        <button class="active" data-tab="all" data-en="all" data-tr="tümü">all</button>
+        <button data-tab="books" data-en="books" data-tr="kitaplar">books</button>
+        <button data-tab="poems" data-en="poems" data-tr="şiirler">poems</button>
+        <button data-tab="articles" data-en="articles" data-tr="yazılar">articles</button>
+      </div>
 
-<div class="site-layout">
-  <!-- Main Content -->
-  <main class="site-content">
-    <div class="writings-tabs">
-      <button class="writings-tab on" id="tab-all" onclick="switchTab('all')" data-en="all" data-tr="tümü">all</button>
-      <button class="writings-tab" id="tab-books" onclick="switchTab('books')" data-en="books" data-tr="kitaplar">books</button>
-      <button class="writings-tab" id="tab-poems" onclick="switchTab('poems')" data-en="poems" data-tr="şiirler">poems</button>
-      <button class="writings-tab" id="tab-articles" onclick="switchTab('articles')" data-en="articles" data-tr="makaleler">articles</button>
-    </div>
-    
-    <div class="writings-list" id="writings-list"></div>
-  </main>
+      <!-- All Panel -->
+      <div class="writings-panel active" id="panel-all">
+        <div class="books-grid" id="all-books"></div>
+        <div class="writings-list" id="all-writings" style="margin-top:30px;"></div>
+      </div>
 
-  <!-- Right Sidebar -->
-  <aside class="site-sidebar">
-    <div class="sidebar-name">
-      <a href="index.html">tarık yiğit</a>
-    </div>
-    
-    <nav class="sidebar-nav">
-      <a href="index.html" class="sidebar-link" data-en="artworks" data-tr="eserler">artworks</a>
-      <a href="about.html" class="sidebar-link" data-en="about" data-tr="hakkında">about</a>
-      <a href="writings.html" class="sidebar-link active" data-en="writings" data-tr="yazılar">writings</a>
-      <a href="contact.html" class="sidebar-link" data-en="contact" data-tr="iletişim">contact</a>
+      <!-- Books Panel -->
+      <div class="writings-panel" id="panel-books">
+        <div class="books-grid" id="only-books"></div>
+      </div>
+
+      <!-- Poems Panel -->
+      <div class="writings-panel" id="panel-poems">
+        <div class="writings-list" id="only-poems"></div>
+      </div>
+
+      <!-- Articles Panel -->
+      <div class="writings-panel" id="panel-articles">
+        <div class="writings-list" id="only-articles"></div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-name">
+        <a href="index.html">tarık yiğit</a>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html" data-en="artworks" data-tr="eserler">artworks</a>
+        <a href="about.html" data-en="about" data-tr="hakkında">about</a>
+        <a href="writings.html" class="active" data-en="writings" data-tr="yazılar">writings</a>
+        <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="lang-switch">
+          <button id="btn-en" class="active">EN</button>
+          <button id="btn-tr">TR</button>
+        </div>
+      </div>
     </nav>
-    
-    <div class="sidebar-spacer"></div>
-    
-    <div class="sidebar-lang">
-      <button id="b-en" class="on">EN</button>
-      <span>/</span>
-      <button id="b-tr">TR</button>
+  </div>
+
+  <!-- Reading Overlay (for poems/articles) -->
+  <div class="reading-overlay" id="reading-overlay">
+    <button class="reading-close" onclick="closeReading()">×</button>
+    <div class="reading-content" id="reading-content"></div>
+  </div>
+
+  <!-- Book Reader -->
+  <div class="book-reader" id="book-reader">
+    <div class="br-toolbar">
+      <span class="br-title" id="br-title"></span>
+      <div class="br-controls">
+        <div class="br-page-nav">
+          <button class="br-btn" onclick="brNav(-1)">‹</button>
+          <input class="br-page-input" id="br-page-input" type="number" min="1" value="1">
+          <span id="br-page-total">/ 1</span>
+          <button class="br-btn" onclick="brNav(1)">›</button>
+        </div>
+        <button class="br-btn" onclick="brZoom(-1)">−</button>
+        <span id="br-zoom">100%</span>
+        <button class="br-btn" onclick="brZoom(1)">+</button>
+        <button class="br-btn" onclick="closeBook()" data-en="close" data-tr="kapat">close</button>
+      </div>
     </div>
-  </aside>
-</div>
-
-<!-- Reading Overlay -->
-<div class="reading-overlay" id="reading-overlay">
-  <button class="reading-close" onclick="closeReading()" data-en="← back" data-tr="← geri">← back</button>
-  <div class="reading-inner" id="reading-content"></div>
-</div>
-
-<!-- Book Reader -->
-<div class="book-reader" id="book-reader">
-  <div class="book-reader-header">
-    <div class="book-reader-title" id="book-title"></div>
-    <div class="book-reader-controls">
-      <button onclick="bookPrev()">←</button>
-      <span id="book-page-info">1 / 1</span>
-      <button onclick="bookNext()">→</button>
-      <span style="margin: 0 10px; color: var(--line);">|</span>
-      <button onclick="bookZoom(-1)">−</button>
-      <span id="book-zoom-info">100%</span>
-      <button onclick="bookZoom(1)">+</button>
-      <span style="margin: 0 10px; color: var(--line);">|</span>
-      <button onclick="closeBook()" data-en="close" data-tr="kapat">close</button>
+    <div class="br-stage" id="br-stage">
+      <div class="br-loading" id="br-loading">Loading...</div>
+      <canvas class="br-canvas" id="br-canvas"></canvas>
     </div>
   </div>
-  <div class="book-reader-body" id="book-body">
-    <canvas id="book-canvas" class="book-reader-canvas"></canvas>
-  </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-</script>
-<script src="data.js"></script>
-<script>
-let currentLang = localStorage.getItem('lang') || 'tr';
-let currentTab = 'all';
-
-// Book reader state
-let bookPdf = null;
-let bookPage = 1;
-let bookTotal = 1;
-let bookScale = 1.0;
-
-function updateLang() {
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = currentLang === 'tr' ? el.dataset.tr : el.dataset.en;
-  });
-  document.getElementById('b-en').classList.toggle('on', currentLang === 'en');
-  document.getElementById('b-tr').classList.toggle('on', currentLang === 'tr');
-  localStorage.setItem('lang', currentLang);
-}
-
-function switchTab(tab) {
-  currentTab = tab;
-  ['all', 'books', 'poems', 'articles'].forEach(t => {
-    document.getElementById('tab-' + t).classList.toggle('on', t === tab);
-  });
-  buildList();
-}
-
-function buildList() {
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script>
+/* ════════════════════════════════════════════
+   BUILD LISTS
+════════════════════════════════════════════ */
+function buildLists() {
   const l = currentLang;
-  const list = document.getElementById('writings-list');
-  list.innerHTML = '';
   
-  let items = [];
-  
-  // Filter out archived
-  const activeBooks = (SITE.books || []).filter(b => !b.archived);
-  const activePoems = (SITE.poems || []).filter(p => !p.archived);
-  const activeArticles = (SITE.articles || []).filter(a => !a.archived);
-  
-  if (currentTab === 'all' || currentTab === 'books') {
-    activeBooks.forEach((b, i) => {
-      const idx = SITE.books.findIndex(x => x.id === b.id);
-      items.push({
-        type: 'book',
-        idx: idx,
-        title: l === 'tr' ? (b.titleTR || b.title) : b.title,
-        meta: b.year || '',
-        year: parseInt(b.year) || 0
-      });
-    });
-  }
-  
-  if (currentTab === 'all' || currentTab === 'poems') {
-    activePoems.forEach((p, i) => {
-      const idx = SITE.poems.findIndex(x => x.id === p.id);
-      items.push({
-        type: 'poem',
-        idx: idx,
-        title: l === 'tr' ? (p.titleTR || p.title) : p.title,
-        meta: p.year || '',
-        year: parseInt(p.year) || 0
-      });
-    });
-  }
-  
-  if (currentTab === 'all' || currentTab === 'articles') {
-    activeArticles.forEach((a, i) => {
-      const idx = SITE.articles.findIndex(x => x.id === a.id);
-      const type = l === 'tr' ? (a.typeTR || a.type) : a.type;
-      items.push({
-        type: 'article',
-        idx: idx,
-        title: l === 'tr' ? (a.titleTR || a.title) : a.title,
-        meta: `${a.year || ''}${type ? ' · ' + type : ''}`,
-        year: parseInt(a.year) || 0
-      });
-    });
-  }
+  // Filter archived
+  const books = (SITE.books || []).filter(b => !b.archived);
+  const poems = (SITE.poems || []).filter(p => !p.archived);
+  const articles = (SITE.articles || []).filter(a => !a.archived);
   
   // Sort by year descending
-  items.sort((a, b) => b.year - a.year);
+  const sortByYear = (a, b) => (b.year || 0) - (a.year || 0);
   
-  items.forEach(item => {
-    const div = document.createElement('a');
-    div.href = '#';
-    div.className = 'writing-item';
-    div.innerHTML = `
-      <div class="writing-title">${item.title}</div>
-      <div class="writing-meta">${item.meta}</div>
-    `;
-    div.addEventListener('click', e => {
-      e.preventDefault();
-      if (item.type === 'book') openBook(item.idx);
-      else if (item.type === 'poem') openPoem(item.idx);
-      else if (item.type === 'article') openArticle(item.idx);
+  // Books
+  ['all-books', 'only-books'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    books.sort(sortByYear).forEach((b, i) => {
+      const actualIdx = SITE.books.findIndex(x => x.id === b.id);
+      el.appendChild(makeBookItem(b, actualIdx));
     });
-    list.appendChild(div);
+  });
+  
+  // Combined poems + articles for "all" tab
+  const allWritings = [
+    ...poems.map((p, i) => ({ type: 'poem', item: p, idx: SITE.poems.findIndex(x => x.id === p.id) })),
+    ...articles.map((a, i) => ({ type: 'article', item: a, idx: SITE.articles.findIndex(x => x.id === a.id) }))
+  ].sort((a, b) => (b.item.year || 0) - (a.item.year || 0));
+  
+  const allWritingsEl = document.getElementById('all-writings');
+  allWritingsEl.innerHTML = '';
+  allWritings.forEach(w => {
+    allWritingsEl.appendChild(makeWritingItem(w.type, w.item, w.idx));
+  });
+  
+  // Poems only
+  const poemsEl = document.getElementById('only-poems');
+  poemsEl.innerHTML = '';
+  poems.sort(sortByYear).forEach((p, i) => {
+    const actualIdx = SITE.poems.findIndex(x => x.id === p.id);
+    poemsEl.appendChild(makeWritingItem('poem', p, actualIdx));
+  });
+  
+  // Articles only
+  const articlesEl = document.getElementById('only-articles');
+  articlesEl.innerHTML = '';
+  articles.sort(sortByYear).forEach((a, i) => {
+    const actualIdx = SITE.articles.findIndex(x => x.id === a.id);
+    articlesEl.appendChild(makeWritingItem('article', a, actualIdx));
   });
 }
 
-// Reading overlay functions
+function makeBookItem(book, idx) {
+  const l = currentLang;
+  const title = l === 'tr' ? (book.titleTR || book.title) : book.title;
+  
+  const div = document.createElement('div');
+  div.className = 'book-item';
+  div.innerHTML = `
+    ${book.cover 
+      ? `<img class="book-cover" src="${_esc(book.cover)}" alt="${_esc(title)}">`
+      : `<div class="book-cover-placeholder">PDF</div>`
+    }
+    <div class="book-title">${_esc(title)}</div>
+    <div class="book-year">${book.year || ''}</div>
+  `;
+  div.addEventListener('click', () => openBook(idx));
+  return div;
+}
+
+function makeWritingItem(type, item, idx) {
+  const l = currentLang;
+  const title = l === 'tr' ? (item.titleTR || item.title) : item.title;
+  const typeLabel = type === 'article' 
+    ? (l === 'tr' ? (item.typeTR || item.type) : item.type)
+    : (l === 'tr' ? 'şiir' : 'poem');
+  
+  const a = document.createElement('a');
+  a.href = '#';
+  a.className = 'writing-item';
+  a.innerHTML = `
+    <div class="writing-item-title">${_esc(title)}</div>
+    <div class="writing-item-meta">${item.year || ''} · ${typeLabel}</div>
+  `;
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    if (type === 'poem') openPoem(idx);
+    else openArticle(idx);
+  });
+  return a;
+}
+
+/* ════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════ */
+function switchTab(tab) {
+  document.querySelectorAll('.writings-tabs button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.querySelectorAll('.writings-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === 'panel-' + tab);
+  });
+}
+
+/* ════════════════════════════════════════════
+   READING OVERLAY (Poems / Articles)
+════════════════════════════════════════════ */
 function openPoem(idx) {
-  const p = SITE.poems[idx];
-  if (!p) return;
+  const poem = SITE.poems[idx];
+  if (!poem) return;
   
   const l = currentLang;
-  const title = l === 'tr' ? (p.titleTR || p.title) : p.title;
-  const body = l === 'tr' ? (p.bodyTR || p.body) : p.body;
+  const title = l === 'tr' ? (poem.titleTR || poem.title) : poem.title;
+  const body = l === 'tr' ? (poem.bodyTR || poem.body) : poem.body;
   
-  document.getElementById('reading-content').innerHTML = `
-    <div class="reading-title">${title}</div>
-    <div class="reading-meta">${p.year || ''}</div>
-    <div class="reading-body poem">${body || ''}</div>
+  const content = document.getElementById('reading-content');
+  content.innerHTML = `
+    <div class="reading-title">${_esc(title)}</div>
+    <div class="reading-meta">${poem.year || ''}</div>
+    <div class="reading-body">${_esc(body)}</div>
   `;
+  
   document.getElementById('reading-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
 function openArticle(idx) {
-  const a = SITE.articles[idx];
-  if (!a) return;
+  const article = SITE.articles[idx];
+  if (!article) return;
   
   const l = currentLang;
-  const title = l === 'tr' ? (a.titleTR || a.title) : a.title;
-  const type = l === 'tr' ? (a.typeTR || a.type) : a.type;
-  const body = l === 'tr' ? (a.bodyTR || a.body) : a.body;
+  const title = l === 'tr' ? (article.titleTR || article.title) : article.title;
+  const typeLabel = l === 'tr' ? (article.typeTR || article.type) : article.type;
   
-  let html = `
-    <div class="reading-title">${title}</div>
-    <div class="reading-meta">${a.year || ''}${type ? ' · ' + type : ''}</div>
-  `;
+  const content = document.getElementById('reading-content');
   
-  // If article has PDF
-  if (a.pdf && a.pdf.trim()) {
-    const pdfId = 'pdf-' + Math.random().toString(36).substr(2, 9);
-    html += `
-      ${body ? `<div class="reading-body" style="margin-bottom:30px;"><p>${body}</p></div>` : ''}
-      <div class="pdf-viewer-wrap" id="${pdfId}-wrap">
-        <div class="pdf-controls">
-          <button class="pdf-ctrl-btn" onclick="articlePdfPrev('${pdfId}')">← ${l === 'tr' ? 'önceki' : 'prev'}</button>
-          <span class="pdf-page-info" id="${pdfId}-info">1 / 1</span>
-          <button class="pdf-ctrl-btn" onclick="articlePdfNext('${pdfId}')">${l === 'tr' ? 'sonraki' : 'next'} →</button>
-          <button class="pdf-ctrl-btn" onclick="articlePdfZoom('${pdfId}', -1)">−</button>
-          <span class="pdf-zoom-info" id="${pdfId}-zoom">100%</span>
-          <button class="pdf-ctrl-btn" onclick="articlePdfZoom('${pdfId}', 1)">+</button>
-        </div>
-        <div class="pdf-canvas-wrap">
-          <canvas id="${pdfId}-canvas"></canvas>
-        </div>
-      </div>
+  // Check if article has PDF
+  if (article.pdf) {
+    content.innerHTML = `
+      <div class="reading-title">${_esc(title)}</div>
+      <div class="reading-meta">${article.year || ''} · ${typeLabel}</div>
+      <iframe class="pdf-viewer" src="https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(location.origin + '/' + article.pdf)}#pagemode=none"></iframe>
     `;
-    
-    document.getElementById('reading-content').innerHTML = html;
-    document.getElementById('reading-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    
-    // Load PDF
-    loadArticlePdf(pdfId, a.pdf);
   } else {
-    const paras = (body || '').split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
-    html += `<div class="reading-body">${paras}</div>`;
-    
-    document.getElementById('reading-content').innerHTML = html;
-    document.getElementById('reading-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    const body = l === 'tr' ? (article.bodyTR || article.body) : article.body;
+    content.innerHTML = `
+      <div class="reading-title">${_esc(title)}</div>
+      <div class="reading-meta">${article.year || ''} · ${typeLabel}</div>
+      <div class="reading-body">${_esc(body)}</div>
+    `;
   }
+  
+  document.getElementById('reading-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeReading() {
@@ -249,154 +260,135 @@ function closeReading() {
   document.body.style.overflow = '';
 }
 
-// Article PDF viewer
-const articlePdfs = {};
+/* ════════════════════════════════════════════
+   BOOK READER (PDF)
+════════════════════════════════════════════ */
+let brPdf = null;
+let brPage = 1;
+let brTotalPages = 1;
+let brScale = 1.5;
 
-async function loadArticlePdf(pdfId, path) {
-  try {
-    const pdf = await pdfjsLib.getDocument(path).promise;
-    articlePdfs[pdfId] = { pdf, page: 1, scale: 1.0 };
-    renderArticlePdf(pdfId);
-  } catch (err) {
-    console.error('PDF load error:', err);
-  }
-}
-
-async function renderArticlePdf(pdfId) {
-  const state = articlePdfs[pdfId];
-  if (!state) return;
-  
-  const page = await state.pdf.getPage(state.page);
-  const viewport = page.getViewport({ scale: state.scale * 1.5 });
-  
-  const canvas = document.getElementById(pdfId + '-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  
-  await page.render({ canvasContext: ctx, viewport }).promise;
-  
-  document.getElementById(pdfId + '-info').textContent = `${state.page} / ${state.pdf.numPages}`;
-  document.getElementById(pdfId + '-zoom').textContent = Math.round(state.scale * 100) + '%';
-}
-
-function articlePdfPrev(pdfId) {
-  const state = articlePdfs[pdfId];
-  if (state && state.page > 1) {
-    state.page--;
-    renderArticlePdf(pdfId);
-  }
-}
-
-function articlePdfNext(pdfId) {
-  const state = articlePdfs[pdfId];
-  if (state && state.page < state.pdf.numPages) {
-    state.page++;
-    renderArticlePdf(pdfId);
-  }
-}
-
-function articlePdfZoom(pdfId, dir) {
-  const state = articlePdfs[pdfId];
-  if (!state) return;
-  state.scale = Math.max(0.5, Math.min(3, state.scale + dir * 0.25));
-  renderArticlePdf(pdfId);
-}
-
-// Book reader functions
-async function openBook(idx) {
-  const b = SITE.books[idx];
-  if (!b || !b.pdf) return;
+function openBook(idx) {
+  const book = SITE.books[idx];
+  if (!book || !book.pdf) return;
   
   const l = currentLang;
-  const title = l === 'tr' ? (b.titleTR || b.title) : b.title;
+  document.getElementById('br-title').textContent = l === 'tr' ? (book.titleTR || book.title) : book.title;
   
-  document.getElementById('book-title').textContent = title;
   document.getElementById('book-reader').classList.add('open');
   document.body.style.overflow = 'hidden';
   
-  try {
-    bookPdf = await pdfjsLib.getDocument(b.pdf).promise;
-    bookPage = 1;
-    bookTotal = bookPdf.numPages;
-    bookScale = 1.0;
-    renderBook();
-  } catch (err) {
-    console.error('Book load error:', err);
-  }
+  document.getElementById('br-loading').style.display = '';
+  document.getElementById('br-canvas').style.display = 'none';
+  
+  pdfjsLib.getDocument(book.pdf).promise.then(pdf => {
+    brPdf = pdf;
+    brTotalPages = pdf.numPages;
+    brPage = 1;
+    document.getElementById('br-page-total').textContent = '/ ' + brTotalPages;
+    document.getElementById('br-page-input').max = brTotalPages;
+    renderBrPage();
+  });
 }
 
-async function renderBook() {
-  if (!bookPdf) return;
+function renderBrPage() {
+  if (!brPdf) return;
   
-  const page = await bookPdf.getPage(bookPage);
-  const viewport = page.getViewport({ scale: bookScale * 1.5 });
+  brPdf.getPage(brPage).then(page => {
+    const canvas = document.getElementById('br-canvas');
+    const ctx = canvas.getContext('2d');
+    const viewport = page.getViewport({ scale: brScale });
+    
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    
+    page.render({ canvasContext: ctx, viewport: viewport }).promise.then(() => {
+      document.getElementById('br-loading').style.display = 'none';
+      canvas.style.display = '';
+    });
+  });
   
-  const canvas = document.getElementById('book-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-  
-  await page.render({ canvasContext: ctx, viewport }).promise;
-  
-  document.getElementById('book-page-info').textContent = `${bookPage} / ${bookTotal}`;
-  document.getElementById('book-zoom-info').textContent = Math.round(bookScale * 100) + '%';
+  document.getElementById('br-page-input').value = brPage;
+  document.getElementById('br-zoom').textContent = Math.round(brScale * 100) + '%';
 }
 
-function bookPrev() {
-  if (bookPage > 1) {
-    bookPage--;
-    renderBook();
-  }
+function brNav(dir) {
+  brPage += dir;
+  if (brPage < 1) brPage = 1;
+  if (brPage > brTotalPages) brPage = brTotalPages;
+  renderBrPage();
 }
 
-function bookNext() {
-  if (bookPage < bookTotal) {
-    bookPage++;
-    renderBook();
-  }
-}
-
-function bookZoom(dir) {
-  bookScale = Math.max(0.5, Math.min(3, bookScale + dir * 0.25));
-  renderBook();
+function brZoom(dir) {
+  brScale += dir * 0.25;
+  if (brScale < 0.5) brScale = 0.5;
+  if (brScale > 3) brScale = 3;
+  renderBrPage();
 }
 
 function closeBook() {
   document.getElementById('book-reader').classList.remove('open');
   document.body.style.overflow = '';
-  bookPdf = null;
+  brPdf = null;
 }
 
-// ESC key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (document.getElementById('book-reader').classList.contains('open')) {
-      closeBook();
-    } else if (document.getElementById('reading-overlay').classList.contains('open')) {
-      closeReading();
-    }
-  }
-});
+/* ════════════════════════════════════════════
+   LANGUAGE
+════════════════════════════════════════════ */
+function updateLangTexts() {
+  const l = currentLang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = l === 'tr' ? el.dataset.tr : el.dataset.en;
+  });
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
+}
 
-// Init
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  updateLang();
-  buildList();
+  buildLists();
+  updateLangTexts();
   
-  document.getElementById('b-en').addEventListener('click', () => {
-    currentLang = 'en';
-    updateLang();
-    buildList();
+  // Tab clicks
+  document.querySelectorAll('.writings-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
   
-  document.getElementById('b-tr').addEventListener('click', () => {
-    currentLang = 'tr';
-    updateLang();
-    buildList();
+  // Language switches
+  document.getElementById('btn-en').addEventListener('click', () => {
+    setLang('en');
+    buildLists();
+    updateLangTexts();
+  });
+  
+  document.getElementById('btn-tr').addEventListener('click', () => {
+    setLang('tr');
+    buildLists();
+    updateLangTexts();
+  });
+  
+  // Page input for book reader
+  document.getElementById('br-page-input').addEventListener('change', e => {
+    brPage = parseInt(e.target.value) || 1;
+    if (brPage < 1) brPage = 1;
+    if (brPage > brTotalPages) brPage = brTotalPages;
+    renderBrPage();
+  });
+  
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (document.getElementById('reading-overlay').classList.contains('open')) {
+      if (e.key === 'Escape') closeReading();
+    }
+    if (document.getElementById('book-reader').classList.contains('open')) {
+      if (e.key === 'Escape') closeBook();
+      if (e.key === 'ArrowLeft') brNav(-1);
+      if (e.key === 'ArrowRight') brNav(1);
+    }
   });
 });
-</script>
-
+  </script>
 </body>
 </html>
