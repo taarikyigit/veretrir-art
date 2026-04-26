@@ -1,0 +1,407 @@
+
+<h2 class="sr-only">Plastik çerçeve 3B simülatörü — sürüklenebilir çubuklar, gerçekçi yerçekimi ve alçı dokusu.</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:11px;color:var(--color-text-secondary);">
+    <b style="font-weight:500;color:var(--color-text-primary);">3B görünüm:</b> sağ tık + sürükle → döndür &nbsp;·&nbsp; scroll → zoom
+  </div>
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:11px;color:var(--color-text-secondary);">
+    <b style="font-weight:500;color:var(--color-text-primary);">Çubuk taşı:</b> sol tık çubuğa bas + sürükle
+  </div>
+</div>
+
+<div style="width:100%;height:460px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-secondary);cursor:grab;" id="mount"></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem 2rem;margin-top:1.25rem;">
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between;">yerçekimi gücü <span id="v-grav" style="font-weight:500;color:var(--color-text-primary);">60</span>%</label>
+    <input type="range" id="s-grav" min="5" max="100" value="60" step="1">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between;">alçı kıvamı <span id="v-alci" style="font-weight:500;color:var(--color-text-primary);">50</span>%</label>
+    <input type="range" id="s-alci" min="10" max="90" value="50" step="1">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between;">lif yoğunluğu <span id="v-lif" style="font-weight:500;color:var(--color-text-primary);">55</span>%</label>
+    <input type="range" id="s-lif" min="10" max="90" value="55" step="1">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between;">deformasyon <span id="v-def" style="font-weight:500;color:var(--color-text-primary);">45</span>%</label>
+    <input type="range" id="s-def" min="0" max="100" value="45" step="1">
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between;">katman <span id="v-kat" style="font-weight:500;color:var(--color-text-primary);">2</span></label>
+    <input type="range" id="s-kat" min="1" max="4" value="2" step="1">
+  </div>
+  <div style="display:flex;align-items:flex-end;padding-bottom:4px;gap:8px;">
+    <button onclick="resetAll()" style="font-size:13px;">sıfırla</button>
+    <button onclick="randomize()" style="font-size:13px;">rastgele ↗</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const mount = document.getElementById('mount');
+const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+const W = mount.clientWidth||680, H = 460;
+
+const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
+renderer.setSize(W,H);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0x000000,0);
+mount.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(44,W/H,0.01,100);
+
+let camTheta=0.3, camPhi=0.22, camRadius=5.0;
+function updateCam(){
+  camera.position.set(
+    camRadius*Math.sin(camTheta)*Math.cos(camPhi),
+    camRadius*Math.sin(camPhi),
+    camRadius*Math.cos(camTheta)*Math.cos(camPhi)
+  );
+  camera.lookAt(0,0,0);
+}
+updateCam();
+
+scene.add(new THREE.AmbientLight(0xffffff, dark?0.6:0.8));
+const d1=new THREE.DirectionalLight(0xffffff,dark?0.7:0.95);
+d1.position.set(3,6,4); scene.add(d1);
+const d2=new THREE.DirectionalLight(0xffffff,0.25);
+d2.position.set(-3,2,-4); scene.add(d2);
+
+// çubuk uç noktaları — dünya koordinatlarında
+// her çubuk: {a: V3, b: V3}
+let rods = [
+  {a: new THREE.Vector3(-1.4, 0.0, -0.1), b: new THREE.Vector3(-1.4, 0.0,  0.1)},
+  {a: new THREE.Vector3( 1.4, 0.0, -0.1), b: new THREE.Vector3( 1.4, 0.0,  0.1)},
+];
+
+let mainGroup = new THREE.Group();
+scene.add(mainGroup);
+
+function seededRand(seed){
+  let s=seed%2147483647; if(s<=0)s+=2147483646;
+  return function(){s=s*16807%2147483647; return (s-1)/2147483646;};
+}
+
+function catenary(t, pA, pB, sagAmt){
+  // t in [0,1], pA ve pB çubuk üzerindeki bağlantı noktaları
+  // sag: aşağı doğru, dünya -Y ekseni
+  const pos = new THREE.Vector3().lerpVectors(pA, pB, t);
+  const sag = sagAmt * Math.sin(t * Math.PI); // düz sinüs — symmetrik bombe
+  pos.y -= sag;
+  return pos;
+}
+
+function getP(){
+  return {
+    grav: +document.getElementById('s-grav').value/100,
+    alci: +document.getElementById('s-alci').value/100,
+    lif:  +document.getElementById('s-lif').value/100,
+    def:  +document.getElementById('s-def').value/100,
+    kat:  +document.getElementById('s-kat').value|0
+  };
+}
+
+const palLight=[
+  new THREE.Color(0.90,0.85,0.87),
+  new THREE.Color(0.88,0.58,0.64),
+  new THREE.Color(0.76,0.80,0.88),
+  new THREE.Color(0.93,0.88,0.85),
+];
+const palDark=[
+  new THREE.Color(0.55,0.50,0.53),
+  new THREE.Color(0.60,0.33,0.40),
+  new THREE.Color(0.42,0.46,0.55),
+  new THREE.Color(0.58,0.52,0.48),
+];
+const pal = dark ? palDark : palLight;
+
+function build(){
+  while(mainGroup.children.length) mainGroup.remove(mainGroup.children[0]);
+
+  const p = getP();
+  // iki çubuğun merkez noktaları
+  const cA = new THREE.Vector3().addVectors(rods[0].a, rods[0].b).multiplyScalar(0.5);
+  const cB = new THREE.Vector3().addVectors(rods[1].a, rods[1].b).multiplyScalar(0.5);
+  const span = cA.distanceTo(cB);
+
+  // sarkma miktarı: yerçekimi + mesafe + kıvam
+  const sagBase = span * p.grav * (0.15 + (1-p.alci)*0.35);
+
+  const numFibers = Math.round(10 + p.lif * 32);
+
+  // çubukları çiz
+  const rodMat = new THREE.MeshStandardMaterial({color: dark?0x706050:0x2a2018, roughness:0.95});
+  rods.forEach(rod => {
+    const dir = new THREE.Vector3().subVectors(rod.b, rod.a);
+    const len = dir.length();
+    const mid = new THREE.Vector3().addVectors(rod.a, rod.b).multiplyScalar(0.5);
+    const geo = new THREE.CylinderGeometry(0.022, 0.022, len+0.05, 8);
+    const m = new THREE.Mesh(geo, rodMat);
+    const up = new THREE.Vector3(0,1,0);
+    if(dir.length()>0.001){
+      const q = new THREE.Quaternion().setFromUnitVectors(up, dir.clone().normalize());
+      m.quaternion.copy(q);
+    }
+    m.position.copy(mid);
+    mainGroup.add(m);
+    // uç topları
+    [rod.a, rod.b].forEach(pt=>{
+      const cg = new THREE.SphereGeometry(0.026,8,8);
+      const cm = new THREE.Mesh(cg, rodMat);
+      cm.position.copy(pt);
+      mainGroup.add(cm);
+    });
+  });
+
+  // lif oluştur
+  for(let layer=0; layer<p.kat; layer++){
+    const rand = seededRand(layer*9871 + 1337);
+    const sagL = sagBase * (1 + layer*0.12);
+    const col = pal[layer%pal.length].clone();
+    const steps = 80;
+
+    for(let fi=0; fi<numFibers; fi++){
+      // başlangıç: çubuk A üzerinde rastgele nokta
+      const tA = rand();
+      const tB = rand();
+      const startPt = new THREE.Vector3().lerpVectors(rods[0].a, rods[0].b, tA);
+      const endPt   = new THREE.Vector3().lerpVectors(rods[1].a, rods[1].b, tB);
+
+      // çapraz lif mi?
+      const cross = rand()<0.28;
+      const finalEnd = cross
+        ? new THREE.Vector3().lerpVectors(rods[1].a, rods[1].b, 1-tB)
+        : endPt;
+
+      // catenary + lateral noise
+      const defMag = p.def * 0.18;
+      const noiseSeedX = rand()*100;
+      const noiseSeedZ = rand()*100;
+
+      const pts=[];
+      for(let i=0;i<=steps;i++){
+        const t=i/steps;
+        const base = new THREE.Vector3().lerpVectors(startPt, finalEnd, t);
+        // bombe: aşağı doğru
+        const sag = sagL * Math.sin(t*Math.PI);
+        // lateral noise — sadece ortalara dağıl
+        const envelope = Math.sin(t*Math.PI);
+        const nx = (Math.sin(noiseSeedX+t*13.7)*0.5 + Math.sin(noiseSeedX+t*7.3)*0.5)*defMag*envelope;
+        const nz = (Math.sin(noiseSeedZ+t*11.1)*0.5 + Math.sin(noiseSeedZ+t*5.9)*0.5)*defMag*envelope;
+        pts.push(new THREE.Vector3(base.x+nx, base.y-sag, base.z+nz));
+      }
+      // uçları sabitle
+      pts[0].copy(startPt);
+      pts[steps].copy(finalEnd);
+
+      const curve = new THREE.CatmullRomCurve3(pts);
+
+      // değişken kalınlık: alçı birikimini taklit et
+      // ortada kalın, uçlarda ince — birden fazla tüp segmenti ile
+      const segCount = 12;
+      const segPts = curve.getPoints(segCount);
+      for(let si=0;si<segCount;si++){
+        const tMid = (si+0.5)/segCount;
+        const bulge = 0.5+0.5*Math.sin(tMid*Math.PI);
+        const baseR = 0.003 + p.lif*0.014;
+        const r = baseR*(0.4 + bulge*1.2)*(0.7+rand()*0.6)*(1-layer*0.08);
+
+        const segCurve = new THREE.CatmullRomCurve3([segPts[si], segPts[si+1]]);
+        const geo = new THREE.TubeGeometry(segCurve, 4, Math.max(0.002,r), 5, false);
+        const mat = new THREE.MeshStandardMaterial({
+          color: col.clone().offsetHSL((rand()-0.5)*0.06,(rand()-0.5)*0.1,(rand()-0.5)*0.07),
+          roughness: 0.80+rand()*0.15,
+          metalness: 0.0,
+          transparent:true,
+          opacity: 0.78-layer*0.07+rand()*0.1
+        });
+        mainGroup.add(new THREE.Mesh(geo,mat));
+      }
+    }
+  }
+}
+
+// ——— etkileşim: çubuk taşıma + kamera ———
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let dragMode = null; // 'rod0','rod1',null
+let camDrag = false;
+let prevMouse = {x:0,y:0};
+let dragPlane = new THREE.Plane();
+let dragOffset = new THREE.Vector3();
+
+// kamera düzlemi: çubuk sürüklenirken XZ düzlemi (Y sabit)
+function getWorldPos(clientX, clientY, planeY){
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ((clientX-rect.left)/rect.width)*2-1;
+  const y = -((clientY-rect.top)/rect.height)*2+1;
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera({x,y},camera);
+  const plane = new THREE.Plane(new THREE.Vector3(0,1,0), -planeY);
+  const hit = new THREE.Vector3();
+  ray.ray.intersectPlane(plane,hit);
+  return hit;
+}
+
+function getRodMeshes(){
+  // sadece çubuk silindirleri: ilk 2*3 obje (2 çubuk * (silindir+2 top))
+  // bunları mainGroup'tan bul
+  return []; // raycasting için ayrı grup tutacağız
+}
+
+let rodHandles = []; // görsel seçim için küçük küreler
+
+function buildHandles(){
+  rodHandles.forEach(h=>scene.remove(h));
+  rodHandles=[];
+  const hMat = new THREE.MeshStandardMaterial({color:0x4488ff,transparent:true,opacity:0.0});
+  rods.forEach((rod,ri)=>{
+    const mid = new THREE.Vector3().addVectors(rod.a,rod.b).multiplyScalar(0.5);
+    const geo = new THREE.SphereGeometry(0.25,8,8);
+    const m = new THREE.Mesh(geo,hMat);
+    m.position.copy(mid);
+    m.userData.rodIdx = ri;
+    scene.add(m);
+    rodHandles.push(m);
+  });
+}
+
+const el = renderer.domElement;
+
+el.addEventListener('mousedown',e=>{
+  const rect=el.getBoundingClientRect();
+  const mx=((e.clientX-rect.left)/rect.width)*2-1;
+  const my=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera({x:mx,y:my},camera);
+  const hits=raycaster.intersectObjects(rodHandles);
+  if(hits.length>0 && e.button===0){
+    dragMode='rod'+hits[0].object.userData.rodIdx;
+    el.style.cursor='grabbing';
+    e.preventDefault();
+  } else if(e.button===2||e.button===0){
+    camDrag=true;
+    prevMouse={x:e.clientX,y:e.clientY};
+  }
+});
+
+window.addEventListener('mouseup',()=>{
+  if(dragMode){dragMode=null;el.style.cursor='grab';}
+  camDrag=false;
+});
+
+window.addEventListener('mousemove',e=>{
+  if(dragMode!==null){
+    const ri=parseInt(dragMode.replace('rod',''));
+    const planeY = rods[ri].a.y;
+    const wp = getWorldPos(e.clientX,e.clientY,planeY);
+    if(wp){
+      const mid = new THREE.Vector3().addVectors(rods[ri].a,rods[ri].b).multiplyScalar(0.5);
+      const delta = wp.clone().sub(mid);
+      rods[ri].a.add(delta);
+      rods[ri].b.add(delta);
+      buildHandles();
+      build();
+    }
+    return;
+  }
+  if(camDrag){
+    const dx=e.clientX-prevMouse.x, dy=e.clientY-prevMouse.y;
+    camTheta-=dx*0.011;
+    camPhi=Math.max(-1.1,Math.min(1.1,camPhi+dy*0.011));
+    prevMouse={x:e.clientX,y:e.clientY};
+    updateCam();
+  }
+});
+
+el.addEventListener('contextmenu',e=>e.preventDefault());
+el.addEventListener('wheel',e=>{
+  camRadius=Math.max(1.5,Math.min(10,camRadius+e.deltaY*0.007));
+  updateCam();
+  e.preventDefault();
+},{passive:false});
+
+// touch
+let touches={};
+el.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){
+    const t=e.touches[0];
+    const rect=el.getBoundingClientRect();
+    const mx=((t.clientX-rect.left)/rect.width)*2-1;
+    const my=-((t.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera({x:mx,y:my},camera);
+    const hits=raycaster.intersectObjects(rodHandles);
+    if(hits.length>0){
+      dragMode='rod'+hits[0].object.userData.rodIdx;
+    } else {
+      camDrag=true;
+      prevMouse={x:t.clientX,y:t.clientY};
+    }
+  }
+  e.preventDefault();
+},{passive:false});
+el.addEventListener('touchend',e=>{dragMode=null;camDrag=false;},{passive:false});
+el.addEventListener('touchmove',e=>{
+  if(e.touches.length===1){
+    const t=e.touches[0];
+    if(dragMode!==null){
+      const ri=parseInt(dragMode.replace('rod',''));
+      const wp=getWorldPos(t.clientX,t.clientY,rods[ri].a.y);
+      if(wp){
+        const mid=new THREE.Vector3().addVectors(rods[ri].a,rods[ri].b).multiplyScalar(0.5);
+        const delta=wp.clone().sub(mid);
+        rods[ri].a.add(delta); rods[ri].b.add(delta);
+        buildHandles(); build();
+      }
+    } else if(camDrag){
+      camTheta-=(t.clientX-prevMouse.x)*0.011;
+      camPhi=Math.max(-1.1,Math.min(1.1,camPhi+(t.clientY-prevMouse.y)*0.011));
+      prevMouse={x:t.clientX,y:t.clientY};
+      updateCam();
+    }
+  }
+  e.preventDefault();
+},{passive:false});
+
+function sync(sid,lid){
+  document.getElementById(sid).addEventListener('input',function(){
+    document.getElementById(lid).textContent=this.value;
+    build();
+  });
+}
+sync('s-grav','v-grav');
+sync('s-alci','v-alci');
+sync('s-lif','v-lif');
+sync('s-def','v-def');
+sync('s-kat','v-kat');
+
+window.resetAll=function(){
+  [['s-grav','v-grav',60],['s-alci','v-alci',50],['s-lif','v-lif',55],['s-def','v-def',45],['s-kat','v-kat',2]].forEach(([s,l,v])=>{
+    document.getElementById(s).value=v; document.getElementById(l).textContent=v;
+  });
+  rods=[
+    {a:new THREE.Vector3(-1.4,0.0,-0.1),b:new THREE.Vector3(-1.4,0.0,0.1)},
+    {a:new THREE.Vector3( 1.4,0.0,-0.1),b:new THREE.Vector3( 1.4,0.0,0.1)},
+  ];
+  buildHandles(); build();
+};
+
+window.randomize=function(){
+  const r=()=>Math.random();
+  rods=[
+    {a:new THREE.Vector3(-1.2-r()*0.6, r()*0.8-0.2, (r()-0.5)*0.6), b:new THREE.Vector3(-1.0-r()*0.4, r()*0.8-0.2, (r()-0.5)*0.6)},
+    {a:new THREE.Vector3( 1.0+r()*0.4, r()*0.8-0.2, (r()-0.5)*0.6), b:new THREE.Vector3( 1.2+r()*0.6, r()*0.8-0.2, (r()-0.5)*0.6)},
+  ];
+  buildHandles(); build();
+};
+
+buildHandles();
+build();
+
+(function animate(){requestAnimationFrame(animate);renderer.render(scene,camera);})();
+})();
+</script>

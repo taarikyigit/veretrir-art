@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>hayat döner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1814;color:#ddd;font-family:system-ui,sans-serif;overflow:hidden}
+.app{display:flex;height:100vh}
+.panel{width:230px;min-width:230px;background:#1e1c18;border-right:1px solid #333;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+.sec{padding:9px 11px;border-bottom:1px solid #2a2820}
+.st{font-size:10px;font-weight:600;color:#998;letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase}
+.ct{margin-bottom:5px}
+.ct label{font-size:11px;color:#887;display:flex;justify-content:space-between;margin-bottom:1px}
+.ct label span{font-weight:600;color:#cca}
+.ct input[type=range]{width:100%;accent-color:#b08050}
+.ct select{width:100%;font-size:11px;padding:4px 6px;background:#2a2820;color:#cca;border:1px solid #444;border-radius:4px}
+.bg{display:grid;gap:3px}
+.bg2{grid-template-columns:1fr 1fr}
+.bg3{grid-template-columns:1fr 1fr 1fr}
+.b{padding:5px 4px;font-size:10px;border:1px solid #444;border-radius:4px;background:#2a2820;color:#887;cursor:pointer;text-align:center}
+.b.on{border-color:#b08050;color:#ddc;background:#3a3020}
+.ab{width:100%;padding:7px 10px;font-size:11px;border:1px solid #444;border-radius:5px;background:transparent;color:#cca;cursor:pointer;margin-bottom:4px;text-align:left}
+.ab:hover{background:#2a2820}
+.ab.go{color:#6a4;border-color:#6a4}
+.ab.r{color:#c64;border-color:#c64}
+.fill{flex:1}
+.cyl-list{max-height:200px;overflow-y:auto}
+.cyl-item{padding:5px 7px;border:1px solid #333;border-radius:4px;margin-bottom:3px;background:#222018;cursor:pointer;font-size:11px;color:#998;display:flex;justify-content:space-between;align-items:center}
+.cyl-item.sel{border-color:#b08050;background:#2a2418;color:#ddc}
+.cyl-item .nm{font-weight:600;color:#cca}
+.cyl-item.sel .nm{color:#eea}
+.add-btn{width:100%;padding:5px;font-size:11px;border:1px dashed #555;border-radius:4px;background:transparent;color:#887;cursor:pointer;margin-top:3px}
+.add-btn:hover{border-color:#b08050;color:#cca}
+.del-btn{font-size:9px;color:#c64;cursor:pointer;background:none;border:1px solid #c64;padding:1px 5px;border-radius:3px}
+#cv{display:block;cursor:grab}
+.vp{flex:1;position:relative;overflow:hidden}
+.hint{position:absolute;bottom:8px;left:10px;font-size:10px;color:rgba(255,255,255,.25);pointer-events:none}
+</style>
+</head><body>
+<div class="app">
+<div class="panel">
+
+<div class="sec">
+<div class="st">çamur kütlesi</div>
+<div class="ct"><label>form</label>
+<select id="p-shape"><option value="cylinder">silindir</option><option value="box">küp</option><option value="cone">koni</option><option value="sphere">küre</option><option value="torus">halka</option></select></div>
+<div class="ct"><label>çap <span id="d-cd">100</span></label><input type="range" id="s-cd" min="40" max="200" value="100" step="2"></div>
+<div class="ct"><label>yükseklik <span id="d-ch">120</span></label><input type="range" id="s-ch" min="30" max="260" value="120" step="2"></div>
+<div class="ct"><label>pürüz <span id="d-cr">45</span>%</label><input type="range" id="s-cr" min="0" max="100" value="45" step="1"></div>
+<div class="st" style="margin-top:5px">ton</div>
+<div class="bg bg3"><button class="b on" data-c="raw">ham</button><button class="b" data-c="wet">ıslak</button><button class="b" data-c="dry">kuru</button></div>
+</div>
+
+<div class="sec">
+<div class="st">silindirler</div>
+<div class="cyl-list" id="cyl-list"></div>
+<button class="add-btn" id="add-cyl">+ silindir ekle</button>
+</div>
+
+<div class="sec" id="cyl-edit" style="display:none">
+<div class="st" id="cyl-edit-title">silindir 1</div>
+<div class="ct"><label>yarıçap <span id="ce-r">12</span></label><input type="range" id="ce-sr" min="3" max="50" value="12" step="1"></div>
+<div class="ct"><label>uzunluk <span id="ce-l">100</span>%</label><input type="range" id="ce-sl" min="20" max="150" value="100" step="2"></div>
+<div class="ct"><label>dikey konum <span id="ce-y">50</span>%</label><input type="range" id="ce-sy" min="0" max="100" value="50" step="1"></div>
+<div class="ct"><label>baskı <span id="ce-p">25</span></label><input type="range" id="ce-sp" min="0" max="70" value="25" step="1"></div>
+<div class="ct"><label>eğim <span id="ce-a">0</span>°</label><input type="range" id="ce-sa" min="-50" max="50" value="0" step="1"></div>
+<div class="ct"><label>başlangıç açısı <span id="ce-o">0</span>°</label><input type="range" id="ce-so" min="0" max="360" value="0" step="5"></div>
+</div>
+
+<div class="sec">
+<div class="st">dönme</div>
+<div class="ct"><label>hız <span id="d-spd">40</span>%</label><input type="range" id="s-spd" min="1" max="100" value="40" step="1"></div>
+<div class="bg bg2"><button class="b on" data-d="cw">↻ saat</button><button class="b" data-d="ccw">↺ ters</button></div>
+<div class="ct" style="margin-top:5px"><label>iz yoğunluğu <span id="d-acc">60</span>%</label><input type="range" id="s-acc" min="5" max="100" value="60" step="1"></div>
+</div>
+
+<div class="fill"></div>
+<div class="sec">
+<button class="ab go" id="go">▶ başlat</button>
+<button class="ab" id="clr">izleri sıfırla</button>
+<button class="ab" id="sv">kaydet</button>
+</div>
+
+</div>
+<div class="vp" id="viewport">
+<canvas id="cv"></canvas>
+<div class="hint">sürükle → döndür · scroll → zoom</div>
+</div>
+</div>
+
+<script>
+(function(){
+var cvEl=document.getElementById('cv');
+var vpEl=document.getElementById('viewport');
+function sizeCV(){
+  var r=vpEl.getBoundingClientRect();
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  cvEl.width=Math.round(r.width*dpr);
+  cvEl.height=Math.round(r.height*dpr);
+  cvEl.style.width=r.width+'px';
+  cvEl.style.height=r.height+'px';
+}
+sizeCV();
+window.__cvReady=true;
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+if(!window.__cvReady){return;}
+var cv=document.getElementById('cv');
+var vpEl=document.getElementById('viewport');
+
+var ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
+ren.setPixelRatio(1);
+ren.shadowMap.enabled=true;
+ren.shadowMap.type=THREE.PCFSoftShadowMap;
+ren.setClearColor(0x1a1814,1);
+
+var sc=new THREE.Scene();
+var cam=new THREE.PerspectiveCamera(42,cv.width/cv.height,.1,200);
+var cT=.5,cP=.35,cRd=11;
+
+function uc(){
+  cam.position.set(cRd*Math.sin(cT)*Math.cos(cP),cRd*Math.sin(cP)+1,cRd*Math.cos(cT)*Math.cos(cP));
+  cam.lookAt(new THREE.Vector3(0,1,0));
+}
+uc();
+
+window.addEventListener('resize',function(){
+  var r=vpEl.getBoundingClientRect();
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);
+  cv.style.width=r.width+'px';cv.style.height=r.height+'px';
+  cam.aspect=cv.width/cv.height;cam.updateProjectionMatrix();
+});
+
+var ambL=new THREE.AmbientLight(0xffffff,.45);sc.add(ambL);
+var dirL=new THREE.DirectionalLight(0xffffff,.9);
+dirL.position.set(4,10,6);dirL.castShadow=true;
+dirL.shadow.mapSize.set(1024,1024);
+dirL.shadow.camera.near=.5;dirL.shadow.camera.far=30;
+dirL.shadow.camera.left=-8;dirL.shadow.camera.right=8;
+dirL.shadow.camera.top=8;dirL.shadow.camera.bottom=-8;
+sc.add(dirL);
+var fillL=new THREE.DirectionalLight(0xffffff,.22);
+fillL.position.set(-4,4,-5);sc.add(fillL);
+
+var floorGeo=new THREE.PlaneGeometry(30,30);
+var floorMat=new THREE.MeshStandardMaterial({color:0x1c1a16,roughness:.95});
+var floorM=new THREE.Mesh(floorGeo,floorMat);
+floorM.rotation.x=-Math.PI/2;floorM.receiveShadow=true;sc.add(floorM);
+
+var baseGeo=new THREE.CylinderGeometry(2.2,2.2,.2,48);
+var baseMat=new THREE.MeshStandardMaterial({color:0x5a3818,roughness:.88});
+var baseM=new THREE.Mesh(baseGeo,baseMat);
+baseM.position.set(0,.1,0);baseM.castShadow=true;sc.add(baseM);
+
+var CC={raw:{r:.545,g:.353,b:.169},wet:{r:.416,g:.236,b:.118},dry:{r:.690,g:.502,b:.314}};
+var G={shape:'cylinder',cd:100,ch:120,cr:45,clay:'raw',spd:40,dir:'cw',acc:60};
+var cyls=[{r:12,l:100,y:50,p:25,a:0,o:0}];
+var selCyl=0;
+var running=false,rotA=0,lastT=null;
+
+var mc=document.createElement('canvas');mc.width=1024;mc.height=512;
+var mx=mc.getContext('2d');
+var mt=new THREE.CanvasTexture(mc);
+mt.wrapS=THREE.RepeatWrapping;mt.wrapT=THREE.ClampToEdgeWrapping;
+
+function resetMarks(){
+  var c=CC[G.clay];
+  mx.fillStyle='rgb('+Math.round(c.r*255)+','+Math.round(c.g*255)+','+Math.round(c.b*255)+')';
+  mx.fillRect(0,0,1024,512);
+  mt.needsUpdate=true;
+}
+resetMarks();
+
+var clayMesh=null;
+var cylGrp=new THREE.Group();sc.add(cylGrp);
+
+function surfaceR(theta,yNorm){
+  var R=G.cd/100;
+  if(G.shape==='cylinder')return R;
+  if(G.shape==='box'){var cos=Math.abs(Math.cos(theta)),sin=Math.abs(Math.sin(theta));return R*.71/Math.max(cos,sin,.01);}
+  if(G.shape==='cone')return R*Math.max(.08,(1-yNorm*.85));
+  if(G.shape==='sphere'){var lat=(yNorm-.5)*Math.PI;return Math.max(.05,R*Math.cos(lat));}
+  if(G.shape==='torus')return R*.7+R*.35;
+  return R;
+}
+
+function clayYoff(){
+  var R=G.cd/100,H=G.ch/100;
+  if(G.shape==='sphere')return R+.2;
+  if(G.shape==='torus')return R*.7+.2;
+  return H/2+.2;
+}
+
+function clayH(){
+  var R=G.cd/100,H=G.ch/100;
+  if(G.shape==='sphere')return R*2;
+  if(G.shape==='torus')return R*.7;
+  return H;
+}
+
+function buildClay(){
+  if(clayMesh){sc.remove(clayMesh);clayMesh.geometry.dispose();}
+  var R=G.cd/100,H=G.ch/100,geo;
+  if(G.shape==='cylinder')geo=new THREE.CylinderGeometry(R,R*1.01,H,64,32);
+  else if(G.shape==='box')geo=new THREE.BoxGeometry(R*1.4,H,R*1.4,16,16,16);
+  else if(G.shape==='cone')geo=new THREE.ConeGeometry(R,H,64,32);
+  else if(G.shape==='sphere')geo=new THREE.SphereGeometry(R,64,48);
+  else if(G.shape==='torus')geo=new THREE.TorusGeometry(R*.7,R*.35,32,64);
+
+  var pos=geo.attributes.position;
+  for(var i=0;i<pos.count;i++){
+    var x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);
+    var r=Math.sqrt(x*x+z*z);
+    if(r>.02){
+      var n=(Math.sin(y*14+x*8)*.3+Math.sin(y*7-z*11)*.3+(Math.random()-.5)*.25)*G.cr/100*.04;
+      pos.setX(i,x+x/r*n);
+      pos.setZ(i,z+z/r*n);
+    }
+  }
+  pos.needsUpdate=true;geo.computeVertexNormals();
+  resetMarks();
+  var mat=new THREE.MeshStandardMaterial({map:mt,roughness:.92,bumpMap:mt,bumpScale:.008});
+  clayMesh=new THREE.Mesh(geo,mat);
+  clayMesh.position.set(0,clayYoff(),0);
+  clayMesh.castShadow=true;clayMesh.receiveShadow=true;
+  sc.add(clayMesh);
+}
+
+function cylYworld(c){
+  var yO=clayYoff(),cH=clayH();
+  return yO-cH/2+c.y/100*cH;
+}
+
+function buildCyls(){
+  while(cylGrp.children.length>0){
+    var ch=cylGrp.children[0];
+    cylGrp.remove(ch);
+  }
+
+  var cylMat=new THREE.MeshStandardMaterial({color:0x5a4020,roughness:.82,metalness:.05});
+  var capMat2=new THREE.MeshStandardMaterial({color:0x807060,roughness:.8});
+  var axMat2=new THREE.MeshStandardMaterial({color:0x999999,roughness:.5,metalness:.4});
+
+  for(var i=0;i<cyls.length;i++){
+    var c=cyls[i];
+    var SR=c.r/100*.6;
+    var cH=clayH();
+    var SL=c.l/100*cH;
+    var yNorm=c.y/100;
+    var sR=surfaceR(c.o*Math.PI/180,yNorm);
+    var off=sR+SR-c.p/100*SR*.7;
+    var baseAng=c.o*Math.PI/180;
+
+    var grp=new THREE.Group();
+
+    var cylGeo=new THREE.CylinderGeometry(SR,SR,SL,16);
+    var p2=cylGeo.attributes.position;
+    for(var vi=0;vi<p2.count;vi++){
+      var vx=p2.getX(vi),vy=p2.getY(vi),vz=p2.getZ(vi);
+      var vr=Math.sqrt(vx*vx+vz*vz);
+      if(vr>SR*.3){
+        var vn=(Math.sin(vy*20+vx*14)*.2+(Math.random()-.5)*.12)*.012;
+        var vf=(vr+vn)/Math.max(.001,vr);
+        p2.setX(vi,vx*vf);p2.setZ(vi,vz*vf);
+      }
+    }
+    p2.needsUpdate=true;cylGeo.computeVertexNormals();
+
+    var cylM=new THREE.Mesh(cylGeo,cylMat.clone());
+    cylM.castShadow=true;
+    grp.add(cylM);
+
+    var capGeo=new THREE.CylinderGeometry(SR*1.08,SR*1.08,.02,16);
+    var cap1=new THREE.Mesh(capGeo,capMat2);
+    cap1.position.set(0,SL/2,0);
+    grp.add(cap1);
+
+    var cap2=new THREE.Mesh(capGeo.clone(),capMat2);
+    cap2.position.set(0,-SL/2,0);
+    grp.add(cap2);
+
+    var axGeo=new THREE.CylinderGeometry(.015,.015,SL*1.3,6);
+    var axM=new THREE.Mesh(axGeo,axMat2);
+    grp.add(axM);
+
+    grp.position.set(Math.cos(baseAng)*off, cylYworld(c), Math.sin(baseAng)*off);
+    grp.rotation.z=c.a*Math.PI/180;
+    grp.userData={idx:i};
+    cylGrp.add(grp);
+  }
+}
+
+function build(){buildClay();buildCyls();}
+
+function paintMark(ang,yNormCenter,cylLenNorm,cylR){
+  var c=CC[G.clay];
+  var u=((ang/(Math.PI*2))%1+1)%1;
+  var x=u*1024;
+  var halfLen=cylLenNorm/2;
+  var yTop=Math.max(0,(yNormCenter-halfLen));
+  var yBot=Math.min(1,(yNormCenter+halfLen));
+  var yTopPx=yTop*512;
+  var yBotPx=yBot*512;
+  var stripH=Math.max(4,yBotPx-yTopPx);
+  var mw=Math.max(2,cylR*5*G.acc/100);
+
+  var darkR=Math.round(c.r*150),darkG=Math.round(c.g*150),darkB=Math.round(c.b*150);
+  var lightR=Math.round(Math.min(255,c.r*320)),lightG=Math.round(Math.min(255,c.g*320)),lightB=Math.round(Math.min(255,c.b*320));
+
+  mx.globalAlpha=.12+G.acc/100*.25;
+  mx.strokeStyle='rgb('+darkR+','+darkG+','+darkB+')';
+  mx.lineWidth=mw;mx.lineCap='round';
+  mx.beginPath();
+  mx.moveTo(x+(Math.random()-.5)*2,yTopPx);
+  mx.lineTo(x+(Math.random()-.5)*2,yBotPx);
+  mx.stroke();
+
+  mx.globalAlpha=.05+G.acc/100*.08;
+  mx.strokeStyle='rgb('+lightR+','+lightG+','+lightB+')';
+  mx.lineWidth=mw*.3;
+  mx.beginPath();
+  mx.moveTo(x+mw*.35,yTopPx+stripH*.1);
+  mx.lineTo(x+mw*.35,yBotPx-stripH*.1);
+  mx.stroke();
+
+  var grooves=Math.round(2+G.acc/100*4);
+  for(var gi=0;gi<grooves;gi++){
+    var gy=yTopPx+Math.random()*stripH;
+    mx.globalAlpha=.06+Math.random()*.1;
+    mx.strokeStyle='rgb('+darkR+','+darkG+','+darkB+')';
+    mx.lineWidth=.5+Math.random()*1.5;
+    mx.beginPath();
+    mx.moveTo(x-mw*.8,gy);
+    mx.lineTo(x+mw*.8,gy);
+    mx.stroke();
+  }
+
+  mx.globalAlpha=1;
+  mt.needsUpdate=true;
+}
+
+function renderCylList(){
+  var el=document.getElementById('cyl-list');el.innerHTML='';
+  for(var i=0;i<cyls.length;i++){
+    (function(idx){
+      var c=cyls[idx];
+      var d=document.createElement('div');
+      d.className='cyl-item'+(idx===selCyl?' sel':'');
+      var left=document.createElement('span');
+      left.className='nm';left.textContent='silindir '+(idx+1);
+      d.appendChild(left);
+      var info=document.createElement('span');
+      info.style.cssText='font-size:10px;color:#776';
+      info.textContent='r:'+c.r+' θ:'+c.o+'°';
+      d.appendChild(info);
+      if(cyls.length>1){
+        var del=document.createElement('button');
+        del.className='del-btn';del.textContent='✕';
+        del.addEventListener('click',function(e){
+          e.stopPropagation();
+          cyls.splice(idx,1);
+          if(selCyl>=cyls.length)selCyl=cyls.length-1;
+          renderCylList();showCylEdit();buildCyls();
+        });
+        d.appendChild(del);
+      }
+      d.addEventListener('click',function(){selCyl=idx;renderCylList();showCylEdit();});
+      el.appendChild(d);
+    })(i);
+  }
+}
+
+function showCylEdit(){
+  var el=document.getElementById('cyl-edit');
+  if(cyls.length===0){el.style.display='none';return;}
+  el.style.display='block';
+  var c=cyls[selCyl];
+  document.getElementById('cyl-edit-title').textContent='silindir '+(selCyl+1)+' ayarları';
+  document.getElementById('ce-sr').value=c.r;document.getElementById('ce-r').textContent=c.r;
+  document.getElementById('ce-sl').value=c.l;document.getElementById('ce-l').textContent=c.l;
+  document.getElementById('ce-sy').value=c.y;document.getElementById('ce-y').textContent=c.y;
+  document.getElementById('ce-sp').value=c.p;document.getElementById('ce-p').textContent=c.p;
+  document.getElementById('ce-sa').value=c.a;document.getElementById('ce-a').textContent=c.a;
+  document.getElementById('ce-so').value=c.o;document.getElementById('ce-o').textContent=c.o;
+}
+
+document.getElementById('add-cyl').addEventListener('click',function(){
+  var newO=cyls.length>0?(cyls[cyls.length-1].o+90)%360:0;
+  cyls.push({r:12,l:100,y:50,p:25,a:0,o:newO});
+  selCyl=cyls.length-1;
+  renderCylList();showCylEdit();buildCyls();
+});
+
+var ceMap=[['ce-sr','r','ce-r'],['ce-sl','l','ce-l'],['ce-sy','y','ce-y'],['ce-sp','p','ce-p'],['ce-sa','a','ce-a'],['ce-so','o','ce-o']];
+for(var mi=0;mi<ceMap.length;mi++){
+  (function(m){
+    document.getElementById(m[0]).addEventListener('input',function(){
+      cyls[selCyl][m[1]]=+this.value;
+      document.getElementById(m[2]).textContent=this.value;
+      buildCyls();
+    });
+  })(ceMap[mi]);
+}
+
+renderCylList();showCylEdit();
+
+var gMap=[['s-cd','cd','d-cd',true],['s-ch','ch','d-ch',true],['s-cr','cr','d-cr',true],['s-spd','spd','d-spd',false],['s-acc','acc','d-acc',false]];
+for(var gi=0;gi<gMap.length;gi++){
+  (function(m){
+    document.getElementById(m[0]).addEventListener('input',function(){
+      G[m[1]]=+this.value;
+      document.getElementById(m[2]).textContent=this.value;
+      if(m[3])build();
+    });
+  })(gMap[gi]);
+}
+
+document.getElementById('p-shape').addEventListener('change',function(){G.shape=this.value;build();});
+
+var clayBtns=document.querySelectorAll('[data-c]');
+for(var ci=0;ci<clayBtns.length;ci++){
+  clayBtns[ci].addEventListener('click',function(){
+    for(var j=0;j<clayBtns.length;j++)clayBtns[j].classList.remove('on');
+    this.classList.add('on');G.clay=this.dataset.c;build();
+  });
+}
+
+var dirBtns=document.querySelectorAll('[data-d]');
+for(var di=0;di<dirBtns.length;di++){
+  dirBtns[di].addEventListener('click',function(){
+    for(var j=0;j<dirBtns.length;j++)dirBtns[j].classList.remove('on');
+    this.classList.add('on');G.dir=this.dataset.d;
+  });
+}
+
+document.getElementById('go').addEventListener('click',function(){
+  running=!running;
+  this.textContent=running?'⏸ duraklat':'▶ başlat';
+});
+document.getElementById('clr').addEventListener('click',function(){resetMarks();});
+document.getElementById('sv').addEventListener('click',function(){
+  ren.render(sc,cam);
+  var a=document.createElement('a');
+  a.href=cv.toDataURL('image/png');
+  a.download='hayat_doner.png';a.click();
+});
+
+var fN=0;
+function tick(ts){
+  requestAnimationFrame(tick);
+  if(running){
+    if(lastT===null)lastT=ts;
+    var dt=Math.min((ts-lastT)/1000,.05);
+    lastT=ts;
+    var omega=(G.spd/100)*2.5*(G.dir==='cw'?1:-1);
+    rotA+=omega*dt;
+
+    for(var ci2=0;ci2<cylGrp.children.length;ci2++){
+      var grp=cylGrp.children[ci2];
+      if(!grp.userData||grp.userData.idx===undefined)continue;
+      var idx=grp.userData.idx;
+      if(idx>=cyls.length)continue;
+      var c=cyls[idx];
+      var SR=c.r/100*.6;
+      var yNorm=c.y/100;
+      var curAng=c.o*Math.PI/180+rotA;
+      var sR=surfaceR(curAng,yNorm);
+      var off=sR+SR-c.p/100*SR*.7;
+
+      grp.position.set(Math.cos(curAng)*off, cylYworld(c), Math.sin(curAng)*off);
+
+      if(grp.children[0])grp.children[0].rotation.y-=omega*dt*3;
+
+      if(fN%2===0){
+        var cylLenNorm=c.l/100;
+        paintMark(curAng,yNorm,cylLenNorm,c.r/100);
+      }
+    }
+  }else{lastT=null;}
+  fN++;
+  ren.render(sc,cam);
+}
+requestAnimationFrame(tick);
+
+var drag=false,pmx=0,pmy=0;
+cv.addEventListener('mousedown',function(e){drag=true;pmx=e.clientX;pmy=e.clientY;cv.style.cursor='grabbing';});
+window.addEventListener('mouseup',function(){drag=false;cv.style.cursor='grab';});
+window.addEventListener('mousemove',function(e){
+  if(!drag)return;
+  cT-=(e.clientX-pmx)*.013;
+  cP=Math.max(-.05,Math.min(1.35,cP+(e.clientY-pmy)*.013));
+  pmx=e.clientX;pmy=e.clientY;uc();
+});
+cv.addEventListener('wheel',function(e){cRd=Math.max(3,Math.min(20,cRd+e.deltaY*.015));uc();e.preventDefault();},{passive:false});
+cv.addEventListener('touchstart',function(e){pmx=e.touches[0].clientX;pmy=e.touches[0].clientY;e.preventDefault();},{passive:false});
+cv.addEventListener('touchmove',function(e){
+  cT-=(e.touches[0].clientX-pmx)*.013;
+  cP=Math.max(-.05,Math.min(1.35,cP+(e.touches[0].clientY-pmy)*.013));
+  pmx=e.touches[0].clientX;pmy=e.touches[0].clientY;uc();e.preventDefault();
+},{passive:false});
+
+build();
+})();
+</script>
+</body></html>

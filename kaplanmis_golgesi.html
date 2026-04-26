@@ -1,0 +1,392 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.wrap{display:flex;height:580px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;}
+.panel{width:190px;min-width:190px;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);overflow-y:auto;display:flex;flex-direction:column;}
+.sec{padding:9px 11px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.sec-title{font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:0.05em;margin-bottom:7px;}
+.obj-grid,.brush-grid,.mat-grid{display:grid;gap:4px;}
+.obj-grid{grid-template-columns:1fr 1fr;}
+.brush-grid{grid-template-columns:1fr 1fr;}
+.mat-grid{grid-template-columns:1fr 1fr 1fr;}
+.btn{padding:6px 3px;font-size:11px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;text-align:center;width:100%;}
+.btn.active{border-color:var(--color-text-primary);color:var(--color-text-primary);background:var(--color-background-tertiary);font-weight:500;}
+.ctrl{margin-bottom:7px;}
+.ctrl label{font-size:11px;color:var(--color-text-secondary);display:flex;justify-content:space-between;margin-bottom:2px;}
+.ctrl label span{font-weight:500;color:var(--color-text-primary);}
+.ctrl input[type=range]{width:100%;}
+.act{width:100%;padding:7px;font-size:11px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:transparent;color:var(--color-text-primary);cursor:pointer;margin-bottom:4px;text-align:left;}
+.act.red{color:#c0392b;}
+.spacer{flex:1;}
+#cv-wrap{flex:1;position:relative;overflow:hidden;}
+#cv-wrap canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important;}
+.hint{position:absolute;bottom:8px;left:8px;font-size:10px;color:var(--color-text-tertiary);background:var(--color-background-secondary);padding:3px 8px;border-radius:4px;opacity:0.9;pointer-events:none;}
+</style>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">obje</div>
+      <div class="obj-grid">
+        <button class="btn active" data-obj="sphere">küre</button>
+        <button class="btn" data-obj="box">kutu</button>
+        <button class="btn" data-obj="cylinder">silindir</button>
+        <button class="btn" data-obj="torus">halka</button>
+        <button class="btn" data-obj="cone">koni</button>
+        <button class="btn" data-obj="torusknot">düğüm</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">kağıt türü</div>
+      <div class="brush-grid">
+        <button class="btn active" data-brush="strip">şerit</button>
+        <button class="btn" data-brush="patch">yama</button>
+        <button class="btn" data-brush="thin">ince</button>
+        <button class="btn" data-brush="crumple">buruşuk</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">malzeme</div>
+      <div class="mat-grid">
+        <button class="btn active" data-mat="paper">kağıt</button>
+        <button class="btn" data-mat="alci">alçı</button>
+        <button class="btn" data-mat="murekkep">mürek.</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">ayarlar</div>
+      <div class="ctrl"><label>boyut <span id="v-sz">35</span></label><input type="range" id="s-sz" min="8" max="75" value="35" step="1"></div>
+      <div class="ctrl"><label>opaklık <span id="v-op">80</span>%</label><input type="range" id="s-op" min="20" max="100" value="80" step="1"></div>
+      <div class="ctrl"><label>kıvrım <span id="v-cv">55</span>%</label><input type="range" id="s-cv" min="0" max="100" value="55" step="1"></div>
+      <div class="ctrl"><label>dağılım <span id="v-sp">50</span>%</label><input type="range" id="s-sp" min="10" max="100" value="50" step="1"></div>
+      <div class="ctrl"><label>yoğunluk <span id="v-den">4</span></label><input type="range" id="s-den" min="1" max="10" value="4" step="1"></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="sec">
+      <button class="act" id="btn-top">kaydet — üstten</button>
+      <button class="act" id="btn-3d">kaydet — 3B</button>
+      <button class="act red" id="btn-clear">izi temizle</button>
+    </div>
+  </div>
+  <div id="cv-wrap">
+    <div class="hint">sol tık sürükle → iz &nbsp;·&nbsp; sağ tık sürükle → kamera</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const dark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+const cvWrap = document.getElementById('cv-wrap');
+
+const renderer = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+cvWrap.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(dark ? 0x1a1814 : 0xeae6dc);
+
+const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 100);
+let camT=0.5, camP=0.32, camR=10;
+
+function updateCam(){
+  camera.position.set(
+    camR*Math.sin(camT)*Math.cos(camP),
+    camR*Math.sin(camP),
+    camR*Math.cos(camT)*Math.cos(camP)
+  );
+  camera.lookAt(0, 0.8, 0);
+}
+
+function resize(){
+  const W = cvWrap.clientWidth;
+  const H = cvWrap.clientHeight;
+  if(W===0||H===0) return;
+  renderer.setSize(W, H, false);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  camera.aspect = W/H;
+  camera.updateProjectionMatrix();
+}
+
+setTimeout(resize, 60);
+window.addEventListener('resize', resize);
+
+updateCam();
+
+scene.add(new THREE.AmbientLight(0xffffff, dark?0.5:0.7));
+const sun = new THREE.DirectionalLight(0xffffff, dark?0.85:1.05);
+sun.position.set(5,9,6); sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.near=0.5; sun.shadow.camera.far=30;
+sun.shadow.camera.left=-8; sun.shadow.camera.right=8;
+sun.shadow.camera.top=8; sun.shadow.camera.bottom=-8;
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff,0.22);
+fill.position.set(-4,3,-5); scene.add(fill);
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(30,30),
+  new THREE.MeshStandardMaterial({color:dark?0x1c1a16:0xe0dbd0,roughness:0.95})
+);
+floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+
+const traceGroup = new THREE.Group(); scene.add(traceGroup);
+const paperPreview = new THREE.Group(); scene.add(paperPreview);
+
+let currentObj = null;
+const state = {obj:'sphere',brush:'strip',mat:'paper',sz:35,op:80,cv:55,sp:50,den:4};
+
+function buildObj(){
+  if(currentObj){ scene.remove(currentObj); currentObj=null; }
+  const mat = new THREE.MeshStandardMaterial({color:dark?0x706050:0x907560,roughness:0.8,metalness:0.02});
+  let geo;
+  if(state.obj==='sphere')    geo = new THREE.SphereGeometry(1.3,64,48);
+  else if(state.obj==='box')  geo = new THREE.BoxGeometry(1.8,1.8,1.8,4,4,4);
+  else if(state.obj==='cylinder') geo = new THREE.CylinderGeometry(0.9,0.9,2.2,48,8);
+  else if(state.obj==='torus')    geo = new THREE.TorusGeometry(0.9,0.45,32,64);
+  else if(state.obj==='cone')     geo = new THREE.ConeGeometry(1.0,2.2,48,8);
+  else if(state.obj==='torusknot')geo = new THREE.TorusKnotGeometry(0.7,0.28,128,16);
+  currentObj = new THREE.Mesh(geo, mat);
+  currentObj.position.y = 2.4;
+  currentObj.castShadow = true;
+  scene.add(currentObj);
+}
+buildObj();
+
+function getMC(){
+  const m = state.mat;
+  if(m==='paper')    return {fill:dark?0xd4d0c8:0xf6f2e8, line:dark?0x909088:0xb0a898, op:state.op/100};
+  if(m==='alci')     return {fill:dark?0xb4aca0:0xddd6c8, line:dark?0x807870:0x908878, op:state.op/100*0.95};
+  return                    {fill:dark?0x141210:0x0c0a08, line:dark?0x282018:0x080402, op:state.op/100*0.85};
+}
+
+function seededR(seed){
+  let s=seed%2147483647; if(s<=0) s+=2147483646;
+  return ()=>{ s=s*16807%2147483647; return (s-1)/2147483646; };
+}
+
+let callIdx=0;
+function spawnTrace(hitPt){
+  const mc=getMC();
+  const sz=state.sz/100;
+  const cv=state.cv/100;
+  const sp=state.sp/100;
+  const brush=state.brush;
+  const rand=seededR(Date.now()%9999 + callIdx*137);
+
+  const dir=hitPt.clone().sub(currentObj.position).normalize();
+  const theta=Math.atan2(dir.z,dir.x);
+  const phi=Math.asin(Math.max(-1,Math.min(1,dir.y)));
+  const spreadR=(2.0+sp*2.2)*Math.sin(Math.abs(phi)*0.7+0.35);
+  const cx=Math.cos(theta)*spreadR*(0.65+sp*0.5);
+  const cz=Math.sin(theta)*spreadR*(0.65+sp*0.5);
+  const angle=theta+Math.PI/2+(rand()-0.5)*0.6;
+
+  let verts=[],uvs=[],idx=[];
+  const segs=brush==='thin'?8:16;
+  const isGrid=(brush==='patch'||brush==='crumple');
+
+  if(!isGrid){
+    const W2=sz*(brush==='thin'?0.22:0.85);
+    const H2=sz*(brush==='thin'?2.8:2.1);
+    for(let i=0;i<=segs;i++){
+      const t=i/segs-0.5;
+      const warp=cv*0.22*(1-4*t*t);
+      const wobble=(rand()-0.5)*cv*0.06;
+      const fx=cx+Math.cos(angle)*t*H2;
+      const fz=cz+Math.sin(angle)*t*H2;
+      const fy=Math.max(0.005,warp*0.2+Math.abs(wobble));
+      const hw=W2*0.5*(0.3+0.7*Math.pow(Math.max(0,Math.cos(t*Math.PI)),0.5));
+      const px=Math.cos(angle+Math.PI/2)*hw, pz=Math.sin(angle+Math.PI/2)*hw;
+      verts.push(fx+px,fy,fz+pz, fx-px,fy,fz-pz);
+      uvs.push(0,t+0.5, 1,t+0.5);
+    }
+    for(let i=0;i<segs;i++){
+      const a=i*2,b=i*2+1,c=(i+1)*2,d=(i+1)*2+1;
+      idx.push(a,b,c,b,d,c);
+    }
+    // kenar çizgileri
+    const ep1=[],ep2=[];
+    for(let i=0;i<=segs;i++){
+      const b=i*6;
+      ep1.push(new THREE.Vector3(verts[b],verts[b+1]+0.005,verts[b+2]));
+      ep2.push(new THREE.Vector3(verts[b+3],verts[b+4]+0.005,verts[b+5]));
+    }
+    [ep1,ep2].forEach(ep=>{
+      traceGroup.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(ep),
+        new THREE.LineBasicMaterial({color:mc.line,transparent:true,opacity:0.3})
+      ));
+    });
+  } else {
+    const S=sz*1.3;
+    for(let i=0;i<=segs;i++){
+      for(let j=0;j<=segs;j++){
+        const tx=j/segs-0.5, tz=i/segs-0.5;
+        let ny,nx,nz;
+        if(brush==='crumple'){
+          const c=(rand()-0.5)*cv*0.45;
+          nx=cx+tx*S+c*0.3; nz=cz+tz*S+c*0.2;
+          ny=Math.max(0.005,Math.abs(c)*0.4+cv*0.08*rand());
+        } else {
+          const warp=cv*0.18*(1-4*tx*tx)*(1-4*tz*tz);
+          nx=cx+tx*S; nz=cz+tz*S;
+          ny=Math.max(0.005,warp*0.22+(rand()-0.5)*cv*0.03);
+        }
+        verts.push(nx,ny,nz); uvs.push(j/segs,i/segs);
+      }
+    }
+    for(let i=0;i<segs;i++){
+      for(let j=0;j<segs;j++){
+        const a=i*(segs+1)+j,b=a+1,c=(i+1)*(segs+1)+j,d=c+1;
+        idx.push(a,b,c,b,d,c);
+      }
+    }
+  }
+
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+
+  const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({
+    color:mc.fill,roughness:0.9,side:THREE.DoubleSide,transparent:true,opacity:mc.op
+  }));
+  mesh.receiveShadow=true;
+  traceGroup.add(mesh);
+
+  if(state.mat!=='paper'){
+    const lc=Math.round(3+state.den*1.5);
+    for(let li=0;li<lc;li++){
+      const ax=cx+(rand()-0.5)*sz*0.95,az=cz+(rand()-0.5)*sz*0.95;
+      const bx=cx+(rand()-0.5)*sz*0.95,bz=cz+(rand()-0.5)*sz*0.95;
+      traceGroup.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(ax,0.009,az),new THREE.Vector3(bx,0.009,bz)]),
+        new THREE.LineBasicMaterial({color:mc.line,transparent:true,opacity:0.15+rand()*0.28})
+      ));
+    }
+  }
+
+  traceGroup.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([hitPt.clone(),new THREE.Vector3(cx,0.007,cz)]),
+    new THREE.LineBasicMaterial({color:mc.line,transparent:true,opacity:0.12})
+  ));
+  callIdx++;
+}
+
+function updatePreview(hit){
+  while(paperPreview.children.length) paperPreview.remove(paperPreview.children[0]);
+  if(!hit) return;
+  const n=hit.point.clone().sub(currentObj.position).normalize();
+  const sz=state.sz/100*1.2;
+  const geo=(state.brush==='patch'||state.brush==='crumple')
+    ? new THREE.PlaneGeometry(sz,sz,2,2)
+    : new THREE.PlaneGeometry(sz*0.6,sz*2.0,2,6);
+  const mc=getMC();
+  const pm=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:mc.fill,transparent:true,opacity:0.45,side:THREE.DoubleSide}));
+  pm.position.copy(hit.point.clone().addScaledVector(n,0.05));
+  pm.lookAt(currentObj.position);
+  paperPreview.add(pm);
+  const el2=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(sz*(state.brush==='patch'||state.brush==='crumple'?1:0.6),sz*(state.brush==='patch'||state.brush==='crumple'?1:2.0),1,1)),
+    new THREE.LineBasicMaterial({color:mc.line,transparent:true,opacity:0.55})
+  );
+  el2.position.copy(pm.position); el2.quaternion.copy(pm.quaternion);
+  paperPreview.add(el2);
+}
+
+const raycaster=new THREE.Raycaster();
+let leftDown=false,rightDown=false,prevMx=0,prevMy=0,throttle=0;
+const el=renderer.domElement;
+el.addEventListener('contextmenu',e=>e.preventDefault());
+
+function getNDC(cx,cy){
+  const r=el.getBoundingClientRect();
+  return new THREE.Vector2(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1);
+}
+function tryHit(mx,my){
+  raycaster.setFromCamera(getNDC(mx,my),camera);
+  if(!currentObj) return null;
+  const hits=raycaster.intersectObject(currentObj,true);
+  return hits.length>0?hits[0]:null;
+}
+
+el.addEventListener('mousedown',e=>{
+  if(e.button===0) leftDown=true;
+  if(e.button===2) rightDown=true;
+  prevMx=e.clientX; prevMy=e.clientY;
+});
+window.addEventListener('mouseup',e=>{
+  if(e.button===0){ leftDown=false; while(paperPreview.children.length) paperPreview.remove(paperPreview.children[0]); }
+  if(e.button===2) rightDown=false;
+});
+window.addEventListener('mousemove',e=>{
+  if(rightDown){
+    camT-=(e.clientX-prevMx)*0.013;
+    camP=Math.max(-0.05,Math.min(1.35,camP+(e.clientY-prevMy)*0.013));
+    prevMx=e.clientX; prevMy=e.clientY; updateCam(); return;
+  }
+  const hit=tryHit(e.clientX,e.clientY);
+  el.style.cursor=hit?'crosshair':'grab';
+  updatePreview(hit||null);
+  if(hit&&leftDown){
+    throttle++;
+    if(throttle%Math.max(1,Math.round(11-state.den))===0) spawnTrace(hit.point);
+  }
+  prevMx=e.clientX; prevMy=e.clientY;
+});
+el.addEventListener('wheel',e=>{
+  camR=Math.max(3,Math.min(18,camR+e.deltaY*0.013));
+  updateCam(); e.preventDefault();
+},{passive:false});
+let t0={x:0,y:0};
+el.addEventListener('touchstart',e=>{ t0={x:e.touches[0].clientX,y:e.touches[0].clientY}; e.preventDefault(); },{passive:false});
+el.addEventListener('touchend',()=>{ while(paperPreview.children.length) paperPreview.remove(paperPreview.children[0]); },{passive:false});
+el.addEventListener('touchmove',e=>{
+  const tc=e.touches[0];
+  const hit=tryHit(tc.clientX,tc.clientY);
+  if(hit){ updatePreview(hit); spawnTrace(hit.point); }
+  t0={x:tc.clientX,y:tc.clientY}; e.preventDefault();
+},{passive:false});
+
+document.querySelectorAll('[data-obj]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-obj]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); state.obj=b.dataset.obj;
+    buildObj(); while(traceGroup.children.length) traceGroup.remove(traceGroup.children[0]);
+  });
+});
+document.querySelectorAll('[data-brush]').forEach(b=>{
+  b.addEventListener('click',()=>{ document.querySelectorAll('[data-brush]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.brush=b.dataset.brush; });
+});
+document.querySelectorAll('[data-mat]').forEach(b=>{
+  b.addEventListener('click',()=>{ document.querySelectorAll('[data-mat]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.mat=b.dataset.mat; });
+});
+[['s-sz','sz','v-sz'],['s-op','op','v-op'],['s-cv','cv','v-cv'],['s-sp','sp','v-sp'],['s-den','den','v-den']].forEach(([sid,key,lid])=>{
+  document.getElementById(sid).addEventListener('input',function(){ state[key]=+this.value; document.getElementById(lid).textContent=this.value; });
+});
+
+document.getElementById('btn-top').addEventListener('click',()=>{
+  const pT=camT,pP=camP,pR=camR;
+  camT=0; camP=Math.PI/2-0.001; camR=9;
+  camera.position.set(0,9,0.01); camera.lookAt(0,0,0);
+  if(currentObj) currentObj.visible=false;
+  renderer.render(scene,camera);
+  const url=renderer.domElement.toDataURL('image/png');
+  if(currentObj) currentObj.visible=true;
+  camT=pT; camP=pP; camR=pR; updateCam();
+  const a=document.createElement('a'); a.href=url; a.download='iz_ustten.png'; a.click();
+});
+document.getElementById('btn-3d').addEventListener('click',()=>{
+  renderer.render(scene,camera);
+  const a=document.createElement('a'); a.href=renderer.domElement.toDataURL('image/png'); a.download='iz_3b.png'; a.click();
+});
+document.getElementById('btn-clear').addEventListener('click',()=>{
+  while(traceGroup.children.length) traceGroup.remove(traceGroup.children[0]);
+});
+
+(function animate(){ requestAnimationFrame(animate); renderer.render(scene,camera); })();
+})();
+</script>
