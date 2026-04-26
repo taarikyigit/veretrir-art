@@ -167,56 +167,6 @@ function buildGallery() {
     div.addEventListener('click', () => openLightbox(idx));
     grid.appendChild(div);
   });
-  
-  // Apply masonry after images load
-  imagesLoaded(grid, () => {
-    resizeMasonryItems();
-  });
-}
-
-// Simple imagesLoaded helper
-function imagesLoaded(container, callback) {
-  const images = container.querySelectorAll('img');
-  let loaded = 0;
-  const total = images.length;
-  
-  if (total === 0) {
-    callback();
-    return;
-  }
-  
-  images.forEach(img => {
-    if (img.complete) {
-      loaded++;
-      if (loaded === total) callback();
-    } else {
-      img.addEventListener('load', () => {
-        loaded++;
-        if (loaded === total) callback();
-      });
-      img.addEventListener('error', () => {
-        loaded++;
-        if (loaded === total) callback();
-      });
-    }
-  });
-}
-
-// Masonry layout using CSS Grid with span calculation
-function resizeMasonryItems() {
-  const grid = document.getElementById('gallery');
-  const items = grid.querySelectorAll('.gallery-item');
-  const rowHeight = 10; // grid-auto-rows value
-  const gap = 20; // grid gap
-  
-  items.forEach(item => {
-    const img = item.querySelector('img');
-    if (img && img.naturalHeight) {
-      const contentHeight = item.getBoundingClientRect().height;
-      const rowSpan = Math.ceil((contentHeight + gap) / (rowHeight + gap));
-      item.style.gridRowEnd = `span ${rowSpan}`;
-    }
-  });
 }
 
 /* ════════════════════════════════════════════
@@ -281,7 +231,56 @@ function renderLightbox() {
     </div>
   `;
   
+  // Additional images (excluding main)
+  if (aw.images && aw.images.length > 1) {
+    const additionalImgs = aw.images.filter(img => img.path !== mainImg);
+    if (additionalImgs.length > 0) {
+      html += '<div class="lightbox-gallery">';
+      additionalImgs.forEach(img => {
+        html += `<img src="${escapeHtml(img.path)}" alt="${escapeHtml(title)}">`;
+      });
+      html += '</div>';
+    }
+  }
+  
+  // Materials section
+  if (aw.materials && aw.materials.length > 0) {
+    const visibleMaterials = aw.materials.filter(m => m.type !== '3d-model');
+    if (visibleMaterials.length > 0) {
+      html += `<div class="lightbox-materials">`;
+      
+      visibleMaterials.forEach(mat => {
+        const label = mat.label || '';
+        const matContent = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
+        
+        html += `<div class="material-section">`;
+        if (label) {
+          html += `<div class="material-label">${escapeHtml(label)}</div>`;
+        }
+        
+        if (mat.type === 'image-gallery' && mat.images && mat.images.length > 0) {
+          html += '<div class="material-images">';
+          mat.images.forEach(img => {
+            html += `<img src="${escapeHtml(img.path)}" alt="">`;
+          });
+          html += '</div>';
+        } else if (mat.type === 'text' && matContent) {
+          html += `<div class="material-text">${formatDesc(matContent)}</div>`;
+        } else if (mat.type === 'video' && mat.path) {
+          html += `<video controls style="max-width:100%;"><source src="${escapeHtml(mat.path)}"></video>`;
+        }
+        
+        html += '</div>';
+      });
+      
+      html += '</div>';
+    }
+  }
+  
   content.innerHTML = html;
+  
+  // Scroll to top when opening new artwork
+  document.getElementById('lightbox').scrollTop = 0;
 }
 
 function formatDesc(text) {
@@ -449,11 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'ArrowLeft') navLightbox(-1);
       if (e.key === 'ArrowRight') navLightbox(1);
     }
-  });
-  
-  // Recalculate masonry on resize
-  window.addEventListener('resize', () => {
-    resizeMasonryItems();
   });
 });
   </script>
