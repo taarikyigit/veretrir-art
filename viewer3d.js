@@ -1,129 +1,171 @@
-/* ═══════════════════════════════════════════════════════════════════
-   VIEWER3D.JS — Three.js 3D model viewer
-   Loads .glb files, supports rotate/zoom, optional fullscreen
-═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   viewer3d.js — Three.js 3D Model Viewer Class
+   Compatible with index.html lightbox
+═══════════════════════════════════════════════════════════════ */
 
-/* Three.js is loaded from CDN in artworks.html when a model is present.
-   This file sets up the viewer when openViewer() is called.           */
-
-let _viewer = null;
-
-function openViewer(modelPath) {
-  if (!modelPath) return;
-  const overlay = document.getElementById('viewerOverlay');
-  overlay.classList.add('open');
-
-  // Lazy-load Three.js + GLTFLoader if not already present
-  if (typeof THREE === 'undefined') {
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', () => {
-      loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', () => {
-        loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js', () => {
-          initViewer(modelPath);
-        });
-      });
-    });
-  } else {
-    initViewer(modelPath);
-  }
-}
-
-function closeViewer() {
-  const overlay = document.getElementById('viewerOverlay');
-  overlay.classList.remove('open');
-  if (_viewer) {
-    cancelAnimationFrame(_viewer.raf);
-    _viewer.renderer.dispose();
-    _viewer = null;
-    const canvas = document.getElementById('viewer3d');
-    canvas.getContext('webgl') && canvas.getContext('webgl').getExtension('WEBGL_lose_context')?.loseContext();
-  }
-}
-
-function initViewer(modelPath) {
-  const canvas = document.getElementById('viewer3d');
-  const W = canvas.clientWidth || window.innerWidth;
-  const H = canvas.clientHeight || window.innerHeight;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-  renderer.setSize(W, H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
-
-  const scene  = new THREE.Scene();
-  scene.background = new THREE.Color(0x0a0a0a);
-
-  const camera = new THREE.PerspectiveCamera(40, W/H, 0.01, 1000);
-  camera.position.set(0, 0, 3);
-
-  // lights
-  const ambL = new THREE.AmbientLight(0xffffff, 0.6);
-  scene.add(ambL);
-  const dirL = new THREE.DirectionalLight(0xffffff, 1.2);
-  dirL.position.set(5, 8, 6);
-  scene.add(dirL);
-  const fillL = new THREE.DirectionalLight(0xd0ccc0, 0.4);
-  fillL.position.set(-4, -2, -4);
-  scene.add(fillL);
-
-  // orbit controls
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.minDistance = 0.5;
-  controls.maxDistance = 20;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.6;
-
-  // load model
-  const loader = new THREE.GLTFLoader();
-  loader.load(
-    modelPath,
-    gltf => {
-      const model = gltf.scene;
-      // center + fit
-      const box = new THREE.Box3().setFromObject(model);
-      const center = box.getCenter(new THREE.Vector3());
-      const size   = box.getSize(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z);
-      model.position.sub(center);
-      const scale  = 1.8 / maxDim;
-      model.scale.setScalar(scale);
-      scene.add(model);
-      camera.position.set(0, 0, 2.5);
-      controls.update();
-    },
-    undefined,
-    err => {
-      console.warn('3D model could not be loaded:', modelPath, err);
+class Viewer3D {
+  constructor(canvasId, modelPath) {
+    this.canvas = document.getElementById(canvasId);
+    if (!this.canvas) {
+      console.error('Canvas not found:', canvasId);
+      return;
     }
-  );
-
-  // animate loop
-  function loop() {
-    _viewer.raf = requestAnimationFrame(loop);
-    controls.update();
-    renderer.render(scene, camera);
+    
+    this.modelPath = modelPath;
+    this.animationId = null;
+    
+    this.init();
+    this.loadModel();
+    this.animate();
   }
-
-  // resize
-  window.addEventListener('resize', () => {
-    if (!_viewer) return;
-    const W2 = canvas.clientWidth || window.innerWidth;
-    const H2 = canvas.clientHeight || window.innerHeight;
-    camera.aspect = W2 / H2;
-    camera.updateProjectionMatrix();
-    renderer.setSize(W2, H2);
-  });
-
-  _viewer = { renderer, raf:null };
-  loop();
-}
-
-function loadScript(src, cb) {
-  const s = document.createElement('script');
-  s.src = src;
-  s.onload = cb;
-  document.head.appendChild(s);
+  
+  init() {
+    const W = this.canvas.parentElement.clientWidth || 600;
+    const H = this.canvas.parentElement.clientHeight || 500;
+    
+    // Scene
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xf5f5f5);
+    
+    // Camera
+    this.camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
+    this.camera.position.set(0, 1, 3);
+    
+    // Renderer
+    this.renderer = new THREE.WebGLRenderer({ 
+      canvas: this.canvas, 
+      antialias: true 
+    });
+    this.renderer.setSize(W, H);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    
+    // Controls
+    this.controls = new THREE.OrbitControls(this.camera, this.canvas);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.minDistance = 1;
+    this.controls.maxDistance = 10;
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    this.scene.add(ambientLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(5, 10, 7.5);
+    this.scene.add(directionalLight);
+    
+    const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    backLight.position.set(-5, 5, -5);
+    this.scene.add(backLight);
+    
+    // Handle resize
+    this.onResize = () => {
+      const W = this.canvas.parentElement.clientWidth || 600;
+      const H = this.canvas.parentElement.clientHeight || 500;
+      this.camera.aspect = W / H;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(W, H);
+    };
+    window.addEventListener('resize', this.onResize);
+  }
+  
+  loadModel() {
+    const ext = this.modelPath.split('.').pop().toLowerCase();
+    
+    if (ext === 'glb' || ext === 'gltf') {
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        this.modelPath,
+        (gltf) => {
+          this.model = gltf.scene;
+          this.centerAndScaleModel();
+          this.scene.add(this.model);
+        },
+        undefined,
+        (error) => console.error('Error loading GLTF:', error)
+      );
+    } else if (ext === 'obj') {
+      const loader = new THREE.OBJLoader();
+      loader.load(
+        this.modelPath,
+        (obj) => {
+          this.model = obj;
+          this.centerAndScaleModel();
+          this.scene.add(this.model);
+        },
+        undefined,
+        (error) => console.error('Error loading OBJ:', error)
+      );
+    } else if (ext === 'fbx') {
+      const loader = new THREE.FBXLoader();
+      loader.load(
+        this.modelPath,
+        (fbx) => {
+          this.model = fbx;
+          this.centerAndScaleModel();
+          this.scene.add(this.model);
+        },
+        undefined,
+        (error) => console.error('Error loading FBX:', error)
+      );
+    }
+  }
+  
+  centerAndScaleModel() {
+    if (!this.model) return;
+    
+    // Center the model
+    const box = new THREE.Box3().setFromObject(this.model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    
+    this.model.position.sub(center);
+    
+    // Scale to fit
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scale = 2 / maxDim;
+    this.model.scale.setScalar(scale);
+    
+    // Adjust camera
+    this.camera.position.set(0, 1, 3);
+    this.controls.target.set(0, 0, 0);
+    this.controls.update();
+  }
+  
+  animate() {
+    this.animationId = requestAnimationFrame(() => this.animate());
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
+  }
+  
+  dispose() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+    }
+    
+    window.removeEventListener('resize', this.onResize);
+    
+    if (this.model) {
+      this.scene.remove(this.model);
+      this.model.traverse((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach(m => m.dispose());
+          } else {
+            child.material.dispose();
+          }
+        }
+      });
+    }
+    
+    if (this.renderer) {
+      this.renderer.dispose();
+    }
+    
+    if (this.controls) {
+      this.controls.dispose();
+    }
+  }
 }
