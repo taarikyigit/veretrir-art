@@ -31,6 +31,71 @@ a {
 }
 
 /* ═══════════════════════════════════════════
+   HERO SLIDER (Fullscreen Entry)
+═══════════════════════════════════════════ */
+.hero-slider {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+}
+
+.hero-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.hero-name {
+  font-size: 42px;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.hero-enter {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  padding: 12px 40px;
+  font-family: var(--font);
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.hero-enter:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: #fff;
+}
+
+/* ═══════════════════════════════════════════
    LAYOUT: Right Sidebar + Left Content
 ═══════════════════════════════════════════ */
 .site-wrapper {
@@ -155,6 +220,12 @@ a {
 
 .series-link.active {
   color: var(--text);
+}
+
+/* Simulations dropdown (same style as series) */
+.sim-dropdown {
+  margin-bottom: 8px;
+  display: flex; /* Always visible on non-index pages */
 }
 
 .sidebar-bottom {
