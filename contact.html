@@ -29,6 +29,14 @@
         <a href="index.html" data-en="artworks" data-tr="eserler">artworks</a>
         <a href="about.html" data-en="about" data-tr="hakkında">about</a>
         <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+        <div class="nav-item-group">
+          <a href="#" class="nav-main" onclick="return false;" data-en="simulations" data-tr="simülasyonlar">simulations</a>
+        </div>
+        <div class="series-dropdown sim-dropdown">
+          <a href="simulations/kaplanmis_golgesi.html" target="_blank" class="series-link">shadow of the object</a>
+          <a href="simulations/hayat_doner.html" target="_blank" class="series-link">life revolves</a>
+          <a href="simulations/yercekiminin_izi.html" target="_blank" class="series-link">trace of gravity</a>
+        </div>
         <a href="contact.html" class="active" data-en="contact" data-tr="iletişim">contact</a>
       </div>
       <div class="sidebar-bottom">
@@ -57,6 +65,19 @@ function updateLangTexts() {
   });
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
   document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
+  
+  // Update simulation links
+  const simLinks = document.querySelectorAll('.sim-dropdown .series-link');
+  const simNames = [
+    { en: 'shadow of the object', tr: 'nesnenin kaplanmış gölgesi' },
+    { en: 'life revolves', tr: 'hayat döner' },
+    { en: 'trace of gravity', tr: 'yerçekiminin izi' }
+  ];
+  simLinks.forEach((link, i) => {
+    if (simNames[i]) {
+      link.textContent = l === 'tr' ? simNames[i].tr : simNames[i].en;
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
