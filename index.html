@@ -9,7 +9,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="site-wrapper">
+  <!-- Hero Slider -->
+  <div class="hero-slider" id="hero-slider">
+    <div class="hero-slides" id="hero-slides"></div>
+    <div class="hero-overlay">
+      <div class="hero-name">tarık yiğit</div>
+      <button class="hero-enter" id="hero-enter" data-en="enter" data-tr="giriş">enter</button>
+    </div>
+  </div>
+
+  <div class="site-wrapper" id="site-wrapper" style="display:none;">
     <!-- Main Content (Left) -->
     <main class="main-content">
       <div class="gallery-grid" id="gallery"></div>
@@ -35,6 +44,20 @@
         
         <a href="about.html" data-en="about" data-tr="hakkında">about</a>
         <a href="writings.html" data-en="writings" data-tr="yazılar">writings</a>
+        
+        <!-- Simulations dropdown -->
+        <div class="nav-item-group">
+          <a href="#" class="nav-main" onclick="return false;" data-en="simulations" data-tr="simülasyonlar">simulations</a>
+          <button class="nav-toggle" id="sim-toggle" aria-label="Toggle simulations">
+            <span class="toggle-arrow sim-arrow">▼</span>
+          </button>
+        </div>
+        <div class="series-dropdown sim-dropdown" id="sim-dropdown">
+          <a href="simulations/kaplanmis_golgesi.html" target="_blank" class="series-link" data-en="shadow of the object" data-tr="nesnenin kaplanmış gölgesi">shadow of the object</a>
+          <a href="simulations/hayat_doner.html" target="_blank" class="series-link" data-en="life revolves" data-tr="hayat döner">life revolves</a>
+          <a href="simulations/yercekiminin_izi.html" target="_blank" class="series-link" data-en="trace of gravity" data-tr="yerçekiminin izi">trace of gravity</a>
+        </div>
+        
         <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
       </div>
       <div class="sidebar-bottom">
@@ -78,6 +101,63 @@ let currentArtworks = [];
 let currentLightboxIndex = 0;
 let currentSeries = 'all';
 let seriesOpen = true;
+let simOpen = false;
+
+/* ════════════════════════════════════════════
+   HERO SLIDER
+════════════════════════════════════════════ */
+function buildHeroSlider() {
+  const slidesContainer = document.getElementById('hero-slides');
+  slidesContainer.innerHTML = '';
+  
+  // Get featured artworks or first 5
+  let heroImages = [];
+  const artworks = (SITE.artworks || []).filter(a => !a.archived);
+  const featured = artworks.filter(a => a.featured);
+  const pool = featured.length >= 3 ? featured : artworks;
+  
+  pool.slice(0, 6).forEach(aw => {
+    const img = aw.displayImage || (aw.images && aw.images[0] ? aw.images[0].path : null);
+    if (img) heroImages.push(img);
+  });
+  
+  if (heroImages.length === 0) {
+    // Skip hero if no images
+    enterSite();
+    return;
+  }
+  
+  heroImages.forEach((src, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+    slide.style.backgroundImage = `url('${src}')`;
+    slidesContainer.appendChild(slide);
+  });
+  
+  // Start slideshow
+  let currentSlide = 0;
+  setInterval(() => {
+    const slides = document.querySelectorAll('.hero-slide');
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }, 4000);
+}
+
+function enterSite() {
+  document.getElementById('hero-slider').style.display = 'none';
+  document.getElementById('site-wrapper').style.display = 'flex';
+  sessionStorage.setItem('entered', '1');
+}
+
+function checkEntered() {
+  if (sessionStorage.getItem('entered')) {
+    document.getElementById('hero-slider').style.display = 'none';
+    document.getElementById('site-wrapper').style.display = 'flex';
+    return true;
+  }
+  return false;
+}
 
 /* ════════════════════════════════════════════
    SERIES DROPDOWN
@@ -117,6 +197,14 @@ function toggleSeries() {
   const arrow = document.querySelector('.toggle-arrow');
   dropdown.classList.toggle('open', seriesOpen);
   arrow.style.transform = seriesOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+function toggleSimulations() {
+  simOpen = !simOpen;
+  const dropdown = document.getElementById('sim-dropdown');
+  const arrow = document.querySelector('.sim-arrow');
+  dropdown.classList.toggle('open', simOpen);
+  arrow.style.transform = simOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
 }
 
 /* ════════════════════════════════════════════
@@ -394,6 +482,19 @@ function updateLangTexts() {
   
   document.getElementById('btn-en').classList.toggle('active', l === 'en');
   document.getElementById('btn-tr').classList.toggle('active', l === 'tr');
+  
+  // Update simulation links
+  const simLinks = document.querySelectorAll('.sim-dropdown .series-link');
+  const simNames = [
+    { en: 'shadow of the object', tr: 'nesnenin kaplanmış gölgesi' },
+    { en: 'life revolves', tr: 'hayat döner' },
+    { en: 'trace of gravity', tr: 'yerçekiminin izi' }
+  ];
+  simLinks.forEach((link, i) => {
+    if (simNames[i]) {
+      link.textContent = l === 'tr' ? simNames[i].tr : simNames[i].en;
+    }
+  });
 }
 
 /* ════════════════════════════════════════════
@@ -412,6 +513,14 @@ function escapeHtml(str) {
    INIT
 ════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Check if already entered
+  if (!checkEntered()) {
+    buildHeroSlider();
+  }
+  
+  // Hero enter button
+  document.getElementById('hero-enter').addEventListener('click', enterSite);
+  
   buildSeriesDropdown();
   buildGallery();
   updateLangTexts();
@@ -419,7 +528,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Series toggle
   document.getElementById('series-toggle').addEventListener('click', toggleSeries);
   
-  // Start with dropdown open
+  // Simulations toggle
+  document.getElementById('sim-toggle').addEventListener('click', toggleSimulations);
+  
+  // Start with series dropdown open
   document.getElementById('series-dropdown').classList.add('open');
   
   // Language buttons
