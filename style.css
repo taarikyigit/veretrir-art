@@ -551,8 +551,10 @@ a {
 }
 
 /* 3D button in lightbox */
-.btn-3d {
-  margin-top: 20px;
+.btn-3d,
+.btn-pdf {
+  margin-top: 15px;
+  margin-right: 10px;
   background: none;
   border: 1px solid var(--border);
   color: var(--dim);
@@ -563,9 +565,97 @@ a {
   transition: all 0.2s;
 }
 
-.btn-3d:hover {
+.btn-3d:hover,
+.btn-pdf:hover {
   border-color: var(--text);
   color: var(--text);
+}
+
+/* GIF in materials */
+.material-gif {
+  margin-top: 10px;
+}
+
+.gif-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════
+   PDF VIEWER OVERLAY
+═══════════════════════════════════════════ */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  background: #1a1a1a;
+  z-index: 1002;
+  display: none;
+  flex-direction: column;
+}
+
+.pdf-overlay.open {
+  display: flex;
+}
+
+.pdf-toolbar {
+  height: 50px;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.pdf-title {
+  color: #fff;
+  font-size: 14px;
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pdf-controls button {
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pdf-controls button:hover {
+  border-color: #666;
+  color: #fff;
+}
+
+.pdf-controls span {
+  color: #888;
+  font-size: 12px;
+}
+
+.pdf-sep {
+  color: #444 !important;
+}
+
+.pdf-stage {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+  background: #2a2a2a;
+}
+
+#pdf-canvas {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
 /* ═══════════════════════════════════════════
