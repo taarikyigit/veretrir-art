@@ -53,9 +53,9 @@
           </button>
         </div>
         <div class="series-dropdown sim-dropdown" id="sim-dropdown">
-          <a href="simulations/kaplanmis_golgesi.html" target="_blank" class="series-link" data-en="shadow of the object" data-tr="nesnenin kaplanmış gölgesi">shadow of the object</a>
-          <a href="simulations/hayat_doner.html" target="_blank" class="series-link" data-en="life revolves" data-tr="hayat döner">life revolves</a>
-          <a href="simulations/yercekiminin_izi.html" target="_blank" class="series-link" data-en="trace of gravity" data-tr="yerçekiminin izi">trace of gravity</a>
+          <a href="kaplanmis_golgesi.html" target="_blank" class="series-link" data-en="shadow of the object" data-tr="nesnenin kaplanmış gölgesi">shadow of the object</a>
+          <a href="hayat_doner.html" target="_blank" class="series-link" data-en="life revolves" data-tr="hayat döner">life revolves</a>
+          <a href="yercekiminin_izi.html" target="_blank" class="series-link" data-en="trace of gravity" data-tr="yerçekiminin izi">trace of gravity</a>
         </div>
         
         <a href="contact.html" data-en="contact" data-tr="iletişim">contact</a>
@@ -86,10 +86,35 @@
     <div class="viewer-hint" data-en="drag to rotate · scroll to zoom" data-tr="döndürmek için sürükle · yakınlaştırmak için kaydır">drag to rotate · scroll to zoom</div>
   </div>
 
+  <!-- PDF Viewer Overlay -->
+  <div class="pdf-overlay" id="pdf-overlay">
+    <div class="pdf-toolbar">
+      <span class="pdf-title" id="pdf-title">PDF</span>
+      <div class="pdf-controls">
+        <button onclick="pdfNav(-1)">‹</button>
+        <span id="pdf-page-info">1 / 1</span>
+        <button onclick="pdfNav(1)">›</button>
+        <span class="pdf-sep">|</span>
+        <button onclick="pdfZoom(-1)">−</button>
+        <span id="pdf-zoom-info">100%</span>
+        <button onclick="pdfZoom(1)">+</button>
+        <span class="pdf-sep">|</span>
+        <button onclick="closePdfViewer()" data-en="close" data-tr="kapat">close</button>
+      </div>
+    </div>
+    <div class="pdf-stage">
+      <canvas id="pdf-canvas"></canvas>
+    </div>
+  </div>
+
   <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
   <script src="data.js"></script>
   <script src="common.js"></script>
@@ -300,7 +325,7 @@ function renderLightbox() {
   // Check for 3D model in materials
   let modelPath = null;
   if (aw.materials) {
-    const modelMat = aw.materials.find(m => m.type === '3d-model' && m.path);
+    const modelMat = aw.materials.find(m => (m.type === '3d-model' || m.type === '3d') && m.path);
     if (modelMat) modelPath = modelMat.path;
   }
   
@@ -333,36 +358,64 @@ function renderLightbox() {
   
   // Materials section
   if (aw.materials && aw.materials.length > 0) {
-    const visibleMaterials = aw.materials.filter(m => m.type !== '3d-model');
-    if (visibleMaterials.length > 0) {
-      html += `<div class="lightbox-materials">`;
+    html += `<div class="lightbox-materials">`;
+    
+    aw.materials.forEach(mat => {
+      const label = mat.label || '';
+      const matContent = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
       
-      visibleMaterials.forEach(mat => {
-        const label = mat.label || '';
-        const matContent = l === 'tr' ? (mat.contentTR || mat.content) : mat.content;
-        
-        html += `<div class="material-section">`;
-        if (label) {
-          html += `<div class="material-label">${escapeHtml(label)}</div>`;
-        }
-        
-        if (mat.type === 'image-gallery' && mat.images && mat.images.length > 0) {
-          html += '<div class="material-images">';
+      html += `<div class="material-section">`;
+      if (label) {
+        html += `<div class="material-label">${escapeHtml(label)}</div>`;
+      }
+      
+      // GIF type
+      if (mat.type === 'gif') {
+        if (mat.images && mat.images.length > 0) {
+          html += '<div class="material-gif">';
           mat.images.forEach(img => {
-            html += `<img src="${escapeHtml(img.path)}" alt="">`;
+            html += `<img src="${escapeHtml(img.path)}" alt="GIF" class="gif-image">`;
           });
           html += '</div>';
-        } else if (mat.type === 'text' && matContent) {
-          html += `<div class="material-text">${formatDesc(matContent)}</div>`;
-        } else if (mat.type === 'video' && mat.path) {
-          html += `<video controls style="max-width:100%;"><source src="${escapeHtml(mat.path)}"></video>`;
         }
-        
+      }
+      // Image gallery
+      else if (mat.type === 'image-gallery' && mat.images && mat.images.length > 0) {
+        html += '<div class="material-images">';
+        mat.images.forEach(img => {
+          html += `<img src="${escapeHtml(img.path)}" alt="">`;
+        });
         html += '</div>';
-      });
+      }
+      // Text
+      else if (mat.type === 'text' && matContent) {
+        html += `<div class="material-text">${formatDesc(matContent)}</div>`;
+      }
+      // Video
+      else if (mat.type === 'video' && mat.path) {
+        html += `<video controls style="max-width:100%;"><source src="${escapeHtml(mat.path)}"></video>`;
+      }
+      // PDF
+      else if (mat.type === 'pdf' && mat.path) {
+        html += `
+          <div class="material-pdf">
+            <button class="btn-pdf" onclick="openPdfViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? 'PDF Görüntüle' : 'View PDF'}</button>
+          </div>
+        `;
+      }
+      // 3D model (show button if not already shown)
+      else if ((mat.type === '3d' || mat.type === '3d-model') && mat.path && !modelPath) {
+        html += `
+          <div class="material-3d">
+            <button class="btn-3d" onclick="openViewer('${escapeHtml(mat.path)}')">${l === 'tr' ? '3D Görüntüle' : 'View in 3D'}</button>
+          </div>
+        `;
+      }
       
       html += '</div>';
-    }
+    });
+    
+    html += '</div>';
   }
   
   content.innerHTML = html;
@@ -470,6 +523,68 @@ function initViewer(modelPath) {
 }
 
 /* ════════════════════════════════════════════
+   PDF VIEWER
+════════════════════════════════════════════ */
+let pdfDoc = null;
+let pdfPage = 1;
+let pdfTotalPages = 1;
+let pdfScale = 1.5;
+
+function openPdfViewer(pdfPath) {
+  document.getElementById('pdf-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  
+  pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
+    pdfDoc = pdf;
+    pdfTotalPages = pdf.numPages;
+    pdfPage = 1;
+    renderPdfPage();
+  }).catch(err => {
+    console.error('PDF load error:', err);
+    alert('PDF yüklenemedi / Could not load PDF');
+    closePdfViewer();
+  });
+}
+
+function renderPdfPage() {
+  if (!pdfDoc) return;
+  
+  pdfDoc.getPage(pdfPage).then(page => {
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    const viewport = page.getViewport({ scale: pdfScale });
+    
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    
+    page.render({ canvasContext: ctx, viewport: viewport });
+    
+    document.getElementById('pdf-page-info').textContent = `${pdfPage} / ${pdfTotalPages}`;
+    document.getElementById('pdf-zoom-info').textContent = Math.round(pdfScale * 100 / 1.5) + '%';
+  });
+}
+
+function pdfNav(dir) {
+  pdfPage += dir;
+  if (pdfPage < 1) pdfPage = 1;
+  if (pdfPage > pdfTotalPages) pdfPage = pdfTotalPages;
+  renderPdfPage();
+}
+
+function pdfZoom(dir) {
+  pdfScale += dir * 0.25;
+  if (pdfScale < 0.5) pdfScale = 0.5;
+  if (pdfScale > 4) pdfScale = 4;
+  renderPdfPage();
+}
+
+function closePdfViewer() {
+  document.getElementById('pdf-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  pdfDoc = null;
+}
+
+/* ════════════════════════════════════════════
    LANGUAGE
 ════════════════════════════════════════════ */
 function updateLangTexts() {
@@ -551,6 +666,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Keyboard navigation
   document.addEventListener('keydown', e => {
+    if (document.getElementById('pdf-overlay').classList.contains('open')) {
+      if (e.key === 'Escape') closePdfViewer();
+      if (e.key === 'ArrowLeft') pdfNav(-1);
+      if (e.key === 'ArrowRight') pdfNav(1);
+      return;
+    }
     if (document.getElementById('viewer-overlay').classList.contains('open')) {
       if (e.key === 'Escape') closeViewer();
       return;
